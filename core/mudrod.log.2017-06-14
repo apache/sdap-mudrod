@@ -1,0 +1,9 @@
+2017-06-14 10:01:56,775 INFO  process.LocalOntology - Creating new ontology
+2017-06-14 10:01:57,575 WARN  impl.RDFDefaultErrorHandler - unknown-source: {W136} Relative URIs are not permitted in RDF: specifically <ont-policy.rdf>
+2017-06-14 10:01:57,647 INFO  process.LocalOntology - Reading and processing https://raw.githubusercontent.com/ESIPFed/sweet/master/2.4/sweetAll.owl
+2017-06-14 10:02:04,930 WARN  impl.RDFDefaultErrorHandler - https://raw.githubusercontent.com/ESIPFed/sweet/master/2.4/reprSciUnits.owl(line 683 column 44): {W105} Redefinition of ID: lux
+2017-06-14 10:02:04,930 WARN  impl.RDFDefaultErrorHandler - https://raw.githubusercontent.com/ESIPFed/sweet/master/2.4/reprSciUnits.owl(line 635 column 44): {W105} Previous definition of 'lux'.
+2017-06-14 10:02:15,572 INFO  process.LocalOntology - Successfully processed https://raw.githubusercontent.com/ESIPFed/sweet/master/2.4/sweetAll.owl
+2017-06-14 10:02:18,889 INFO  process.LocalOntology - Creating new ontology
+2017-06-14 10:02:18,889 INFO  process.LocalOntology - Reading and processing https://raw.githubusercontent.com/ESIPFed/sweet/master/2.4/sweetAll.owl
+2017-06-14 10:02:18,898 INFO  process.LocalOntology - Successfully processed https://raw.githubusercontent.com/ESIPFed/sweet/master/2.4/sweetAll.owl
