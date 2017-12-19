@@ -13,8 +13,8 @@
  */
 package gov.nasa.jpl.mudrod.services.search;
 
-import gov.nasa.jpl.mudrod.main.MudrodConstants;
-import gov.nasa.jpl.mudrod.main.MudrodEngine;
+import org.apache.sdap.mudrod.main.MudrodConstants;
+import org.apache.sdap.mudrod.main.MudrodEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

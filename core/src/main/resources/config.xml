@@ -63,7 +63,7 @@
     The ontology service implementation. Possible values include
      EsipPortal - EsipPortalOntology
      EsipCOR - EsipCOROntology
-     Local - gov.nasa.jpl.mudrod.ontology.process.Local
+     Local - org.apache.sdap.mudrod.ontology.process.Local
      -->
     <para name="mudrod.ontology.implementation">Local</para>
 

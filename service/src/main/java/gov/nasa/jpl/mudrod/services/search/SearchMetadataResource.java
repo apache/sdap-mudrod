@@ -16,10 +16,11 @@ package gov.nasa.jpl.mudrod.services.search;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import gov.nasa.jpl.mudrod.main.MudrodConstants;
-import gov.nasa.jpl.mudrod.main.MudrodEngine;
-import gov.nasa.jpl.mudrod.ssearch.Ranker;
-import gov.nasa.jpl.mudrod.ssearch.Searcher;
+
+import org.apache.sdap.mudrod.main.MudrodConstants;
+import org.apache.sdap.mudrod.main.MudrodEngine;
+import org.apache.sdap.mudrod.ssearch.Ranker;
+import org.apache.sdap.mudrod.ssearch.Searcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

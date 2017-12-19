@@ -14,7 +14,8 @@
 package gov.nasa.jpl.mudrod.services.ontology;
 
 import com.google.gson.Gson;
-import gov.nasa.jpl.mudrod.ontology.Ontology;
+
+import org.apache.sdap.mudrod.ontology.Ontology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

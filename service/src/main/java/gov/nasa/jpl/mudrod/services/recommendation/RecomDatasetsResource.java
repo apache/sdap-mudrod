@@ -14,14 +14,15 @@
 package gov.nasa.jpl.mudrod.services.recommendation;
 
 import com.google.gson.JsonObject;
-import gov.nasa.jpl.mudrod.main.MudrodEngine;
-import gov.nasa.jpl.mudrod.recommendation.structure.RecomData;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.apache.sdap.mudrod.main.MudrodEngine;
+import org.apache.sdap.mudrod.recommendation.structure.RecomData;
 
 ;
 

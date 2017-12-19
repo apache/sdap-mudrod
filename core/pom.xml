@@ -18,7 +18,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>gov.nasa.jpl.mudrod</groupId>
+        <groupId>org.apache.sdap.mudrod</groupId>
         <artifactId>mudrod-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../</relativePath>
@@ -192,7 +192,7 @@
                     <repositoryName>lib</repositoryName>
                     <programs>
                         <program>
-                            <mainClass>gov.nasa.jpl.mudrod.main.MudrodEngine
+                            <mainClass>org.apache.sdap.mudrod.main.MudrodEngine
                             </mainClass>
                             <name>mudrod-engine</name>
                         </program>
@@ -273,7 +273,7 @@
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
                                         <Main-Class>
-                                            gov.nasa.jpl.mudrod.main.MudrodEngine
+                                            org.apache.sdap.mudrod.main.MudrodEngine
                                         </Main-Class>
                                         <Build-Number>${implementation.build}
                                         </Build-Number>

@@ -25,25 +25,25 @@
         <init-param>
             <param-name>jaxrs.serviceClasses</param-name>
             <param-value>
-                gov.nasa.jpl.mudrod.services.autocomplete.AutoCompleteResource,
-                gov.nasa.jpl.mudrod.services.search.SearchDatasetDetailResource,
-                gov.nasa.jpl.mudrod.services.recommendation.HybridRecomDatasetsResource,
-                gov.nasa.jpl.mudrod.services.recommendation.RecomDatasetsResource,
-                gov.nasa.jpl.mudrod.services.search.SearchMetadataResource,
-                gov.nasa.jpl.mudrod.services.search.SearchVocabResource,
-                gov.nasa.jpl.mudrod.services.search.SessionDetailResource,
-                gov.nasa.jpl.mudrod.services.ontology.OntologyResource,
+                org.apache.sdap.mudrod.services.autocomplete.AutoCompleteResource,
+                org.apache.sdap.mudrod.services.search.SearchDatasetDetailResource,
+                org.apache.sdap.mudrod.services.recommendation.HybridRecomDatasetsResource,
+                org.apache.sdap.mudrod.services.recommendation.RecomDatasetsResource,
+                org.apache.sdap.mudrod.services.search.SearchMetadataResource,
+                org.apache.sdap.mudrod.services.search.SearchVocabResource,
+                org.apache.sdap.mudrod.services.search.SessionDetailResource,
+                org.apache.sdap.mudrod.services.ontology.OntologyResource,
             </param-value>
         </init-param>
         <init-param>
             <param-name>jaxrs.providers</param-name>
-            <param-value>gov.nasa.jpl.mudrod.services.DefaultExceptionMapper</param-value>
+            <param-value>org.apache.sdap.mudrod.services.DefaultExceptionMapper</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
     <listener>
-        <listener-class>gov.nasa.jpl.mudrod.services.MudrodContextListener
+        <listener-class>org.apache.sdap.mudrod.services.MudrodContextListener
         </listener-class>
     </listener>
 

@@ -15,8 +15,9 @@ package gov.nasa.jpl.mudrod.services.search;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import gov.nasa.jpl.mudrod.integration.LinkageIntegration;
-import gov.nasa.jpl.mudrod.main.MudrodEngine;
+
+import org.apache.sdap.mudrod.integration.LinkageIntegration;
+import org.apache.sdap.mudrod.main.MudrodEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
