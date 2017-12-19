@@ -14,4 +14,4 @@
 /**
  * Mudrod recommendation resources.
  */
-package gov.nasa.jpl.mudrod.services.recommendation;
+package org.apache.sdap.mudrod.services.recommendation;

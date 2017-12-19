@@ -14,4 +14,4 @@
 /**
  * Mudrod search-related resources.
  */
-package gov.nasa.jpl.mudrod.services.search;
+package org.apache.sdap.mudrod.services.search;

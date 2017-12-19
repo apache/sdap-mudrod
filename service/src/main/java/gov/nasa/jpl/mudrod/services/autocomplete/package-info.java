@@ -14,4 +14,4 @@
 /**
  * Mudrod Autocompletion resources.
  */
-package gov.nasa.jpl.mudrod.services.autocomplete;
+package org.apache.sdap.mudrod.services.autocomplete;

@@ -1,17 +1,10 @@
 # MUDROD
 ## Mining and Utilizing Dataset Relevancy from Oceanographic Datasets to Improve Data Discovery and Access
 
-[![license](https://img.shields.io/github/license/mudrod/mudrod.svg?maxAge=2592000?style=plastic)](http://www.apache.org/licenses/LICENSE-2.0)
-[![Build Status](https://travis-ci.org/mudrod/mudrod.svg?branch=master)](https://travis-ci.org/mudrod/mudrod)
-[![Docker Pulls](https://img.shields.io/docker/pulls/mudrod/mudrod.svg?maxAge=2592000?style=plastic)](https://hub.docker.com/r/mudrod/mudrod/) [![](https://images.microbadger.com/badges/image/mudrod/mudrod.svg)](https://microbadger.com/images/mudrod/mudrod "Get your own image badge on microbadger.com")
-[![codecov](https://codecov.io/gh/mudrod/mudrod/branch/master/graph/badge.svg)](https://codecov.io/gh/mudrod/mudrod)
-[![Quality Gate](https://sonarqube.com/api/badges/gate?key=gov.nasa.jpl.mudrod:mudrod-parent)](https://sonarqube.com/dashboard/index/gov.nasa.jpl.mudrod:mudrod-parent)
-
-<img src="http://geant4.slac.stanford.edu/Space06/NASAJPLlogo.jpg" align="right" width="300" />
-<img src="http://www.iucrc.org/sites/default/files/centerLogo.png" align="right" width="170" />
+[![license](https://img.shields.io/github/license/apache/incubator-sdap-mudrod.svg?maxAge=2592000?style=plastic)](http://www.apache.org/licenses/LICENSE-2.0)
 
 [MUDROD](https://esto.nasa.gov/forum/estf2015/presentations/Yang_S8P1_ESTF2015.pdf) 
-is a semantic discovery and search project funded by NASA AIST (NNX15AM85G).
+is a semantic discovery and search project part of [Apache SDAP](https://sdap.apache.org).
 
 # Software requirements: 
  * Java 8
@@ -29,8 +22,8 @@ We strongly advise all users to save time and effort by consulting the [Dockerfi
 for guidance on how to quickly use Docker to deploy Mudrod.
 
 ## From source
-1. Ensure you have Elasticsearch running locally and that the configuration in [config.xml](https://github.com/mudrod/mudrod/blob/master/core/src/main/resources/config.xml) reflects your ES cluster.
-2. Update the `svmSgdModel` configuration option in [config.xml](https://github.com/mudrod/mudrod/blob/master/core/src/main/resources/config.xml). There is a line in config.xml that looks like 
+1. Ensure you have Elasticsearch running locally and that the configuration in [config.xml](https://github.com/apache/incubator-sdap-mudrod/blob/master/core/src/main/resources/config.xml) reflects your ES cluster.
+2. Update the `svmSgdModel` configuration option in [config.xml](https://github.com/apache/incubator-sdap-mudrod/blob/master/core/src/main/resources/config.xml). There is a line in config.xml that looks like 
     ```
     <para name="svmSgdModel">file://YOUNEEDTOCHANGETHIS</para>
     ```
@@ -99,15 +92,9 @@ $ cp mudrod/service/target/mudrod-service-${version}-SNAPSHOT.war $CATALINA_HOME
 ```
 Once Tomcat hot deploys the .war artifact, you will be able to browse to the running application similar to what is shown above [http://localhost:8080/mudrod-service](http://localhost:8080/mudrod-service)
 
-# Publications
-* Jiang, Y., Li, Y., Yang, C., Liu, K., Armstrong, E.M., Huang, T., Moroni, D.F. and Finch, C.J., 2017. [A comprehensive methodology for discovering semantic relationships among geospatial vocabularies using oceanographic data discovery as an example](http://www.tandfonline.com/eprint/JgGYJBk4mhdt5NFjEx8f/full). International Journal of Geographical Information Science, pp.1-19.
-* Jiang, Y., Y. Li, C. Yang, K. Liu, E. M. Armstrong, T. Huang, D. Moroni & L. Mcgibbney (2016) Towards intelligent geospatial discovery: a machine learning ranking framework (Accepted). International Journal of Digital Earth
-* Jiang, Y., Y. Li, C. Yang, E. M. Armstrong, T. Huang & D. Moroni (2016) [Reconstructing Sessions from Data Discovery and Access Logs to Build a Semantic Knowledge Base for Improving Data Discovery](http://www.mdpi.com/2220-9964/5/5/54#stats ). ISPRS International Journal of Geo-Information, 5, 54.
-* Y. Li, Jiang, Y., C. Yang, K. Liu, E. M. Armstrong, T. Huang & D. Moroni (2016) Leverage cloud computing to improve data access log mining. IEEE Oceans 2016.
-
 ## Mudrod Wiki
 
-https://github.com/mudrod/mudrod/wiki
+https://cwiki.apache.org/confluence/display/SDAP/Home
 
 ## Java API Documentation
 
@@ -122,20 +109,8 @@ $ open target/site/apidocs/index.html
 $ mvn clean install
 $ open service/target/miredot/index.html
 ```
-The REST API documentation can also be seen at [https://mudrod.github.io/miredot](https://mudrod.github.io/miredot).
+The REST API documentation can also be seen at [https://sdap.apache.org/miredot](https://sdap.apache.org/miredot).
 
-# Team members:
-
- * Chaowei (Phil) Yang - [NSF Spatiotemporal Innovation Center](http://stcenter.net/), George Mason University
- * [Yongyao Jiang](https://www.linkedin.com/in/yongyao-jiang-42516164) - [NSF Spatiotemporal Innovation Center](http://stcenter.net/), George Mason University
- * Yun Li - [NSF Spatiotemporal Innovation Center](http://stcenter.net/), George Mason University
- * Edward M Armstrong - [Jet Propulsion Laboratory](http://www.jpl.nasa.gov/), [NASA](http://www.nasa.gov)
- * Thomas Huang - [Jet Propulsion Laboratory](http://www.jpl.nasa.gov/), [NASA](http://www.nasa.gov)
- * David Moroni - [Jet Propulsion Laboratory](http://www.jpl.nasa.gov/), [NASA](http://www.nasa.gov)
- * Chris Finch - [Jet Propulsion Laboratory](http://www.jpl.nasa.gov/), [NASA](http://www.nasa.gov)
- * [Lewis John Mcgibbney](https://www.linkedin.com/in/lmcgibbney) - [Jet Propulsion Laboratory](http://www.jpl.nasa.gov/), [NASA](http://www.nasa.gov)
- * [Frank Greguska](https://www.linkedin.com/in/frankgreguska/) - [Jet Propulsion Laboratory](http://www.jpl.nasa.gov/), [NASA](http://www.nasa.gov)
- 
 # License
 This source code is licensed under the [Apache License v2.0](http://www.apache.org/licenses/LICENSE-2.0), a
 copy of which is shipped with this project. 

@@ -14,4 +14,4 @@
 /**
  * Mudrod ontology resources.
  */
-package gov.nasa.jpl.mudrod.services.ontology;
+package org.apache.sdap.mudrod.services.ontology;
