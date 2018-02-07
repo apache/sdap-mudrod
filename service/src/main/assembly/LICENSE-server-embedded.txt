@@ -203,7 +203,7 @@
 
 MUDROD DEPENDENCIES:
 
-The Murdor distribution packages include a number of dependencies with
+The Muddod distribution packages include a number of dependencies with
 separate copyright notices and license terms. Your use of the binaries for these
 dependencies is subject to the terms and conditions of the following licenses.
 

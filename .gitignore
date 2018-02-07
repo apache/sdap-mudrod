@@ -2,3 +2,11 @@
 .project
 .settings/
 **/*.settings/org.eclipse.wst.validation.prefs
+service/.settings/org.eclipse.wst.common.component
+web/.settings/org.eclipse.wst.common.component
+service/.settings/org.eclipse.wst.common.component
+core/bin/
+service/bin/
+core/lib
+service/lib
+core/mudrod.log*

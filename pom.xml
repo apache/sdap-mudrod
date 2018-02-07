@@ -36,20 +36,14 @@
         </license>
     </licenses>
 
-    <organization>
-        <name>George Mason University</name>
-        <url>https://www2.gmu.edu/</url>
-    </organization>
-
     <developers>
         <developer>
             <id>lewismc</id>
             <name>Lewis John McGibbney</name>
-            <email>lewis[dot]j[dot]mcgibbney[at]jpl[dot]nasa[dot]gov</email>
+            <email>lewismc[at]apache[dot]org</email>
             <roles>
                 <role>Committer</role>
             </roles>
-            <organization>NASA Jet Propulsion Laboratory</organization>
         </developer>
         <developer>
             <id>Yongyao</id>
@@ -266,6 +260,25 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <!-- Generate UML diagrams in javadoc using doclet: mvn javadoc:aggregate -->
+            <!-- Graphiviz installation is required, see http://plantuml.com/graphviz-dot -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <doclet>info.leadinglight.umljavadoclet.UmlJavaDoclet</doclet>
+                    <docletArtifact>
+                        <groupId>com.chfourie</groupId>
+                        <artifactId>uml-java-doclet</artifactId>
+                        <version>1.0.0</version>
+                    </docletArtifact>
+                    <!-- -linetype polyline / spline / ortho (default) -->
+                    <!-- -dependencies public (default) / protected / package / private -->
+                    <additionalparam></additionalparam>
+                    <useStandardDocletOptions>true</useStandardDocletOptions>
+                </configuration>
             </plugin>
         </plugins>
         <pluginManagement>

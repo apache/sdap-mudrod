@@ -106,6 +106,7 @@ public class Searcher extends MudrodAbstract implements Serializable {
    * @param type           type name in Elasticsearch
    * @param query          regular query string
    * @param queryOperator query mode- query, or, and
+   * @param rankOption a keyword used to dertermine the ElasticSearch SortOrder 
    * @return a list of search result
    */
   @SuppressWarnings("unchecked")
@@ -248,6 +249,7 @@ public class Searcher extends MudrodAbstract implements Serializable {
    * @param type           type name in Elasticsearch
    * @param query          regular query string
    * @param queryOperator query mode- query, or, and
+   * @param rankOption a keyword used to dertermine the ElasticSearch SortOrder 
    * @param rr             selected ranking method
    * @return search results
    */
