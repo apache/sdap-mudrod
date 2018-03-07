@@ -13,11 +13,11 @@
  */
 package org.apache.sdap.mudrod.discoveryengine;
 
-import java.io.Serializable;
-import java.util.Properties;
-
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
+
+import java.io.Serializable;
+import java.util.Properties;
 
 public abstract class DiscoveryEngineAbstract extends MudrodAbstract implements Serializable {
   /**

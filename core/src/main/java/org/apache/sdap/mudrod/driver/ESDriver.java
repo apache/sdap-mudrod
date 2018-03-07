@@ -15,11 +15,10 @@ package org.apache.sdap.mudrod.driver;
 
 import com.carrotsearch.hppc.cursors.ObjectObjectCursor;
 import com.google.gson.GsonBuilder;
-
-import org.apache.commons.lang.StringUtils;
 import org.apache.sdap.mudrod.main.MudrodConstants;
 import org.apache.sdap.mudrod.main.MudrodEngine;
 import org.apache.sdap.mudrod.utils.ESTransportClient;
+import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse.AnalyzeToken;
 import org.elasticsearch.action.admin.indices.get.GetIndexRequest;
@@ -168,15 +167,22 @@ public class ESDriver implements Serializable {
     if (list == null) {
       return list;
     }
+    int size = list.size();
     List<String> customlist = new ArrayList<>();
-    for (String aList : list) {
-      customlist.add(this.customAnalyzing(indexName, aList));
+    for (int i = 0; i < size; i++) {
+      customlist.add(this.customAnalyzing(indexName, list.get(i)));
     }
 
     return customlist;
   }
 
   public void deleteAllByQuery(String index, String type, QueryBuilder query) {
+    ImmutableOpenMap<String, MappingMetaData> mappings = getClient().admin().cluster().prepareState().execute().actionGet()
+        .getState().metaData().index(index).getMappings();
+    
+    //check if the type exists
+    if (!mappings.containsKey(type)) return;
+    
     createBulkProcessor();
     SearchResponse scrollResp = getClient().prepareSearch(index).setSearchType(SearchType.QUERY_AND_FETCH).setTypes(type).setScroll(new TimeValue(60000)).setQuery(query).setSize(10000).execute()
         .actionGet();
@@ -223,7 +229,9 @@ public class ESDriver implements Serializable {
     String[] indices = client.admin().indices().getIndex(new GetIndexRequest()).actionGet().getIndices();
 
     ArrayList<String> indexList = new ArrayList<>();
-    for (String indexName : indices) {
+    int length = indices.length;
+    for (int i = 0; i < length; i++) {
+      String indexName = indices[i];
       if (indexName.startsWith(object.toString())) {
         indexList.add(indexName);
       }
@@ -561,6 +569,9 @@ public class ESDriver implements Serializable {
     return this.getDocCount(index, type, search);
   }
 
+  /*
+   * Get the number of docs in a type of a index
+   */
   public int getDocCount(String[] index, String[] type, QueryBuilder filterSearch) {
     SearchRequestBuilder countSrBuilder = getClient().prepareSearch(index).setTypes(type).setQuery(filterSearch).setSize(0);
     SearchResponse countSr = countSrBuilder.execute().actionGet();

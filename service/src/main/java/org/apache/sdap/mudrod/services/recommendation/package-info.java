@@ -12,6 +12,6 @@
  * limitations under the License.
  */
 /**
- * Mudrod Autocompletion resources.
+ * Mudrod recommendation resources.
  */
-package org.apache.sdap.mudrod.services.autocomplete;
+package org.apache.sdap.mudrod.services.recommendation;

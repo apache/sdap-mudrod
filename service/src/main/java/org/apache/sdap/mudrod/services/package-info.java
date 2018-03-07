@@ -12,6 +12,6 @@
  * limitations under the License.
  */
 /**
- * Mudrod recommendation resources.
+ * This package includes base listeners, etc. for Mudrod services.
  */
-package org.apache.sdap.mudrod.services.recommendation;
+package org.apache.sdap.mudrod.services;

@@ -13,10 +13,10 @@
  */
 package org.apache.sdap.mudrod.discoveryengine;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.main.MudrodConstants;
+import org.apache.commons.io.IOUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.Logger;
@@ -52,7 +52,7 @@ public abstract class MudrodAbstract implements Serializable {
     this.es = es;
     this.spark = spark;
 
-    if (this.props != null) {
+    if (this.props != null && this.es!=null) {
       this.initMudrod();
     }
   }

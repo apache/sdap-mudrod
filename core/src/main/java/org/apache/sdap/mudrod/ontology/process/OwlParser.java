@@ -17,13 +17,15 @@ import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.Literal;
-import org.apache.sdap.mudrod.ontology.Ontology;
 
 import com.esotericsoftware.minlog.Log;
+
+import org.apache.sdap.mudrod.ontology.Ontology;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

@@ -12,6 +12,6 @@
  * limitations under the License.
  */
 /**
- * This package includes base listeners, etc. for Mudrod services.
+ * Mudrod Autocompletion resources.
  */
-package org.apache.sdap.mudrod.services;
+package org.apache.sdap.mudrod.services.autocomplete;

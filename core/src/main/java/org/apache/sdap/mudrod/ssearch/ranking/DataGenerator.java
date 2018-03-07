@@ -20,7 +20,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * SVMData is a program designed to create appropriate input data for the RankSVM
@@ -34,10 +33,10 @@ public class DataGenerator {
   private static boolean isMultFiles;
 
   private static String[] myHeader;
-  private static List<List<String>> myMasterList = new ArrayList<>();
+  private static List<List<String>> myMasterList = new ArrayList<List<String>>();
 
   // HashMap used for comparing evaluation classes
-  public static final Map<String, Integer> map1 = new HashMap<>();
+  public static final HashMap<String, Integer> map1 = new HashMap<String, Integer>();
 
   static {
     map1.put("Excellent", 7);
@@ -83,7 +82,7 @@ public class DataGenerator {
     try {
       String sourceDir = mySourceDir;
 
-      if (isMultFiles) // Case where multiple files have to be processed
+      if (isMultFiles == true) // Case where multiple files have to be processed
       {
         // Iterate over files in directory 
         File directory = new File(sourceDir);
@@ -136,7 +135,7 @@ public class DataGenerator {
    * @param arr the parsed contents of the original CSV file
    */
   public static void calculateVec(String[][] arr) {
-    List<List<String>> listofLists = new ArrayList<>(); // Holds calculations 
+    List<List<String>> listofLists = new ArrayList<List<String>>(); // Holds calculations 
 
     int rowStart = 1;
     for (int row = rowStart; row < arr.length; row++) // Start at row 1 because row 0 is heading lol
@@ -145,6 +144,7 @@ public class DataGenerator {
         List<String> colList = new ArrayList<String>(); // create vector to store all values inside of a column, which is stored inside 2D vector
         for (int col = 0; col < arr[0].length - 1; col++) // Columns go until the next to last column
         {
+          //System.out.println(col + " " + arr[row][col]);
           // Extract double value from each cell
           double x1 = Double.parseDouble(arr[row][col]);
           double x2 = Double.parseDouble(arr[row + i][col]);
@@ -209,8 +209,8 @@ public class DataGenerator {
    */
   public static List<List<String>> equalizeList(List<List<String>> rawList) {
     // Create two sets - one containing row index for +1 and the other for -1
-    List<Integer> pos1List = new ArrayList<>();
-    List<Integer> neg1List = new ArrayList<>();
+    List<Integer> pos1List = new ArrayList<Integer>();
+    List<Integer> neg1List = new ArrayList<Integer>();
 
     for (int i = 0; i < rawList.size(); i++) // Iterate through all rows to get indexes
     {
@@ -276,7 +276,9 @@ public class DataGenerator {
   public static void storeHead(String[][] arr) {
     myHeader = new String[arr[0].length]; // Reside private variable
 
-    System.arraycopy(arr[0], 0, myHeader, 0, arr[0].length);
+    for (int col = 0; col < arr[0].length; col++) {
+      myHeader[col] = arr[0][col];
+    }
   }
 
   /**
@@ -294,9 +296,10 @@ public class DataGenerator {
       if (!alreadyExists) {
         csvOutput.writeNext(myHeader); // Write the text headers first before data
 
-        for (List<String> aList : list) { // Iterate through all rows in 2D array
-          String[] temp = new String[aList.size()]; // Convert row array list in 2D array to regular string array
-          temp = aList.toArray(temp);
+        for (int i = 0; i < list.size(); i++) // Iterate through all rows in 2D array
+        {
+          String[] temp = new String[list.get(i).size()]; // Convert row array list in 2D array to regular string array
+          temp = list.get(i).toArray(temp);
           csvOutput.writeNext(temp); // Write this array to the file
         }
       }

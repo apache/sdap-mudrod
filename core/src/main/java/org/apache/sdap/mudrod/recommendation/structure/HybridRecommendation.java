@@ -16,10 +16,10 @@ package org.apache.sdap.mudrod.recommendation.structure;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import org.apache.sdap.mudrod.discoveryengine.DiscoveryStepAbstract;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
+import org.apache.sdap.mudrod.main.MudrodConstants;
 import org.apache.sdap.mudrod.main.MudrodEngine;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -45,7 +45,7 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
   // format decimal
   DecimalFormat df = new DecimalFormat("#.00");
   // index name
-  protected static final String INDEX_NAME = "indexName";
+  protected static final String INDEX_NAME = MudrodConstants.ES_INDEX_NAME;
   private static final String WEIGHT = "weight";
 
   /**
@@ -87,13 +87,13 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
   public JsonObject getRecomDataInJson(String input, int num) {
     JsonObject resultJson = new JsonObject();
 
-    String type = props.getProperty("metadataCodeSimType");
+    String type = MudrodConstants.METADATA_FEATURE_SIM_TYPE;
     Map<String, Double> sortedVariableSimMap = getRelatedData(type, input, num + 10);
 
-    type = props.getProperty("metadataWordTFIDFSimType");
+    type = MudrodConstants.METADATA_WORD_SIM_TYPE;
     Map<String, Double> sortedAbstractSimMap = getRelatedData(type, input, num + 10);
 
-    type = props.getProperty("metadataSessionBasedSimType");
+    type = MudrodConstants.METADATA_SESSION_SIM_TYPE;
     Map<String, Double> sortedSessionSimMap = getRelatedData(type, input, num + 10);
 
     JsonElement variableSimJson = mapToJson(sortedVariableSimMap, num);
@@ -183,8 +183,9 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
     Map<String, Double> sortedMap = new HashMap<>();
     try {
       List<LinkedTerm> links = getRelatedDataFromES(type, input, num);
-      for (LinkedTerm link : links) {
-        termsMap.put(link.term, link.weight);
+      int size = links.size();
+      for (int i = 0; i < size; i++) {
+        termsMap.put(links.get(i).term, links.get(i).weight);
       }
 
       sortedMap = sortMapByValue(termsMap); // terms_map will be empty

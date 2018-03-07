@@ -11,33 +11,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sdap.mudrod.services.recommendation;
+package org.apache.sdap.mudrod.services.search;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import org.apache.sdap.mudrod.integration.LinkageIntegration;
+import org.apache.sdap.mudrod.main.MudrodEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.sdap.mudrod.main.MudrodEngine;
-import org.apache.sdap.mudrod.recommendation.structure.RecomData;
-
 /**
- * A Dataset recommendation resource.
+ * A Mudrod Search Vocabulary Resource
  */
-@Path("/recommendation")
-public class RecomDatasetsResource {
+@Path("/vocabulary")
+public class SearchVocabResource {
+
+  private static final Logger LOG = LoggerFactory.getLogger(SearchMetadataResource.class);
 
   private MudrodEngine mEngine;
 
-  public RecomDatasetsResource(@Context ServletContext sc) {
+  public SearchVocabResource(@Context ServletContext sc) {
     this.mEngine = (MudrodEngine) sc.getAttribute("MudrodInstance");
   }
 
@@ -45,20 +44,22 @@ public class RecomDatasetsResource {
   @Path("/status")
   @Produces("text/html")
   public Response status() {
-    return Response.ok("<h1>This is MUDROD Recommendation Datasets Resource: running correctly...</h1>").build();
+    return Response.ok("<h1>This is MUDROD Vocabulary Search Resource: running correctly...</h1>").build();
   }
 
-  @PUT
-  @Path("{shortname}")
+  @GET
+  @Path("/search")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes("text/plain")
-  public Response hybridRecommendation(@PathParam("shortname") String shortName) {
+  public Response searchVocabulary(@QueryParam("query") String concept) {
     JsonObject json = new JsonObject();
-    if (shortName != null) {
-      RecomData recom = new RecomData(mEngine.getConfig(), mEngine.getESDriver(), null);
+    if (concept != null) {
+      LinkageIntegration li = new LinkageIntegration(mEngine.getConfig(), mEngine.getESDriver(), null);
       json = new JsonObject();
-      json.add("RecommendationData", recom.getRecomDataInJson(shortName, 10));
+      json.add("graph", li.getIngeratedListInJson(concept));
     }
-    return Response.ok(json.toString(), MediaType.APPLICATION_JSON).build();
+    LOG.info("Response received: {}", json);
+    return Response.ok(new Gson().toJson(json), MediaType.APPLICATION_JSON).build();
   }
+
 }

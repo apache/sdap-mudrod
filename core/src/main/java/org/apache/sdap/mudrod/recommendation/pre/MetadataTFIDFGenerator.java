@@ -1,8 +1,8 @@
 /*
- * Licensed under the Apache License, Version 2.0 (the "License"); you
- * may not use this file except in compliance with the License.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you 
+ * may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -11,12 +11,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * This package includes the preprocessing, processing, and data structure used
+ * by recommendation module.
+ */
+
 package org.apache.sdap.mudrod.recommendation.pre;
 
 import org.apache.sdap.mudrod.discoveryengine.DiscoveryStepAbstract;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
-import org.apache.sdap.mudrod.recommendation.structure.MetadataOpt;
+import org.apache.sdap.mudrod.main.MudrodConstants;
+import org.apache.sdap.mudrod.recommendation.structure.MetadataTokenizer;
 import org.apache.sdap.mudrod.utils.LabeledRowMatrix;
 import org.apache.sdap.mudrod.utils.MatrixUtil;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -24,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -70,35 +77,35 @@ public class MetadataTFIDFGenerator extends DiscoveryStepAbstract {
 
   public LabeledRowMatrix generateWordBasedTFIDF() throws Exception {
 
-    MetadataOpt opt = new MetadataOpt(props);
+    MetadataTokenizer opt = new MetadataTokenizer(props);
 
-    JavaPairRDD<String, String> metadataContents = opt.loadAll(es, spark);
+    String metadataName = props.getProperty(MudrodConstants.METADATA_ID);
+    JavaPairRDD<String, String> metadataContents = opt.loadAll(es, spark, metadataName);
 
     JavaPairRDD<String, List<String>> metadataWords = opt.tokenizeData(metadataContents, " ");
 
     LabeledRowMatrix wordtfidfMatrix = opt.tFIDFTokens(metadataWords, spark);
 
-    MatrixUtil.exportToCSV(wordtfidfMatrix.rowMatrix, wordtfidfMatrix.rowkeys, wordtfidfMatrix.colkeys, props.getProperty("metadata_word_tfidf_matrix"));
+    MatrixUtil.exportToCSV(wordtfidfMatrix.rowMatrix, wordtfidfMatrix.rowkeys, wordtfidfMatrix.colkeys, props.getProperty(MudrodConstants.METADATA_WORD_MATRIX_PATH));
 
     return wordtfidfMatrix;
   }
 
   public LabeledRowMatrix generateTermBasedTFIDF() throws Exception {
 
-    MetadataOpt opt = new MetadataOpt(props);
+    MetadataTokenizer opt = new MetadataTokenizer(props);
 
-    List<String> variables = new ArrayList<>();
-    variables.add("DatasetParameter-Term");
-    variables.add("DatasetParameter-Variable");
-    variables.add("Dataset-ExtractTerm");
+    String source = props.getProperty(MudrodConstants.SEMANTIC_FIELDS);
+    List<String> variables = new ArrayList<String>(Arrays.asList(source.split(",")));
 
-    JavaPairRDD<String, String> metadataContents = opt.loadAll(es, spark, variables);
+    String metadataName = props.getProperty(MudrodConstants.METADATA_ID);
+    JavaPairRDD<String, String> metadataContents = opt.loadAll(es, spark, variables, metadataName);
 
     JavaPairRDD<String, List<String>> metadataTokens = opt.tokenizeData(metadataContents, ",");
 
     LabeledRowMatrix tokentfidfMatrix = opt.tFIDFTokens(metadataTokens, spark);
 
-    MatrixUtil.exportToCSV(tokentfidfMatrix.rowMatrix, tokentfidfMatrix.rowkeys, tokentfidfMatrix.colkeys, props.getProperty("metadata_term_tfidf_matrix"));
+    MatrixUtil.exportToCSV(tokentfidfMatrix.rowMatrix, tokentfidfMatrix.rowkeys, tokentfidfMatrix.colkeys, props.getProperty(MudrodConstants.METADATA_TERM_MATRIX_PATH));
 
     return tokentfidfMatrix;
   }

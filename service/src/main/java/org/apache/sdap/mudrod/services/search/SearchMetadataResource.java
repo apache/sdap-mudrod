@@ -16,7 +16,6 @@ package org.apache.sdap.mudrod.services.search;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-
 import org.apache.sdap.mudrod.main.MudrodConstants;
 import org.apache.sdap.mudrod.main.MudrodEngine;
 import org.apache.sdap.mudrod.ssearch.Ranker;

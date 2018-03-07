@@ -17,13 +17,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
-import org.apache.commons.io.IOUtils;
 import org.apache.sdap.mudrod.discoveryengine.DiscoveryStepAbstract;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.main.MudrodConstants;
 import org.apache.sdap.mudrod.utils.HttpRequest;
+import org.apache.commons.io.IOUtils;
 import org.elasticsearch.action.index.IndexRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +56,8 @@ public class ApiHarvester extends DiscoveryStepAbstract {
     //remove old metadata from ES
     es.deleteType(props.getProperty(MudrodConstants.ES_INDEX_NAME), props.getProperty(MudrodConstants.RAW_METADATA_TYPE));
     //harvest new metadata using PO.DAAC web services
-    harvestMetadatafromWeb();
+    if(props.getProperty(MudrodConstants.METADATA_DOWNLOAD).equals("1")) 
+      harvestMetadatafromWeb();
     es.createBulkProcessor();
     addMetadataMapping();
     importToES();
@@ -125,7 +125,9 @@ public class ApiHarvester extends DiscoveryStepAbstract {
     int doc_length = 0;
     JsonParser parser = new JsonParser();
     do {
-      String searchAPI = "https://podaac.jpl.nasa.gov/api/dataset?startIndex=" + Integer.toString(startIndex) + "&entries=10&sortField=Dataset-AllTimePopularity&sortOrder=asc&id=&value=&search=";
+      //String searchAPI = "https://podaac.jpl.nasa.gov/api/dataset?startIndex=" + Integer.toString(startIndex) + "&entries=10&sortField=Dataset-AllTimePopularity&sortOrder=asc&id=&value=&search=";
+      String searchAPI = props.getProperty(MudrodConstants.METADATA_DOWNLOAD_URL);
+      searchAPI = searchAPI.replace("$startIndex", Integer.toString(startIndex));
       HttpRequest http = new HttpRequest();
       String response = http.getRequest(searchAPI);
 
@@ -148,7 +150,7 @@ public class ApiHarvester extends DiscoveryStepAbstract {
         int docId = startIndex + i;
         File itemfile = new File(props.getProperty(MudrodConstants.RAW_METADATA_PATH) + "/" + docId + ".json");
 
-        try (FileWriter fw = new FileWriter(itemfile.getAbsoluteFile()); BufferedWriter bw = new BufferedWriter(fw)) {
+        try (FileWriter fw = new FileWriter(itemfile.getAbsoluteFile()); BufferedWriter bw = new BufferedWriter(fw);) {
           itemfile.createNewFile();
           bw.write(item.toString());
         } catch (IOException e) {

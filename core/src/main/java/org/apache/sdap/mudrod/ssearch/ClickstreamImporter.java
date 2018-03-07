@@ -17,6 +17,7 @@ import org.apache.sdap.mudrod.discoveryengine.MudrodAbstract;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.main.MudrodConstants;
+
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 
@@ -78,7 +79,7 @@ public class ClickstreamImporter extends MudrodAbstract {
     String cvsSplitBy = ",";
 
     try {
-      br = new BufferedReader(new FileReader(props.getProperty("clickstreamMatrix")));
+      br = new BufferedReader(new FileReader(props.getProperty(MudrodConstants.CLICKSTREAM_PATH)));
       String line = br.readLine();
       // first item needs to be skipped
       String[] dataList = line.split(cvsSplitBy);

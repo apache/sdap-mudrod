@@ -13,11 +13,10 @@
  */
 package org.apache.sdap.mudrod.weblog.structure;
 
-import org.apache.sdap.mudrod.utils.HttpRequest;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.apache.sdap.mudrod.utils.HttpRequest;
 
 /**
  * ClassName: GeoIp Function: convert IP to geo location

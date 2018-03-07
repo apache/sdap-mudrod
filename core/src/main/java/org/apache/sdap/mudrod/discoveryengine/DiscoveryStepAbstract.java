@@ -13,10 +13,10 @@
  */
 package org.apache.sdap.mudrod.discoveryengine;
 
-import java.util.Properties;
-
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
+
+import java.util.Properties;
 
 /*
  * Generic class of discovery engine step

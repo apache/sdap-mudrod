@@ -13,10 +13,12 @@
  */
 package org.apache.sdap.mudrod.ontology.pre;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.sdap.mudrod.discoveryengine.DiscoveryStepAbstract;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
+import org.apache.sdap.mudrod.main.MudrodConstants;
+
+import org.apache.commons.io.FilenameUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -51,7 +53,7 @@ public class AggregateTriples extends DiscoveryStepAbstract {
    */
   @Override
   public Object execute() {
-    File file = new File(this.props.getProperty("oceanTriples"));
+    File file = new File(this.props.getProperty(MudrodConstants.ONTOLOGY_PATH));
     if (file.exists()) {
       file.delete();
     }
@@ -69,7 +71,7 @@ public class AggregateTriples extends DiscoveryStepAbstract {
       e.printStackTrace();
     }
 
-    File[] files = new File(this.props.getProperty("ontologyInputDir")).listFiles();
+    File[] files = new File(this.props.getProperty(MudrodConstants.ONTOLOGY_INPUT_PATH)).listFiles();
     for (File file_in : files) {
       String ext = FilenameUtils.getExtension(file_in.getAbsolutePath());
       if ("owl".equals(ext)) {
@@ -167,8 +169,8 @@ public class AggregateTriples extends DiscoveryStepAbstract {
   public void getAllClass() throws IOException {
     List<?> classElements = rootNode.getChildren("Class", Namespace.getNamespace("owl", owl_namespace));
 
-    for (Object classElement1 : classElements) {
-      Element classElement = (Element) classElement1;
+    for (int i = 0; i < classElements.size(); i++) {
+      Element classElement = (Element) classElements.get(i);
       String className = classElement.getAttributeValue("about", Namespace.getNamespace("rdf", rdf_namespace));
 
       if (className == null) {
@@ -176,8 +178,8 @@ public class AggregateTriples extends DiscoveryStepAbstract {
       }
 
       List<?> subclassElements = classElement.getChildren("subClassOf", Namespace.getNamespace("rdfs", rdfs_namespace));
-      for (Object subclassElement1 : subclassElements) {
-        Element subclassElement = (Element) subclassElement1;
+      for (int j = 0; j < subclassElements.size(); j++) {
+        Element subclassElement = (Element) subclassElements.get(j);
         String subclassName = subclassElement.getAttributeValue("resource", Namespace.getNamespace("rdf", rdf_namespace));
         if (subclassName == null) {
           Element allValuesFromEle = findChild("allValuesFrom", subclassElement);
@@ -192,8 +194,8 @@ public class AggregateTriples extends DiscoveryStepAbstract {
       }
 
       List equalClassElements = classElement.getChildren("equivalentClass", Namespace.getNamespace("owl", owl_namespace));
-      for (Object equalClassElement1 : equalClassElements) {
-        Element equalClassElement = (Element) equalClassElement1;
+      for (int k = 0; k < equalClassElements.size(); k++) {
+        Element equalClassElement = (Element) equalClassElements.get(k);
         String equalClassElementName = equalClassElement.getAttributeValue("resource", Namespace.getNamespace("rdf", rdf_namespace));
 
         if (equalClassElementName != null) {

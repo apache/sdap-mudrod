@@ -82,25 +82,25 @@ public class SessionStatistic extends LogAbstract {
 
   public void processSession() throws InterruptedException, IOException, ExecutionException {
     String processingType = props.getProperty(MudrodConstants.PROCESS_TYPE);
-    if ("sequential".equals(processingType)) {
+    if (processingType.equals("sequential")) {
       processSessionInSequential();
-    } else if ("parallel".equals(processingType)) {
+    } else if (processingType.equals("parallel")) {
       processSessionInParallel();
     }
   }
 
   public void processSessionInSequential() throws IOException, InterruptedException, ExecutionException {
     es.createBulkProcessor();
-    Terms sessions = this.getSessionTerms();
-    int sessionCount = 0;
-    for (Terms.Bucket entry : sessions.getBuckets()) {
-      if (entry.getDocCount() >= 3 && !"invalid".equals(entry.getKey())) {
+    Terms Sessions = this.getSessionTerms();
+    int session_count = 0;
+    for (Terms.Bucket entry : Sessions.getBuckets()) {
+      if (entry.getDocCount() >= 3 && !entry.getKey().equals("invalid")) {
         String sessionid = entry.getKey().toString();
         int sessionNum = processSession(es, sessionid);
-        sessionCount += sessionNum;
+        session_count += sessionNum;
       }
     }
-    LOG.info("Final Session count: {}", Integer.toString(sessionCount));
+    LOG.info("Final Session count: {}", Integer.toString(session_count));
     es.destroyBulkProcessor();
   }
 
@@ -111,7 +111,7 @@ public class SessionStatistic extends LogAbstract {
    * @return dataset ID
    */
   public String findDataset(String request) {
-    String pattern1 = "/dataset/";
+    String pattern1 = props.getProperty(MudrodConstants.VIEW_MARKER);
     String pattern2;
     if (request.contains("?")) {
       pattern2 = "?";
@@ -138,7 +138,7 @@ public class SessionStatistic extends LogAbstract {
       public Iterator<Integer> call(Iterator<String> arg0) throws Exception {
         ESDriver tmpES = new ESDriver(props);
         tmpES.createBulkProcessor();
-        List<Integer> sessionNums = new ArrayList<>();
+        List<Integer> sessionNums = new ArrayList<Integer>();
         sessionNums.add(0);
         while (arg0.hasNext()) {
           String s = arg0.next();
@@ -170,17 +170,17 @@ public class SessionStatistic extends LogAbstract {
     DateTime start = null;
     DateTime end = null;
     int duration = 0;
-    float requestRate = 0;
+    float request_rate = 0;
 
-    int sessionCount = 0;
+    int session_count = 0;
     Pattern pattern = Pattern.compile("get (.*?) http/*");
 
     StatsAggregationBuilder statsAgg = AggregationBuilders.stats("Stats").field("Time");
 
-    BoolQueryBuilder filterSearch = new BoolQueryBuilder();
-    filterSearch.must(QueryBuilders.termQuery("SessionID", sessionId));
+    BoolQueryBuilder filter_search = new BoolQueryBuilder();
+    filter_search.must(QueryBuilders.termQuery("SessionID", sessionId));
 
-    SearchResponse sr = es.getClient().prepareSearch(logIndex).setTypes(inputType).setQuery(filterSearch).addAggregation(statsAgg).execute().actionGet();
+    SearchResponse sr = es.getClient().prepareSearch(logIndex).setTypes(inputType).setQuery(filter_search).addAggregation(statsAgg).execute().actionGet();
 
     Stats agg = sr.getAggregations().get("Stats");
     min = agg.getMinAsString();
@@ -190,24 +190,18 @@ public class SessionStatistic extends LogAbstract {
 
     duration = Seconds.secondsBetween(start, end).getSeconds();
 
-    int searchDataListRequestCount = 0;
-    int searchDataRequestCount = 0;
-    int searchDataListRequestByKeywordsCount = 0;
-    int ftpRequestCount = 0;
-    int keywordsNum = 0;
+    int searchDataListRequest_count = 0;
+    int searchDataRequest_count = 0;
+    int searchDataListRequest_byKeywords_count = 0;
+    int ftpRequest_count = 0;
+    int keywords_num = 0;
 
-    String iP = null;
+    String IP = null;
     String keywords = "";
     String views = "";
     String downloads = "";
 
-    SearchResponse scrollResp = es.getClient()
-            .prepareSearch(logIndex)
-            .setTypes(inputType)
-            .setScroll(new TimeValue(60000))
-            .setQuery(filterSearch)
-            .setSize(100)
-            .execute().actionGet();
+    SearchResponse scrollResp = es.getClient().prepareSearch(logIndex).setTypes(inputType).setScroll(new TimeValue(60000)).setQuery(filter_search).setSize(100).execute().actionGet();
 
     while (true) {
       for (SearchHit hit : scrollResp.getHits().getHits()) {
@@ -215,30 +209,30 @@ public class SessionStatistic extends LogAbstract {
 
         String request = (String) result.get("Request");
         String logType = (String) result.get("LogType");
-        iP = (String) result.get("IP");
+        IP = (String) result.get("IP");
         Matcher matcher = pattern.matcher(request.trim().toLowerCase());
         while (matcher.find()) {
           request = matcher.group(1);
         }
 
-        String datasetlist = "/datasetlist?";
-        String dataset = "/dataset/";
+        String datasetlist = props.getProperty(MudrodConstants.SEARCH_MARKER);
+        String dataset = props.getProperty(MudrodConstants.VIEW_MARKER);
         if (request.contains(datasetlist)) {
-          searchDataListRequestCount++;
+          searchDataListRequest_count++;
 
           RequestUrl requestURL = new RequestUrl();
           String infoStr = requestURL.getSearchInfo(request) + ",";
-          String info = es.customAnalyzing(props.getProperty("indexName"), infoStr);
+          String info = es.customAnalyzing(props.getProperty(MudrodConstants.ES_INDEX_NAME), infoStr);
 
-          if (!",".equals(info)) {
-            if ("".equals(keywords)) {
+          if (!info.equals(",")) {
+            if (keywords.equals("")) {
               keywords = keywords + info;
             } else {
               String[] items = info.split(",");
               String[] keywordList = keywords.split(",");
-              for (String item : items) {
-                if (!Arrays.asList(keywordList).contains(item)) {
-                  keywords = keywords + item + ",";
+              for (int m = 0; m < items.length; m++) {
+                if (!Arrays.asList(keywordList).contains(items[m])) {
+                  keywords = keywords + items[m] + ",";
                 }
               }
             }
@@ -246,36 +240,30 @@ public class SessionStatistic extends LogAbstract {
 
         }
         if (request.startsWith(dataset)) {
-          searchDataRequestCount++;
-          if (findDataset(request) != null) {
+          searchDataRequest_count++;
+          if (findDataset(request) != null) 
+          {
             String view = findDataset(request);
-
-            if ("".equals(views)) {
+            if (views.equals("")) 
               views = view;
-            } else {
-              if (views.contains(view)) {
-
-              } else {
-                views = views + "," + view;
-              }
-            }
-          }
+             else if (!views.contains(view)) 
+                views = views + "," + view;          
+           }          
         }
-        if ("ftp".equals(logType)) {
-          ftpRequestCount++;
+        if (MudrodConstants.FTP_LOG.equals(logType)) {
+          ftpRequest_count++;
           String download = "";
           String requestLowercase = request.toLowerCase();
-          if (!requestLowercase.endsWith(".jpg") && 
-                  !requestLowercase.endsWith(".pdf") && 
-                  !requestLowercase.endsWith(".txt") && 
-                  !requestLowercase.endsWith(".gif")) {
+          if (requestLowercase.endsWith(".jpg") == false && requestLowercase.endsWith(".pdf") == false && requestLowercase.endsWith(".txt") == false && requestLowercase.endsWith(".gif") == false) {
             download = request;
           }
 
           if ("".equals(downloads)) {
             downloads = download;
           } else {
-            if (!downloads.contains(download)) {
+            if (downloads.contains(download)) {
+
+            } else {
               downloads = downloads + "," + download;
             }
           }
@@ -290,43 +278,29 @@ public class SessionStatistic extends LogAbstract {
       }
     }
 
-    if (!"".equals(keywords)) {
-      keywordsNum = keywords.split(",").length;
+    if (!keywords.equals("")) {
+      keywords_num = keywords.split(",").length;
     }
 
-    if (searchDataListRequestCount != 0
-            && searchDataListRequestCount <= Integer.parseInt(props.getProperty("searchf"))
-            && searchDataRequestCount != 0
-            && searchDataRequestCount <= Integer.parseInt(props.getProperty("viewf"))
-            && ftpRequestCount <= Integer.parseInt(props.getProperty("downloadf"))) {
-      String sessionURL = props.getProperty("SessionPort") + props.getProperty("SessionUrl") + "?sessionid=" + sessionId + "&sessionType=" + outputType + "&requestType=" + inputType;
-      sessionCount = 1;
+    if (searchDataListRequest_count != 0 && 
+        searchDataListRequest_count <= Integer.parseInt(props.getProperty(MudrodConstants.SEARCH_F)) && 
+        searchDataRequest_count != 0 && 
+        searchDataRequest_count <= Integer.parseInt(props.getProperty(MudrodConstants.VIEW_F)) && 
+        ftpRequest_count <= Integer.parseInt(props.getProperty(MudrodConstants.DOWNLOAD_F))) 
+    {
+      String sessionURL = props.getProperty(MudrodConstants.SESSION_PORT) + props.getProperty(MudrodConstants.SESSION_URL) + "?sessionid=" + sessionId + "&sessionType=" + outputType + "&requestType=" + inputType;
+      session_count = 1;
 
       IndexRequest ir = new IndexRequest(logIndex, outputType).source(
-              jsonBuilder().startObject()
-              .field("SessionID", sessionId)
-              .field("SessionURL", sessionURL)
-              .field("Duration", duration)
-              .field("Number of Keywords", keywordsNum)
-              .field("Time", min)
-              .field("End_time", max)
-              .field("searchDataListRequest_count", searchDataListRequestCount)
-              .field("searchDataListRequest_byKeywords_count", searchDataListRequestByKeywordsCount)
-              .field("searchDataRequest_count", searchDataRequestCount)
-              .field("keywords", es.customAnalyzing(logIndex, keywords))
-              .field("views", views)
-              .field("downloads", downloads)
-              .field("request_rate", requestRate)
-              .field("Comments", "")
-              .field("Validation", 0)
-              .field("Produceby", 0)
-              .field("Correlation", 0)
-              .field("IP", iP).endObject());
+          jsonBuilder().startObject().field("SessionID", sessionId).field("SessionURL", sessionURL).field("Duration", duration).field("Number of Keywords", keywords_num).field("Time", min)
+              .field("End_time", max).field("searchDataListRequest_count", searchDataListRequest_count).field("searchDataListRequest_byKeywords_count", searchDataListRequest_byKeywords_count)
+              .field("searchDataRequest_count", searchDataRequest_count).field("keywords", es.customAnalyzing(logIndex, keywords)).field("views", views).field("downloads", downloads)
+              .field("request_rate", request_rate).field("Comments", "").field("Validation", 0).field("Produceby", 0).field("Correlation", 0).field("IP", IP).endObject());
 
       es.getBulkProcessor().add(ir);
     }
 
-    return sessionCount;
+    return session_count;
   }
 
   @Override

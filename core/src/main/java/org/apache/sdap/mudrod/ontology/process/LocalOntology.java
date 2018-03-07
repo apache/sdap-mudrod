@@ -13,6 +13,8 @@
  */
 package org.apache.sdap.mudrod.ontology.process;
 
+import org.apache.sdap.mudrod.ontology.Ontology;
+
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
@@ -24,7 +26,6 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.shared.PrefixMapping;
-import org.apache.sdap.mudrod.ontology.Ontology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,10 +117,12 @@ public class LocalOntology implements Ontology {
    */
   @Override
   public void load(String[] urls) {
-    for (String url1 : urls) {
-      String url = url1.trim();
-      if (!"".equals(url) && LOG.isInfoEnabled())
-        LOG.info("Reading and processing {}", url);
+    for (int i = 0; i < urls.length; i++) {
+      String url = urls[i].trim();
+      if (!"".equals(url))
+        if (LOG.isInfoEnabled()) {
+          LOG.info("Reading and processing {}", url);
+        }
       load(ontologyModel, url);
     }
     parser.parse(ontology, ontologyModel);

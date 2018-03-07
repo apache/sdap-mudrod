@@ -129,8 +129,9 @@ public class MatrixUtil {
       public Iterator<Tuple2<Tuple2<String, Long>, Double>> call(Tuple2<List<String>, Long> docwords) throws Exception {
         List<Tuple2<Tuple2<String, Long>, Double>> pairs = new ArrayList<>();
         List<String> words = docwords._1;
-        for (String word : words) {
-          Tuple2<String, Long> worddoc = new Tuple2<>(word, docwords._2);
+        int n = words.size();
+        for (int i = 0; i < n; i++) {
+          Tuple2<String, Long> worddoc = new Tuple2<>(words.get(i), docwords._2);
           pairs.add(new Tuple2<Tuple2<String, Long>, Double>(worddoc, 1.0));
         }
         return pairs.iterator();
@@ -233,8 +234,9 @@ public class MatrixUtil {
       public Iterator<Tuple2<Tuple2<String, String>, Double>> call(Tuple2<String, List<String>> docwords) throws Exception {
         List<Tuple2<Tuple2<String, String>, Double>> pairs = new ArrayList<>();
         List<String> words = docwords._2;
-        for (String word : words) {
-          Tuple2<String, String> worddoc = new Tuple2<>(docwords._1, word);
+        int n = words.size();
+        for (int i = 0; i < n; i++) {
+          Tuple2<String, String> worddoc = new Tuple2<>(docwords._1, words.get(i));
           pairs.add(new Tuple2<Tuple2<String, String>, Double>(worddoc, 1.0));
         }
         return pairs.iterator();

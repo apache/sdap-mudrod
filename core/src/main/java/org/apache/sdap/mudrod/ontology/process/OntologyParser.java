@@ -15,6 +15,7 @@ package org.apache.sdap.mudrod.ontology.process;
 
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
+
 import org.apache.sdap.mudrod.ontology.Ontology;
 
 import java.util.Iterator;

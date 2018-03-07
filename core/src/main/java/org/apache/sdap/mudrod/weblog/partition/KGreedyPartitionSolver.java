@@ -20,22 +20,22 @@ public class KGreedyPartitionSolver implements ThePartitionProblemSolver {
     List<String> months = null;
 
     if (!this.bsorted) {
-      LinkedHashMap<String, Double> sortedMap = (LinkedHashMap<String, Double>) this.sortMapByValue(labelNums);
-      lista = new ArrayList<>(sortedMap.values());
-      months = new ArrayList<>(sortedMap.keySet());
+      LinkedHashMap sortedMap = this.sortMapByValue(labelNums);
+      lista = new ArrayList(sortedMap.values());
+      months = new ArrayList(sortedMap.keySet());
     } else {
-      lista = new ArrayList<>(labelNums.values());
-      months = new ArrayList<>(labelNums.keySet());
+      lista = new ArrayList(labelNums.values());
+      months = new ArrayList(labelNums.keySet());
     }
 
     List<List<Double>> parts = new ArrayList<>();
     List<List<String>> splitMonths = new ArrayList<>();
 
     for (int i = 0; i < k; i++) {
-      List<Double> part = new ArrayList<>();
+      List<Double> part = new ArrayList();
       parts.add(part);
 
-      List<String> monthList = new ArrayList<>();
+      List<String> monthList = new ArrayList();
       splitMonths.add(monthList);
     }
 
@@ -47,10 +47,10 @@ public class KGreedyPartitionSolver implements ThePartitionProblemSolver {
       for (int i = 0; i < parts.size(); i++) {
         List<Double> part = parts.get(i);
         if (minimalSum == -1) {
-          minimalSum = suma(part);
+          minimalSum = Suma(part);
           position = i;
-        } else if (suma(part) < minimalSum) {
-          minimalSum = suma(part);
+        } else if (Suma(part) < minimalSum) {
+          minimalSum = Suma(part);
           position = i;
         }
       }
@@ -65,29 +65,38 @@ public class KGreedyPartitionSolver implements ThePartitionProblemSolver {
       j++;
     }
 
-    Map<String, Integer> labelGroups = new HashMap<>();
+    /*  for(int i=0; i<splitMonths.size(); i++){
+        System.out.println("group:" + i);
+        printStrList(splitMonths.get(i));
+      }
+      
+      for(int i=0; i<parts.size(); i++){
+        print(parts.get(i));
+      }*/
+
+    Map<String, Integer> LabelGroups = new HashMap<String, Integer>();
     for (int i = 0; i < splitMonths.size(); i++) {
       List<String> list = splitMonths.get(i);
-      for (String aList : list) {
-        labelGroups.put(aList, i);
+      for (int m = 0; m < list.size(); m++) {
+        LabelGroups.put(list.get(m), i);
       }
     }
 
-    return labelGroups;
+    return LabelGroups;
   }
 
-  public Map<String, Double> sortMapByValue(Map<String, Double> passedMap) {
-    List<String> mapKeys = new ArrayList<>(passedMap.keySet());
-    List<Double> mapValues = new ArrayList<>(passedMap.values());
+  public LinkedHashMap<String, Double> sortMapByValue(Map passedMap) {
+    List mapKeys = new ArrayList(passedMap.keySet());
+    List mapValues = new ArrayList(passedMap.values());
     Collections.sort(mapValues, Collections.reverseOrder());
     Collections.sort(mapKeys, Collections.reverseOrder());
 
-    LinkedHashMap<String, Double> sortedMap = new LinkedHashMap<>();
+    LinkedHashMap sortedMap = new LinkedHashMap();
 
-    Iterator<Double> valueIt = mapValues.iterator();
+    Iterator valueIt = mapValues.iterator();
     while (valueIt.hasNext()) {
       Object val = valueIt.next();
-      Iterator<String> keyIt = mapKeys.iterator();
+      Iterator keyIt = mapKeys.iterator();
 
       while (keyIt.hasNext()) {
         Object key = keyIt.next();
@@ -107,12 +116,27 @@ public class KGreedyPartitionSolver implements ThePartitionProblemSolver {
     return sortedMap;
   }
 
-  private Double suma(List<Double> part) {
+  private Double Suma(List<Double> part) {
     Double ret = 0.0;
-    for (Double aPart : part) {
-      ret += aPart;
+    for (int i = 0; i < part.size(); i++) {
+      ret += part.get(i);
     }
     return ret;
+  }
+
+  private void print(List<Double> list) {
+    /*for (int i = 0; i < list.size(); i++) {
+        System.out.print(list.get(i)+",");
+    }*/
+    System.out.print("sum is:" + Suma(list));
+    System.out.println();
+  }
+
+  private void printStrList(List<String> list) {
+    for (int i = 0; i < list.size(); i++) {
+      System.out.print(list.get(i) + ",");
+    }
+    System.out.println();
   }
 
 }

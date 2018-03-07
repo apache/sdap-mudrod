@@ -11,12 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sdap.mudrod.services.search;
+package org.apache.sdap.mudrod.services.autocomplete;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
-import org.apache.sdap.mudrod.integration.LinkageIntegration;
+import org.apache.sdap.mudrod.main.MudrodConstants;
 import org.apache.sdap.mudrod.main.MudrodEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,18 +24,19 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * A Mudrod Search Vocabulary Resource
+ * An AutoCompleteResource for term autocompletion suggestion.
  */
-@Path("/vocabulary")
-public class SearchVocabResource {
+@Path("/autocomplete")
+public class AutoCompleteResource {
 
-  private static final Logger LOG = LoggerFactory.getLogger(SearchMetadataResource.class);
-
+  private static final Logger LOG = LoggerFactory.getLogger(AutoCompleteResource.class);
   private MudrodEngine mEngine;
 
-  public SearchVocabResource(@Context ServletContext sc) {
+  public AutoCompleteResource(@Context ServletContext sc) {
     this.mEngine = (MudrodEngine) sc.getAttribute("MudrodInstance");
   }
 
@@ -45,22 +44,22 @@ public class SearchVocabResource {
   @Path("/status")
   @Produces("text/html")
   public Response status() {
-    return Response.ok("<h1>This is MUDROD Vocabulary Search Resource: running correctly...</h1>").build();
+    return Response.ok("<h1>This is MUDROD AutoCompleteResource: running correctly...</h1>").build();
   }
 
   @GET
-  @Path("/search")
+  @Path("/query")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes("text/plain")
-  public Response searchVocabulary(@QueryParam("query") String concept) {
-    JsonObject json = new JsonObject();
-    if (concept != null) {
-      LinkageIntegration li = new LinkageIntegration(mEngine.getConfig(), mEngine.getESDriver(), null);
-      json = new JsonObject();
-      json.add("graph", li.getIngeratedListInJson(concept));
+  public Response autoComplete(@QueryParam("term") String term) {
+    List<AutoCompleteData> result = new ArrayList<>();
+    List<String> suggestList = mEngine.getESDriver().autoComplete(mEngine.getConfig().getProperty(MudrodConstants.ES_INDEX_NAME), term);
+    for (final String item : suggestList) {
+      result.add(new AutoCompleteData(item, item));
     }
+    String json = new Gson().toJson(result);
     LOG.info("Response received: {}", json);
-    return Response.ok(new Gson().toJson(json), MediaType.APPLICATION_JSON).build();
+    return Response.ok(json, MediaType.APPLICATION_JSON).build();
   }
 
 }

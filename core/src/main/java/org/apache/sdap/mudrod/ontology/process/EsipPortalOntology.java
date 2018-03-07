@@ -13,9 +13,9 @@
  */
 package org.apache.sdap.mudrod.ontology.process;
 
-import java.util.Iterator;
-
 import org.apache.sdap.mudrod.ontology.Ontology;
+
+import java.util.Iterator;
 
 /**
  * @author lewismc

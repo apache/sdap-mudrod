@@ -16,17 +16,18 @@ package org.apache.sdap.mudrod.ssearch;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import org.apache.sdap.mudrod.discoveryengine.MudrodAbstract;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.ssearch.structure.SResult;
+
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
 import java.io.Serializable;
@@ -105,7 +106,6 @@ public class Searcher extends MudrodAbstract implements Serializable {
    * @param type           type name in Elasticsearch
    * @param query          regular query string
    * @param queryOperator query mode- query, or, and
-   * @param rankOption a keyword used to dertermine the ElasticSearch SortOrder 
    * @return a list of search result
    */
   @SuppressWarnings("unchecked")
@@ -186,7 +186,7 @@ public class Searcher extends MudrodAbstract implements Serializable {
       }
 
       ArrayList<String> longdate = (ArrayList<String>) result.get("DatasetCitation-ReleaseDateLong");
-      Date date = new Date(Long.valueOf(longdate.get(0)));
+      Date date = new Date(Long.valueOf(longdate.get(0)).longValue());
       SimpleDateFormat df2 = new SimpleDateFormat("MM/dd/yyyy");
       String dateText = df2.format(date);
 
@@ -248,7 +248,6 @@ public class Searcher extends MudrodAbstract implements Serializable {
    * @param type           type name in Elasticsearch
    * @param query          regular query string
    * @param queryOperator query mode- query, or, and
-   * @param rankOption a keyword used to dertermine the ElasticSearch SortOrder 
    * @param rr             selected ranking method
    * @return search results
    */
@@ -260,19 +259,19 @@ public class Searcher extends MudrodAbstract implements Serializable {
     Gson gson = new Gson();
     List<JsonObject> fileList = new ArrayList<>();
 
-    for (SResult aLi : li) {
+    for (int i = 0; i < li.size(); i++) {
       JsonObject file = new JsonObject();
-      file.addProperty("Short Name", (String) SResult.get(aLi, "shortName"));
-      file.addProperty("Long Name", (String) SResult.get(aLi, "longName"));
-      file.addProperty("Topic", (String) SResult.get(aLi, "topic"));
-      file.addProperty("Description", (String) SResult.get(aLi, "description"));
-      file.addProperty("Release Date", (String) SResult.get(aLi, "relase_date"));
+      file.addProperty("Short Name", (String) SResult.get(li.get(i), "shortName"));
+      file.addProperty("Long Name", (String) SResult.get(li.get(i), "longName"));
+      file.addProperty("Topic", (String) SResult.get(li.get(i), "topic"));
+      file.addProperty("Description", (String) SResult.get(li.get(i), "description"));
+      file.addProperty("Release Date", (String) SResult.get(li.get(i), "relase_date"));
       fileList.add(file);
 
-      file.addProperty("Start/End Date", (String) SResult.get(aLi, "startDate") + " - " + (String) SResult.get(aLi, "endDate"));
-      file.addProperty("Processing Level", (String) SResult.get(aLi, "processingLevel"));
+      file.addProperty("Start/End Date", (String) SResult.get(li.get(i), "startDate") + " - " + (String) SResult.get(li.get(i), "endDate"));
+      file.addProperty("Processing Level", (String) SResult.get(li.get(i), "processingLevel"));
 
-      file.addProperty("Sensor", (String) SResult.get(aLi, "sensors"));
+      file.addProperty("Sensor", (String) SResult.get(li.get(i), "sensors"));
     }
     JsonElement fileListElement = gson.toJsonTree(fileList);
 
