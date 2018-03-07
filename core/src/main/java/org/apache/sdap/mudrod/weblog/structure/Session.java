@@ -278,7 +278,7 @@ public class Session /*extends MudrodAbstract*/ implements Comparable<Session> {
 
     List<RankingTrainData> trainData = new ArrayList<>();
     try {
-      trainData = tree.getRankingTrainData(indexName, sessionID);
+      trainData = tree.getRankingTrainData(indexName);
     } catch (UnsupportedEncodingException e) {
       LOG.error("Error whilst retreiving ranking training data: {}", e);
     }

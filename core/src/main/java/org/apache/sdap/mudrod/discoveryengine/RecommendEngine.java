@@ -8,7 +8,7 @@ import org.apache.sdap.mudrod.recommendation.pre.NormalizeVariables;
 import org.apache.sdap.mudrod.recommendation.pre.SessionCooccurence;
 import org.apache.sdap.mudrod.recommendation.process.AbstractBasedSimilarity;
 import org.apache.sdap.mudrod.recommendation.process.VariableBasedSimilarity;
-import org.apache.sdap.mudrod.recommendation.process.sessionBasedCF;
+import org.apache.sdap.mudrod.recommendation.process.SessionBasedCF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +60,7 @@ public class RecommendEngine extends DiscoveryEngineAbstract {
     DiscoveryStepAbstract cbCF = new VariableBasedSimilarity(this.props, this.es, this.spark);
     cbCF.execute();
 
-    DiscoveryStepAbstract sbCF = new sessionBasedCF(this.props, this.es, this.spark);
+    DiscoveryStepAbstract sbCF = new SessionBasedCF(this.props, this.es, this.spark);
     sbCF.execute();
 
     endTime = System.currentTimeMillis();

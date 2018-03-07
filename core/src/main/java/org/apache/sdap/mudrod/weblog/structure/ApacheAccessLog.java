@@ -31,10 +31,19 @@ import org.apache.sdap.mudrod.weblog.pre.CrawlerDetection;
  */
 public class ApacheAccessLog extends WebLog implements Serializable {
 
-  // double Bytes;
-  String Response;
-  String Referer;
-  String Browser;
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+
+  public ApacheAccessLog() {
+    //default constructor
+  }
+
+  String response;
+  String referer;
+  String browser;
 
   @Override
   public double getBytes() {
@@ -42,31 +51,28 @@ public class ApacheAccessLog extends WebLog implements Serializable {
   }
 
   public String getBrowser() {
-    return this.Browser;
+    return this.browser;
   }
 
   public String getResponse() {
-    return this.Response;
+    return this.response;
   }
 
   public String getReferer() {
-    return this.Referer;
+    return this.referer;
   }
 
-  public ApacheAccessLog() {
-
-  }
 
   public static String parseFromLogLine(String log) throws IOException, ParseException {
 
     String logEntryPattern = "^([\\d.]+) (\\S+) (\\S+) \\[([\\w:/]+\\s[+\\-]\\d{4})\\] \"(.+?)\" (\\d{3}) (\\d+|-) \"((?:[^\"]|\")+)\" \"([^\"]+)\"";
-    final int NUM_FIELDS = 9;
+    final int numFields = 9;
     Pattern p = Pattern.compile(logEntryPattern);
     Matcher matcher;
 
     String lineJson = "{}";
     matcher = p.matcher(log);
-    if (!matcher.matches() || NUM_FIELDS != matcher.groupCount()) {
+    if (!matcher.matches() || numFields != matcher.groupCount()) {
       return lineJson;
     }
 
@@ -77,7 +83,7 @@ public class ApacheAccessLog extends WebLog implements Serializable {
 
     String bytes = matcher.group(7);
 
-    if (bytes.equals("-")) {
+    if ("-".equals(bytes)) {
       bytes = "0";
     }
 
@@ -88,36 +94,29 @@ public class ApacheAccessLog extends WebLog implements Serializable {
       return lineJson;
     } else {
 
-      boolean tag = false;
       String[] mimeTypes = { ".js", ".css", ".jpg", ".png", ".ico", "image_captcha", "autocomplete", ".gif", "/alldata/", "/api/", "get / http/1.1", ".jpeg", "/ws/" };
-      for (int i = 0; i < mimeTypes.length; i++) {
-        if (request.contains(mimeTypes[i])) {
-          tag = true;
+      for (String mimeType : mimeTypes) {
+        if (request.contains(mimeType)) {
           return lineJson;
         }
       }
 
-      if (tag == false) {
-        ApacheAccessLog accesslog = new ApacheAccessLog();
-        accesslog.LogType = "PO.DAAC";
-        accesslog.IP = matcher.group(1);
-        accesslog.Request = matcher.group(5);
-        accesslog.Response = matcher.group(6);
-        accesslog.Bytes = Double.parseDouble(bytes);
-        accesslog.Referer = matcher.group(8);
-        accesslog.Browser = matcher.group(9);
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss'Z'");
-        accesslog.Time = df.format(date);
+      ApacheAccessLog accesslog = new ApacheAccessLog();
+      accesslog.LogType = "PO.DAAC";
+      accesslog.IP = matcher.group(1);
+      accesslog.Request = matcher.group(5);
+      accesslog.response = matcher.group(6);
+      accesslog.Bytes = Double.parseDouble(bytes);
+      accesslog.referer = matcher.group(8);
+      accesslog.browser = matcher.group(9);
+      SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss'Z'");
+      accesslog.Time = df.format(date);
 
-        Gson gson = new Gson();
-        lineJson = gson.toJson(accesslog);
+      Gson gson = new Gson();
+      lineJson = gson.toJson(accesslog);
 
-        return lineJson;
-      }
+      return lineJson;
     }
-
-    lineJson = "{}";
-    return lineJson;
   }
 
   public static boolean checknull(WebLog s) {

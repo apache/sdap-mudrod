@@ -146,16 +146,12 @@ public class LogAbstract extends DiscoveryStepAbstract {
     Map<String, Long> userList = new HashMap<>();
     for (Terms.Bucket user : users.getBuckets()) {
       String ip = (String) user.getKey();
-
       System.out.println(ip);
-
       Histogram agg = user.getAggregations().get("by_day");
       List<? extends Histogram.Bucket> dateList = agg.getBuckets();
-      int size = dateList.size();
-      for (int i = 0; i < size; i++) {
-        Long count = dateList.get(i).getDocCount();
-        String date = dateList.get(i).getKey().toString();
-
+      for (Histogram.Bucket aDateList : dateList) {
+        Long count = aDateList.getDocCount();
+        String date = aDateList.getKey().toString();
         System.out.println(date);
         System.out.println(count);
       }

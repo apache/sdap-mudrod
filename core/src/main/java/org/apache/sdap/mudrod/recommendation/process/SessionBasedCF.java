@@ -29,12 +29,12 @@ import java.util.Properties;
 /**
  * ClassName: Recommend metedata based on session level co-occurrence
  */
-public class sessionBasedCF extends DiscoveryStepAbstract {
+public class SessionBasedCF extends DiscoveryStepAbstract {
 
-  private static final Logger LOG = LoggerFactory.getLogger(sessionBasedCF.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SessionBasedCF.class);
 
   /**
-   * Creates a new instance of sessionBasedCF.
+   * Creates a new instance of SessionBasedCF.
    *
    * @param props
    *          the Mudrod configuration
@@ -43,7 +43,7 @@ public class sessionBasedCF extends DiscoveryStepAbstract {
    * @param spark
    *          the spark drive
    */
-  public sessionBasedCF(Properties props, ESDriver es, SparkDriver spark) {
+  public SessionBasedCF(Properties props, ESDriver es, SparkDriver spark) {
     super(props, es, spark);
   }
 
