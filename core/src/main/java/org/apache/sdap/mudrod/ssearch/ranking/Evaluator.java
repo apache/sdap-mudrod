@@ -28,12 +28,12 @@ public class Evaluator {
    *
    * @param list a list of integer with each integer element indicating
    *             the performance at its position
-   * @param K    the number of elements needed to be included in the calculation
+   * @param k    the number of elements needed to be included in the calculation
    * @return NDCG score
    */
-  public double getNDCG(int[] list, int K) {
-    double dcg = this.getDCG(list, K);
-    double idcg = this.getIDCG(list, K);
+  public double getNDCG(int[] list, int k) {
+    double dcg = this.getDCG(list, k);
+    double idcg = this.getIDCG(list, k);
     double ndcg = 0.0;
     if (idcg > 0.0) {
       ndcg = dcg / idcg;
@@ -46,22 +46,21 @@ public class Evaluator {
    *
    * @param list a list of integer with each integer element indicating
    *             the performance at its position
-   * @param K    the number of elements needed to be included in the calculation
+   * @param k    the number of elements needed to be included in the calculation
    * @return precision at K
    */
-  public double getPrecision(int[] list, int K) {
+  public double getPrecision(int[] list, int k) {
     int size = list.length;
-    if (size == 0 || K == 0) {
+    if (size == 0 || k == 0) {
       return 0;
     }
 
-    if (K > size) {
-      K = size;
+    if (k > size) {
+      k = size;
     }
 
-    int rel_doc_num = this.getRelevantDocNum(list, K);
-    double precision = (double) rel_doc_num / (double) K;
-    return precision;
+    int relDocNum = this.getRelevantDocNum(list, k);
+    return (double) relDocNum / (double) k;
   }
 
   /**
@@ -69,26 +68,26 @@ public class Evaluator {
    *
    * @param list a list of integer with each integer element indicating
    *             the performance at its position
-   * @param K    the number of elements needed to be included in the calculation
+   * @param k    the number of elements needed to be included in the calculation
    * @return the number of relevant element
    */
-  private int getRelevantDocNum(int[] list, int K) {
+  private int getRelevantDocNum(int[] list, int k) {
     int size = list.length;
-    if (size == 0 || K == 0) {
+    if (size == 0 || k == 0) {
       return 0;
     }
 
-    if (K > size) {
-      K = size;
+    if (k > size) {
+      k = size;
     }
 
-    int rel_num = 0;
-    for (int i = 0; i < K; i++) {
+    int relNum = 0;
+    for (int i = 0; i < k; i++) {
       if (list[i] > 3) { // 3 refers to "OK"
-        rel_num++;
+        relNum++;
       }
     }
-    return rel_num;
+    return relNum;
   }
 
   /**
@@ -96,25 +95,25 @@ public class Evaluator {
    *
    * @param list a list of integer with each integer element indicating
    *             the performance at its position
-   * @param K    the number of elements needed to be included in the calculation
+   * @param k    the number of elements needed to be included in the calculation
    * @return DCG score
    */
-  private double getDCG(int[] list, int K) {
+  private double getDCG(int[] list, int k) {
     int size = list.length;
-    if (size == 0 || K == 0) {
+    if (size == 0 || k == 0) {
       return 0.0;
     }
 
-    if (K > size) {
-      K = size;
+    if (k > size) {
+      k = size;
     }
 
     double dcg = list[0];
-    for (int i = 1; i < K; i++) {
+    for (int i = 1; i < k; i++) {
       int rel = list[i];
       int pos = i + 1;
-      double rel_log = Math.log(pos) / Math.log(2);
-      dcg += rel / rel_log;
+      double relLog = Math.log(pos) / Math.log(2);
+      dcg += rel / relLog;
     }
     return dcg;
   }
@@ -124,10 +123,10 @@ public class Evaluator {
    *
    * @param list a list of integer with each integer element indicating
    *             the performance at its position
-   * @param K    the number of elements needed to be included in the calculation
+   * @param k    the number of elements needed to be included in the calculation
    * @return IDCG score
    */
-  private double getIDCG(int[] list, int K) {
+  private double getIDCG(int[] list, int k) {
     Comparator<Integer> comparator = new Comparator<Integer>() {
       @Override
       public int compare(Integer o1, Integer o2) {
@@ -135,11 +134,9 @@ public class Evaluator {
       }
     };
     List<Integer> sortlist = IntStream.of(list).boxed().collect(Collectors.toList());
-    ;
     Collections.sort(sortlist, comparator);
     int[] sortedArr = sortlist.stream().mapToInt(i -> i).toArray();
-    double idcg = this.getDCG(sortedArr, K);
-    return idcg;
+    return this.getDCG(sortedArr, k);
   }
 
 }

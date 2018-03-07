@@ -23,7 +23,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -93,14 +97,16 @@ public class SessionTree extends MudrodAbstract {
    */
   public SessionNode insert(SessionNode node) {
     // begin with datasetlist
-    if (node.getKey().equals("datasetlist")) {
+    if ("datasetlist".equals(node.getKey())) {
       this.binsert = true;
     }
     if (!this.binsert) {
       return null;
     }
     // remove unrelated node
-    if (!node.getKey().equals("datasetlist") && !node.getKey().equals("dataset") && !node.getKey().equals("ftp")) {
+    if (!"datasetlist".equals(node.getKey()) &&
+            !"dataset".equals(node.getKey()) &&
+            !"ftp".equals(node.getKey())) {
       return null;
     }
     // remove dumplicated click
@@ -186,9 +192,7 @@ public class SessionTree extends MudrodAbstract {
 
     List<ClickStream> clickthroughs = new ArrayList<>();
     List<SessionNode> viewnodes = this.getViewNodes(this.root);
-    for (int i = 0; i < viewnodes.size(); i++) {
-
-      SessionNode viewnode = viewnodes.get(i);
+    for (SessionNode viewnode : viewnodes) {
       SessionNode parent = viewnode.getParent();
       List<SessionNode> children = viewnode.getChildren();
 
@@ -207,8 +211,7 @@ public class SessionTree extends MudrodAbstract {
 
       String dataset = viewnode.getDatasetId();
       boolean download = false;
-      for (int j = 0; j < children.size(); j++) {
-        SessionNode child = children.get(j);
+      for (SessionNode child : children) {
         if ("ftp".equals(child.getKey())) {
           download = true;
           break;
@@ -218,8 +221,8 @@ public class SessionTree extends MudrodAbstract {
       if (viewquery != null && !"".equals(viewquery)) {
         String[] queries = viewquery.trim().split(",");
         if (queries.length > 0) {
-          for (int k = 0; k < queries.length; k++) {
-            ClickStream data = new ClickStream(queries[k], dataset, download);
+          for (String query : queries) {
+            ClickStream data = new ClickStream(query, dataset, download);
             data.setSessionId(this.sessionID);
             data.setType(this.cleanupType);
             clickthroughs.add(data);
@@ -326,8 +329,8 @@ public class SessionTree extends MudrodAbstract {
    * @return
    */
   private boolean check(List<SessionNode> children, String str) {
-    for (int i = 0; i < children.size(); i++) {
-      if (children.get(i).key.equals(str)) {
+    for (SessionNode aChildren : children) {
+      if (aChildren.key.equals(str)) {
         return true;
       }
     }
@@ -342,8 +345,8 @@ public class SessionTree extends MudrodAbstract {
    * @return
    */
   private boolean insertHelperChildren(SessionNode entry, List<SessionNode> children) {
-    for (int i = 0; i < children.size(); i++) {
-      boolean result = insertHelper(entry, children.get(i));
+    for (SessionNode aChildren : children) {
+      boolean result = insertHelper(entry, aChildren);
       if (result) {
         return result;
       }
@@ -447,30 +450,26 @@ public class SessionTree extends MudrodAbstract {
    * Obtain the ranking training data.
    *
    * @param indexName   the index from whcih to obtain the data
-   * @param sessionID   a valid session identifier
    * @return {@link ClickStream}
    * @throws UnsupportedEncodingException if there is an error whilst
    *                                      processing the ranking training data.
    */
-  public List<RankingTrainData> getRankingTrainData(String indexName, String sessionID) throws UnsupportedEncodingException {
+  public List<RankingTrainData> getRankingTrainData(String indexName) throws UnsupportedEncodingException {
 
     List<RankingTrainData> trainDatas = new ArrayList<>();
 
     List<SessionNode> queryNodes = this.getQueryNodes(this.root);
-    for (int i = 0; i < queryNodes.size(); i++) {
-      SessionNode querynode = queryNodes.get(i);
+    for (SessionNode querynode : queryNodes) {
       List<SessionNode> children = querynode.getChildren();
 
       LinkedHashMap<String, Boolean> datasetOpt = new LinkedHashMap<>();
       int ndownload = 0;
-      for (int j = 0; j < children.size(); j++) {
-        SessionNode node = children.get(j);
+      for (SessionNode node : children) {
         if ("dataset".equals(node.getKey())) {
           Boolean bDownload = false;
           List<SessionNode> nodeChildren = node.getChildren();
-          int childSize = nodeChildren.size();
-          for (int k = 0; k < childSize; k++) {
-            if ("ftp".equals(nodeChildren.get(k).getKey())) {
+          for (SessionNode aNodeChildren : nodeChildren) {
+            if ("ftp".equals(aNodeChildren.getKey())) {
               bDownload = true;
               ndownload += 1;
               break;
@@ -502,9 +501,8 @@ public class SessionTree extends MudrodAbstract {
               if (!bDownloadB) {
 
                 String[] queries = query.split(",");
-                for (int l = 0; l < queries.length; l++) {
-                  RankingTrainData trainData = new RankingTrainData(queries[l], datasetA, datasetB);
-
+                for (String query1 : queries) {
+                  RankingTrainData trainData = new RankingTrainData(query1, datasetA, datasetB);
                   trainData.setSessionId(this.sessionID);
                   trainData.setIndex(indexName);
                   trainData.setFilter(filter);
