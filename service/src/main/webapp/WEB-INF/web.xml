@@ -28,7 +28,6 @@
                 org.apache.sdap.mudrod.services.autocomplete.AutoCompleteResource,
                 org.apache.sdap.mudrod.services.search.SearchDatasetDetailResource,
                 org.apache.sdap.mudrod.services.recommendation.HybridRecomDatasetsResource,
-                org.apache.sdap.mudrod.services.recommendation.RecomDatasetsResource,
                 org.apache.sdap.mudrod.services.search.SearchMetadataResource,
                 org.apache.sdap.mudrod.services.search.SearchVocabResource,
                 org.apache.sdap.mudrod.services.search.SessionDetailResource,

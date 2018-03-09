@@ -138,48 +138,37 @@ public class MudrodEngine {
       LOG.info("Loaded config file from " + configFile.getAbsolutePath());
       return configStream;
     } catch (IOException e) {
-      LOG.info("File specified by environment variable " + MudrodConstants.MUDROD_CONFIG + "=\'" + configLocation + "\' could not be loaded. " + e.getMessage());
+      LOG.info("File specified by environment variable " + MudrodConstants.MUDROD_CONFIG + "=\'" + configLocation + "\' could not be loaded. Default configuration will be used." + e.getMessage());
     }
 
-    InputStream configStream = MudrodEngine.class.getClassLoader().getResourceAsStream("config.xml");
+    InputStream configStream = MudrodEngine.class.getClassLoader().getResourceAsStream("config.properties");
 
     if (configStream != null) {
-      LOG.info("Loaded config file from {}", MudrodEngine.class.getClassLoader().getResource("config.xml").getPath());
+      LOG.info("Loaded config file from {}", MudrodEngine.class.getClassLoader().getResource("config.properties").getPath());
     }
 
     return configStream;
   }
 
   /**
-   * Load the configuration provided at <a href=
-   * "https://github.com/mudrod/mudrod/blob/master/core/src/main/resources/config.xml">config.xml</a>.
+   * Load the configuration provided at resources/config.properties.
    *
    * @return a populated {@link java.util.Properties} object.
    */
   public Properties loadConfig() {
-    SAXBuilder saxBuilder = new SAXBuilder();
-
     InputStream configStream = locateConfig();
-
-    Document document;
     try {
-      document = saxBuilder.build(configStream);
-      Element rootNode = document.getRootElement();
-      List<Element> paraList = rootNode.getChildren("para");
-
-      for (Element paraNode : paraList) {
-        String attributeName = paraNode.getAttributeValue("name");
-        if (MudrodConstants.SVM_SGD_MODEL.equals(attributeName)) {
-          props.put(attributeName, decompressSVMWithSGDModel(paraNode.getTextTrim()));
-        } else {
-          props.put(attributeName, paraNode.getTextTrim());
-        }
+      props.load(configStream);
+      for(String key : props.stringPropertyNames()) {
+        props.put(key, props.getProperty(key).trim());
       }
-    } catch (JDOMException | IOException e) {
-      LOG.error("Exception whilst retrieving or processing XML contained within 'config.xml'!", e);
+      String rankingModelPath = props.getProperty(MudrodConstants.RANKING_MODEL);
+      props.put(MudrodConstants.RANKING_MODEL, decompressSVMWithSGDModel(rankingModelPath));
+    } catch (IOException e) {
+      LOG.info("Fail to load the sytem config file");
     }
+    
     return getConfig();
-
   }
 
   private String decompressSVMWithSGDModel(String archiveName) throws IOException {
@@ -383,7 +372,7 @@ public class MudrodEngine {
 
       me.es = new ESDriver(me.getConfig());
       me.spark = new SparkDriver(me.getConfig());
-      loadFullConfig(me, dataDir);
+      loadPathConfig(me, dataDir);
       if (processingType != null) {
         switch (processingType) {
         case PROCESSING:
@@ -410,27 +399,19 @@ public class MudrodEngine {
     }
   }
 
-  private static void loadFullConfig(MudrodEngine me, String dataDir) {
-    //TODO all of the properties defined below, which are determined are
-    //runtime need to be added to MudrodConstants.java and referenced 
-    //accordingly and consistently from Properties.getProperty(MudrodConstant...);
-    me.props.put("ontologyInputDir", dataDir + "SWEET_ocean/");
-    me.props.put("oceanTriples", dataDir + "Ocean_triples.csv");
-    me.props.put("userHistoryMatrix", dataDir + "UserHistoryMatrix.csv");
-    me.props.put("clickstreamMatrix", dataDir + "ClickstreamMatrix.csv");
-    me.props.put("metadataMatrix", dataDir + "MetadataMatrix.csv");
-    me.props.put("clickstreamSVDMatrix_tmp", dataDir + "clickstreamSVDMatrix_tmp.csv");
-    me.props.put("metadataSVDMatrix_tmp", dataDir + "metadataSVDMatrix_tmp.csv");
-    me.props.put("raw_metadataPath", dataDir + me.props.getProperty(MudrodConstants.RAW_METADATA_TYPE));
+  private static void loadPathConfig(MudrodEngine me, String dataDir) {
+    me.props.put(MudrodConstants.ONTOLOGY_INPUT_PATH, dataDir + "SWEET_ocean/");
+    me.props.put(MudrodConstants.ONTOLOGY_PATH, dataDir + "ocean_triples.csv");
+    me.props.put(MudrodConstants.USER_HISTORY_PATH, dataDir + "userhistorymatrix.csv");
+    me.props.put(MudrodConstants.CLICKSTREAM_PATH, dataDir + "clickstreammatrix.csv");
+    me.props.put(MudrodConstants.METADATA_MATRIX_PATH, dataDir + "metadatamatrix.csv");
+    me.props.put(MudrodConstants.CLICKSTREAM_SVD_PATH, dataDir + "clickstreamsvdmatrix_tmp.csv");
+    me.props.put(MudrodConstants.METADATA_SVD_PATH, dataDir + "metadatasvdMatrix_tmp.csv");
+    me.props.put(MudrodConstants.RAW_METADATA_PATH, dataDir + me.props.getProperty(MudrodConstants.RAW_METADATA_TYPE));
 
-    me.props.put("jtopia", dataDir + "jtopiaModel");
-    me.props.put("metadata_term_tfidf_matrix", dataDir + "metadata_term_tfidf.csv");
-    me.props.put("metadata_word_tfidf_matrix", dataDir + "metadata_word_tfidf.csv");
-    me.props.put("session_metadata_Matrix", dataDir + "metadata_session_coocurrence_matrix.csv");
-
-    me.props.put("metadataOBCode", dataDir + "MetadataOHCode");
-    me.props.put("metadata_topic", dataDir + "metadata_topic");
-    me.props.put("metadata_topic_matrix", dataDir + "metadata_topic_matrix.csv");
+    me.props.put(MudrodConstants.METADATA_TERM_MATRIX_PATH, dataDir + "metadata_term_tfidf.csv");
+    me.props.put(MudrodConstants.METADATA_WORD_MATRIX_PATH, dataDir + "metadata_word_tfidf.csv");
+    me.props.put(MudrodConstants.METADATA_SESSION_MATRIX_PATH, dataDir + "metadata_session_coocurrence_matrix.csv");
   }
 
   /**

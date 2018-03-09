@@ -16,8 +16,9 @@ package org.apache.sdap.mudrod.weblog.structure;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import org.apache.sdap.mudrod.driver.ESDriver;
+import org.apache.sdap.mudrod.main.MudrodConstants;
+
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -214,7 +215,7 @@ public class Session /*extends MudrodAbstract*/ implements Comparable<Session> {
       String logType = (String) result.get("LogType");
       String referer = (String) result.get("Referer");
 
-      SessionNode node = new SessionNode(request, logType, referer, time, seq);
+      SessionNode node = new SessionNode(request, logType, referer, props.getProperty(MudrodConstants.BASE_URL), time, seq);
       tree.insert(node);
       seq++;
     }
@@ -231,7 +232,7 @@ public class Session /*extends MudrodAbstract*/ implements Comparable<Session> {
    * @throws UnsupportedEncodingException UnsupportedEncodingException
    */
   private JsonElement getRequests(String cleanuptype, String sessionID) throws UnsupportedEncodingException {
-    SearchResponse response = es.getClient().prepareSearch(props.getProperty("indexName")).setTypes(cleanuptype).setQuery(QueryBuilders.termQuery("SessionID", sessionID)).setSize(100)
+    SearchResponse response = es.getClient().prepareSearch(props.getProperty(MudrodConstants.ES_INDEX_NAME)).setTypes(cleanuptype).setQuery(QueryBuilders.termQuery("SessionID", sessionID)).setSize(100)
         .addSort("Time", SortOrder.ASC).execute().actionGet();
 
     Gson gson = new Gson();
