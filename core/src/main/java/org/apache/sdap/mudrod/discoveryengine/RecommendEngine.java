@@ -26,7 +26,7 @@ public class RecommendEngine extends DiscoveryEngineAbstract {
 
   @Override
   public void preprocess() {
-    LOG.info("*****************Recommendation preprocessing starts******************");
+    LOG.info("Recommendation preprocessing starts.");
 
     startTime = System.currentTimeMillis();
 
@@ -44,13 +44,13 @@ public class RecommendEngine extends DiscoveryEngineAbstract {
 
     endTime = System.currentTimeMillis();
 
-    LOG.info("*****************Recommendation preprocessing  ends******************Took {}s {}", (endTime - startTime) / 1000);
+    LOG.info("Recommendation preprocessing ends. Took {}s {}", (endTime - startTime) / 1000);
   }
 
   @Override
   public void process() {
     // TODO Auto-generated method stub
-    LOG.info("*****************Recommendation processing starts******************");
+    LOG.info("Recommendation processing starts.");
 
     startTime = System.currentTimeMillis();
 
@@ -65,12 +65,11 @@ public class RecommendEngine extends DiscoveryEngineAbstract {
 
     endTime = System.currentTimeMillis();
 
-    LOG.info("*****************Recommendation processing ends******************Took {}s {}", (endTime - startTime) / 1000);
+    LOG.info("Recommendation processing ends. Took {}s {}", (endTime - startTime) / 1000);
   }
 
   @Override
   public void output() {
-    // TODO Auto-generated method stub
 
   }
 

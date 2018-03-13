@@ -78,7 +78,8 @@ public class HistoryGenerator extends LogAbstract {
       String[] statictypeArray = new String[] { this.sessionStats };
       int docCount = es.getDocCount(logIndices, statictypeArray);
       
-      LOG.info(this.sessionStats + ":" + docCount);      
+      LOG.info("{}: {}", this.sessionStats, docCount);      
+
       if (docCount==0) 
       { 
         bw.close(); 
@@ -91,7 +92,7 @@ public class HistoryGenerator extends LogAbstract {
       Terms ips = sr.getAggregations().get("IPs");
       List<String> ipList = new ArrayList<>();
       for (Terms.Bucket entry : ips.getBuckets()) {
-        if (entry.getDocCount() >= Integer.parseInt(props.getProperty(MudrodConstants.QUERY_MIN))) { // filter
+        if (entry.getDocCount() > Integer.parseInt(props.getProperty(MudrodConstants.QUERY_MIN))) { // filter
           // out
           // less
           // active users/ips

@@ -69,7 +69,7 @@ public class MetadataExtractor implements Serializable {
    */
   protected List<Metadata> loadMetadataFromES(ESDriver es, String index, String type) {
 
-    List<Metadata> metadatas = new ArrayList<Metadata>();
+    List<Metadata> metadatas = new ArrayList<>();
     SearchResponse scrollResp = es.getClient().prepareSearch(index).setTypes(type).setQuery(QueryBuilders.matchAllQuery()).setScroll(new TimeValue(60000)).setSize(100).execute().actionGet();
 
     while (true) {

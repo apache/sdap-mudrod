@@ -30,16 +30,13 @@ import java.util.*;
  * Supports the ability to calculating ranking score
  */
 public class Ranker extends MudrodAbstract implements Serializable {
-  /**
-   *
-   */
   private static final long serialVersionUID = 1L;
   transient List<SResult> resultList = new ArrayList<>();
   Learner le = null;
 
   public Ranker(Properties props, ESDriver es, SparkDriver spark) {
     super(props, es, spark);
-    if(props.getProperty(MudrodConstants.RANKING_ML).equals("1"))
+    if("1".equals(props.getProperty(MudrodConstants.RANKING_ML)))
       le = new Learner(spark, props.getProperty(MudrodConstants.RANKING_MODEL));
   }
 

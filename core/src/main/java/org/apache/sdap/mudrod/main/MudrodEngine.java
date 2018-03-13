@@ -138,7 +138,7 @@ public class MudrodEngine {
       LOG.info("Loaded config file from " + configFile.getAbsolutePath());
       return configStream;
     } catch (IOException e) {
-      LOG.info("File specified by environment variable " + MudrodConstants.MUDROD_CONFIG + "=\'" + configLocation + "\' could not be loaded. Default configuration will be used." + e.getMessage());
+      LOG.info("File specified by environment variable {} = '{}' could not be loaded. Default configuration will be used.", MudrodConstants.MUDROD_CONFIG, configLocation, e.getMessage());   
     }
 
     InputStream configStream = MudrodEngine.class.getClassLoader().getResourceAsStream("config.properties");
@@ -221,7 +221,7 @@ public class MudrodEngine {
     DiscoveryEngineAbstract wd = new WeblogDiscoveryEngine(props, es, spark);
     wd.preprocess();
     wd.process();
-    LOG.info("*****************logs have been ingested successfully******************");
+    LOG.info("Logs have been ingested successfully");
   }
 
   /**

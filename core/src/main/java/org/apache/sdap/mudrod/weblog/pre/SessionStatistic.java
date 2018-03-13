@@ -82,9 +82,9 @@ public class SessionStatistic extends LogAbstract {
 
   public void processSession() throws InterruptedException, IOException, ExecutionException {
     String processingType = props.getProperty(MudrodConstants.PROCESS_TYPE);
-    if (processingType.equals("sequential")) {
+    if ("sequential".equals(processingType)) {
       processSessionInSequential();
-    } else if (processingType.equals("parallel")) {
+    } else if ("parallel".equals(processingType)) {
       processSessionInParallel();
     }
   }
@@ -230,8 +230,8 @@ public class SessionStatistic extends LogAbstract {
           String infoStr = requestURL.getSearchInfo(request) + ",";
           String info = es.customAnalyzing(props.getProperty(MudrodConstants.ES_INDEX_NAME), infoStr);
 
-          if (!info.equals(",")) {
-            if (keywords.equals("")) {
+          if (!",".equals(info)) {
+            if ("".equals(keywords)) {
               keywords = keywords + info;
             } else {
               String[] items = info.split(",");
@@ -249,7 +249,7 @@ public class SessionStatistic extends LogAbstract {
           searchDataRequestCount++;
           if (findDataset(request) != null) {
             String view = findDataset(request);
-            if (views.equals("")) 
+            if ("".equals(views)) 
               views = view;
              else if (!views.contains(view)) 
                 views = views + "," + view;          

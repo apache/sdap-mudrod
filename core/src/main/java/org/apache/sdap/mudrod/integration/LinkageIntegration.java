@@ -136,7 +136,7 @@ public class LinkageIntegration extends DiscoveryStepAbstract {
       }
       count++;
     }
-    LOG.info("\n************************Integrated results***************************");
+    LOG.info("Integrated results:");
     LOG.info(output);
     return output;
   }
@@ -244,7 +244,7 @@ public class LinkageIntegration extends DiscoveryStepAbstract {
   public void aggregateRelatedTermsSWEET(String input, String model) {
     SearchResponse usrhis = es.getClient().prepareSearch(props.getProperty(INDEX_NAME)).setTypes(model).setQuery(QueryBuilders.termQuery("concept_A", input)).addSort(WEIGHT, SortOrder.DESC)
         .setSize(11).execute().actionGet();
-    LOG.info("\n************************ {} results***************************", model);
+    LOG.info("{} results:", model);
     for (SearchHit hit : usrhis.getHits().getHits()) {
       Map<String, Object> result = hit.getSource();
       String conceptB = (String) result.get("concept_B");

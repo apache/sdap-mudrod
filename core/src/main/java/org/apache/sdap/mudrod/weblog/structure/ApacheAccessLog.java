@@ -77,7 +77,7 @@ public class ApacheAccessLog extends WebLog implements Serializable {
 
     String bytes = matcher.group(7);
 
-    if (bytes.equals("-")) {
+    if ("-".equals(bytes)) {
       bytes = "0";
     }
 

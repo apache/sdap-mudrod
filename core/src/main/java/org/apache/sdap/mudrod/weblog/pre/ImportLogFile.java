@@ -307,8 +307,9 @@ public class ImportLogFile extends LogAbstract {
     if (!crawlerDe.checkKnownCrawler(agent)) {
       boolean tag = false;
       String[] mimeTypes = props.getProperty(MudrodConstants.BLACK_LIST_REQUEST).split(",");
-      for (int i = 0; i < mimeTypes.length; i++) {
-        if (request.contains(mimeTypes[i].trim())) {
+      for(String str:mimeTypes)
+      {
+        if (request.contains(str.trim())) {
           tag = true;
           break;
         }

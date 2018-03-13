@@ -64,7 +64,7 @@ public class MetadataAnalyzer extends DiscoveryStepAbstract implements Serializa
   @Override
   public Object execute() {
     try {
-      LOG.info("*****************Metadata Analyzer starts******************");
+      LOG.info("Metadata Analyzer starts.");
       startTime = System.currentTimeMillis();
 
       SVDAnalyzer analyzer = new SVDAnalyzer(props, es, spark);
@@ -83,7 +83,7 @@ public class MetadataAnalyzer extends DiscoveryStepAbstract implements Serializa
 
     endTime = System.currentTimeMillis();
     es.refreshIndex();
-    LOG.info("*****************Metadata Analyzer ends******************Took {}s", (endTime - startTime) / 1000);
+    LOG.info("Metadata Analyzer ends. Took {}s", (endTime - startTime) / 1000);
     return null;
   }
 }

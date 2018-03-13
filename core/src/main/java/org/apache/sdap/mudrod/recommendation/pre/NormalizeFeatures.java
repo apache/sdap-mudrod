@@ -64,13 +64,13 @@ public class NormalizeFeatures extends DiscoveryStepAbstract {
 
   @Override
   public Object execute() {
-    LOG.info("*****************proprocessing metadata feature starts******************");
+    LOG.info("Preprocessing metadata feature starts.");
     startTime = System.currentTimeMillis();
 
     normalizeMetadataVariables(es);
 
     endTime = System.currentTimeMillis();
-    LOG.info("*****************proprocessing metadata feature ends******************Took {}s", (endTime - startTime) / 1000);
+    LOG.info("Preprocessing metadata feature ends. Took {}s", (endTime - startTime) / 1000);
 
     return null;
   }

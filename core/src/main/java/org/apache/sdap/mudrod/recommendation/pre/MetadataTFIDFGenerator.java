@@ -91,7 +91,7 @@ public class MetadataTFIDFGenerator extends DiscoveryStepAbstract {
     MetadataTokenizer opt = new MetadataTokenizer(props);
 
     String source = props.getProperty(MudrodConstants.SEMANTIC_FIELDS);
-    List<String> variables = new ArrayList<String>(Arrays.asList(source.split(",")));
+    List<String> variables = new ArrayList<>(Arrays.asList(source.split(",")));
 
     String metadataName = props.getProperty(MudrodConstants.METADATA_ID);
     JavaPairRDD<String, String> metadataContents = opt.loadAll(es, spark, variables, metadataName);

@@ -37,15 +37,14 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.Properties;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 public class FeatureBasedSimilarity extends DiscoveryStepAbstract implements Serializable {
-
-  /**
-   *
-   */
   private static final long serialVersionUID = 1L;
 
   private static final Logger LOG = LoggerFactory.getLogger(FeatureBasedSimilarity.class);
@@ -77,7 +76,7 @@ public class FeatureBasedSimilarity extends DiscoveryStepAbstract implements Ser
     metadataType = MudrodConstants.RECOM_METADATA_TYPE;
     variableSimType = MudrodConstants.METADATA_FEATURE_SIM_TYPE;
  
-    // !!! important, please change to other class when using other metadata
+    // important, please change to other class when using other metadata
     metadata = new PODAACMetadataFeature();
     metadata.inital();
     variableTypes = metadata.featureTypes;
