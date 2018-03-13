@@ -19,6 +19,8 @@ import com.google.gson.JsonObject;
 
 import org.apache.sdap.mudrod.discoveryengine.MudrodAbstract;
 import org.apache.sdap.mudrod.driver.ESDriver;
+import org.apache.sdap.mudrod.main.MudrodConstants;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +68,7 @@ public class SessionTree extends MudrodAbstract {
    */
   public SessionTree(Properties props, ESDriver es, SessionNode rootData, String sessionID, String cleanupType) {
     super(props, es, null);
-    root = new SessionNode("root", "root", "", "", 0);
+    root = new SessionNode("root", "root", "", props.getProperty(MudrodConstants.BASE_URL), "", 0);
     tmpnode = root;
     this.sessionID = sessionID;
     this.cleanupType = cleanupType;
@@ -82,7 +84,7 @@ public class SessionTree extends MudrodAbstract {
    */
   public SessionTree(Properties props, ESDriver es, String sessionID, String cleanupType) {
     super(props, es, null);
-    root = new SessionNode("root", "root", "", "", 0);
+    root = new SessionNode("root", "root", "", props.getProperty(MudrodConstants.BASE_URL), "", 0);
     root.setParent(root);
     tmpnode = root;
     this.sessionID = sessionID;
@@ -97,16 +99,16 @@ public class SessionTree extends MudrodAbstract {
    */
   public SessionNode insert(SessionNode node) {
     // begin with datasetlist
-    if ("datasetlist".equals(node.getKey())) {
+    if (props.getProperty(MudrodConstants.SEARCH_MARKER).equals(node.getKey())) {
       this.binsert = true;
     }
     if (!this.binsert) {
       return null;
     }
     // remove unrelated node
-    if (!"datasetlist".equals(node.getKey()) &&
-            !"dataset".equals(node.getKey()) &&
-            !"ftp".equals(node.getKey())) {
+    if (!props.getProperty(MudrodConstants.SEARCH_MARKER).equals(node.getKey()) &&
+            !props.getProperty(MudrodConstants.VIEW_MARKER).equals(node.getKey()) &&
+            !MudrodConstants.FTP_LOG.equals(node.getKey())) {
       return null;
     }
     // remove dumplicated click
@@ -204,7 +206,7 @@ public class SessionTree extends MudrodAbstract {
       String viewquery = "";
       try {
         String infoStr = requestURL.getSearchInfo(viewnode.getRequest());
-        viewquery = es.customAnalyzing(props.getProperty("indexName"), infoStr);
+        viewquery = es.customAnalyzing(props.getProperty(MudrodConstants.ES_INDEX_NAME), infoStr);
       } catch (UnsupportedEncodingException | InterruptedException | ExecutionException e) {
         LOG.warn("Exception getting search info. Ignoring...", e);
       }
@@ -487,7 +489,7 @@ public class SessionTree extends MudrodAbstract {
         String infoStr = requestURL.getSearchInfo(queryUrl);
         String query = null;
         try {
-          query = es.customAnalyzing(props.getProperty("indexName"), infoStr);
+          query = es.customAnalyzing(props.getProperty(MudrodConstants.ES_INDEX_NAME), infoStr);
         } catch (InterruptedException | ExecutionException e) {
           throw new RuntimeException("Error performing custom analyzing", e);
         }

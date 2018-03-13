@@ -16,6 +16,7 @@ package org.apache.sdap.mudrod.weblog.pre;
 import org.apache.sdap.mudrod.discoveryengine.DiscoveryStepAbstract;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
+import org.apache.sdap.mudrod.main.MudrodConstants;
 import org.apache.sdap.mudrod.utils.LabeledRowMatrix;
 import org.apache.sdap.mudrod.utils.MatrixUtil;
 import org.apache.sdap.mudrod.weblog.structure.ClickStream;
@@ -48,11 +49,11 @@ public class ClickStreamGenerator extends DiscoveryStepAbstract {
     LOG.info("Starting ClickStreamGenerator...");
     startTime = System.currentTimeMillis();
 
-    String clickstremMatrixFile = props.getProperty("clickstreamMatrix");
+    String clickstremMatrixFile = props.getProperty(MudrodConstants.CLICKSTREAM_PATH);
     try {
       SessionExtractor extractor = new SessionExtractor();
       JavaRDD<ClickStream> clickstreamRDD = extractor.extractClickStreamFromES(this.props, this.es, this.spark);
-      int weight = Integer.parseInt(props.getProperty("downloadWeight"));
+      int weight = Integer.parseInt(props.getProperty(MudrodConstants.DOWNLOAD_WEIGHT));
       JavaPairRDD<String, List<String>> metaddataQueryRDD = extractor.bulidDataQueryRDD(clickstreamRDD, weight);
       LabeledRowMatrix wordDocMatrix = MatrixUtil.createWordDocMatrix(metaddataQueryRDD);
 
