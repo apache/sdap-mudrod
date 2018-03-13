@@ -46,7 +46,7 @@ public class AbstractBasedSimilarity extends DiscoveryStepAbstract {
   @Override
   public Object execute() {
 
-    LOG.info("*****************abstract similarity calculation starts******************");
+    LOG.info("Abstract similarity calculation starts.");
     startTime = System.currentTimeMillis();
 
     try {
@@ -61,7 +61,7 @@ public class AbstractBasedSimilarity extends DiscoveryStepAbstract {
     }
 
     endTime = System.currentTimeMillis();
-    LOG.info("*****************abstract similarity calculation ends******************Took {}s", (endTime - startTime) / 1000);
+    LOG.info("Abstract similarity calculation ends. Took {}s", (endTime - startTime) / 1000);
 
     return null;
   }

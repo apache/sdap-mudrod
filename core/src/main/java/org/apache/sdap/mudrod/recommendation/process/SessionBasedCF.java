@@ -50,7 +50,7 @@ public class SessionBasedCF extends DiscoveryStepAbstract {
 
   @Override
   public Object execute() {
-    LOG.info("*****************Session based metadata similarity starts******************");
+    LOG.info("Session based metadata similarity starts.");
     startTime = System.currentTimeMillis();
 
     try {
@@ -67,7 +67,7 @@ public class SessionBasedCF extends DiscoveryStepAbstract {
     }
 
     endTime = System.currentTimeMillis();
-    LOG.info("*****************Session based metadata similarity ends******************Took {}s", (endTime - startTime) / 1000);
+    LOG.info("Session based metadata similarity ends. Took {}s", (endTime - startTime) / 1000);
 
     return null;
   }

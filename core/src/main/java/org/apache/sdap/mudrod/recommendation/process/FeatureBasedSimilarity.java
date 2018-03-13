@@ -85,7 +85,7 @@ public class FeatureBasedSimilarity extends DiscoveryStepAbstract implements Ser
 
   @Override
   public Object execute() {
-    LOG.info("*****************calculating metadata feature based similarity starts******************");
+    LOG.info("Calculating metadata feature based similarity starts.");
     startTime = System.currentTimeMillis();
     es.deleteType(indexName, variableSimType);
     addMapping(es, indexName, variableSimType);
@@ -95,7 +95,7 @@ public class FeatureBasedSimilarity extends DiscoveryStepAbstract implements Ser
     normalizeVariableWeight(es);
     es.refreshIndex();
     endTime = System.currentTimeMillis();
-    LOG.info("*****************calculating metadata feature based similarity ends******************Took {}s", (endTime - startTime) / 1000);
+    LOG.info("Calculating metadata feature based similarity ends. Took {}s", (endTime - startTime) / 1000);
     return null;
   }
 
