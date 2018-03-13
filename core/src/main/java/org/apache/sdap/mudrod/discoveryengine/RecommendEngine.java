@@ -4,10 +4,10 @@ import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.recommendation.pre.ImportMetadata;
 import org.apache.sdap.mudrod.recommendation.pre.MetadataTFIDFGenerator;
-import org.apache.sdap.mudrod.recommendation.pre.NormalizeVariables;
+import org.apache.sdap.mudrod.recommendation.pre.NormalizeFeatures;
 import org.apache.sdap.mudrod.recommendation.pre.SessionCooccurence;
 import org.apache.sdap.mudrod.recommendation.process.AbstractBasedSimilarity;
-import org.apache.sdap.mudrod.recommendation.process.VariableBasedSimilarity;
+import org.apache.sdap.mudrod.recommendation.process.FeatureBasedSimilarity;
 import org.apache.sdap.mudrod.recommendation.process.SessionBasedCF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,7 @@ public class RecommendEngine extends DiscoveryEngineAbstract {
 
   @Override
   public void preprocess() {
-    LOG.info("*****************Recommendation preprocessing starts******************");
+    LOG.info("Recommendation preprocessing starts.");
 
     startTime = System.currentTimeMillis();
 
@@ -39,25 +39,25 @@ public class RecommendEngine extends DiscoveryEngineAbstract {
     DiscoveryStepAbstract sessionMatrixGen = new SessionCooccurence(this.props, this.es, this.spark);
     sessionMatrixGen.execute();
 
-    DiscoveryStepAbstract transformer = new NormalizeVariables(this.props, this.es, this.spark);
+    DiscoveryStepAbstract transformer = new NormalizeFeatures(this.props, this.es, this.spark);
     transformer.execute();
 
     endTime = System.currentTimeMillis();
 
-    LOG.info("*****************Recommendation preprocessing  ends******************Took {}s {}", (endTime - startTime) / 1000);
+    LOG.info("Recommendation preprocessing ends. Took {}s {}", (endTime - startTime) / 1000);
   }
 
   @Override
   public void process() {
     // TODO Auto-generated method stub
-    LOG.info("*****************Recommendation processing starts******************");
+    LOG.info("Recommendation processing starts.");
 
     startTime = System.currentTimeMillis();
 
     DiscoveryStepAbstract tfCF = new AbstractBasedSimilarity(this.props, this.es, this.spark);
     tfCF.execute();
 
-    DiscoveryStepAbstract cbCF = new VariableBasedSimilarity(this.props, this.es, this.spark);
+    DiscoveryStepAbstract cbCF = new FeatureBasedSimilarity(this.props, this.es, this.spark);
     cbCF.execute();
 
     DiscoveryStepAbstract sbCF = new SessionBasedCF(this.props, this.es, this.spark);
@@ -65,12 +65,11 @@ public class RecommendEngine extends DiscoveryEngineAbstract {
 
     endTime = System.currentTimeMillis();
 
-    LOG.info("*****************Recommendation processing ends******************Took {}s {}", (endTime - startTime) / 1000);
+    LOG.info("Recommendation processing ends. Took {}s {}", (endTime - startTime) / 1000);
   }
 
   @Override
   public void output() {
-    // TODO Auto-generated method stub
 
   }
 

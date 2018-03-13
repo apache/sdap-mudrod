@@ -16,6 +16,7 @@ package org.apache.sdap.mudrod.recommendation.process;
 import org.apache.sdap.mudrod.discoveryengine.DiscoveryStepAbstract;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
+import org.apache.sdap.mudrod.main.MudrodConstants;
 import org.apache.sdap.mudrod.semantics.SemanticAnalyzer;
 import org.apache.sdap.mudrod.utils.LinkageTriple;
 import org.apache.sdap.mudrod.utils.SimilarityUtil;
@@ -49,16 +50,16 @@ public class SessionBasedCF extends DiscoveryStepAbstract {
 
   @Override
   public Object execute() {
-    LOG.info("*****************Session based metadata similarity starts******************");
+    LOG.info("Session based metadata similarity starts.");
     startTime = System.currentTimeMillis();
 
     try {
-      String session_metadatFile = props.getProperty("session_metadata_Matrix");
+      String session_metadatFile = props.getProperty(MudrodConstants.METADATA_SESSION_MATRIX_PATH);
       File f = new File(session_metadatFile);
       if (f.exists()) {
         SemanticAnalyzer analyzer = new SemanticAnalyzer(props, es, spark);
         List<LinkageTriple> triples = analyzer.calTermSimfromMatrix(session_metadatFile, SimilarityUtil.SIM_PEARSON, 1);
-        analyzer.saveToES(triples, props.getProperty("indexName"), props.getProperty("metadataSessionBasedSimType"), true, false);
+        analyzer.saveToES(triples, props.getProperty(MudrodConstants.ES_INDEX_NAME), MudrodConstants.METADATA_SESSION_SIM_TYPE, true, false);
       }
 
     } catch (Exception e) {
@@ -66,7 +67,7 @@ public class SessionBasedCF extends DiscoveryStepAbstract {
     }
 
     endTime = System.currentTimeMillis();
-    LOG.info("*****************Session based metadata similarity ends******************Took {}s", (endTime - startTime) / 1000);
+    LOG.info("Session based metadata similarity ends. Took {}s", (endTime - startTime) / 1000);
 
     return null;
   }

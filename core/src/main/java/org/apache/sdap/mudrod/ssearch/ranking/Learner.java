@@ -28,7 +28,6 @@ public class Learner implements Serializable {
    *
    */
   private static final long serialVersionUID = 1L;
-  private static final String SPARKSVM = "SparkSVM";
   SVMModel model = null;
   transient SparkContext sc = null;
 
@@ -39,12 +38,10 @@ public class Learner implements Serializable {
    * @param skd            an instance of spark driver
    * @param svmSgdModel    path to a trained model
    */
-  public Learner(String classifierName, SparkDriver skd, String svmSgdModel) {
-    if (classifierName.equals(SPARKSVM)) {
+  public Learner(SparkDriver skd, String svmSgdModel) {
       sc = skd.sc.sc();
       sc.addFile(svmSgdModel, true);
       model = SVMModel.load(sc, svmSgdModel);
-    }
   }
 
   /**
