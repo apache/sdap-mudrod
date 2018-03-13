@@ -39,7 +39,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-
 public class MetadataTokenizer implements Serializable {
   private static final long serialVersionUID = 1L;
   private String indexName;
@@ -52,7 +51,7 @@ public class MetadataTokenizer implements Serializable {
   public MetadataTokenizer(Properties props) {
     indexName = props.getProperty(MudrodConstants.ES_INDEX_NAME);
     metadataType = MudrodConstants.RECOM_METADATA_TYPE;
-    
+
     String source = props.getProperty(MudrodConstants.SEMANTIC_FIELDS);
     variables = new ArrayList<String>(Arrays.asList(source.split(",")));
   }

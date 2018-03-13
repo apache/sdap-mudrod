@@ -24,51 +24,51 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class MetadataFeature implements Serializable {
-	
-	protected static final Integer VAR_SPATIAL = 1;
-	protected static final Integer VAR_TEMPORAL = 2;
-	protected static final Integer VAR_CATEGORICAL = 3;
-	protected static final Integer VAR_ORDINAL = 4;
-	
-	public Map<String, Integer> featureTypes = new HashMap<>();
-	public Map<String, Integer> featureWeights = new HashMap<>();
 
-	public void normalizeMetadataVariables(Map<String, Object> metadata, Map<String, Object> updatedValues) {
+  protected static final Integer VAR_SPATIAL = 1;
+  protected static final Integer VAR_TEMPORAL = 2;
+  protected static final Integer VAR_CATEGORICAL = 3;
+  protected static final Integer VAR_ORDINAL = 4;
 
-		this.normalizeSpatialVariables(metadata, updatedValues);
-		this.normalizeTemporalVariables(metadata, updatedValues);
-		this.normalizeOtherVariables(metadata, updatedValues);
-	}
-	
-	public void inital() {
-	    this.initFeatureType();
-	    this.initFeatureWeight();
-	}
-	
-	public void featureSimilarity(Map<String, Object> metadataA, Map<String, Object> metadataB, XContentBuilder contentBuilder) {
-		 this.spatialSimilarity(metadataA, metadataB, contentBuilder);
-		 this.temporalSimilarity(metadataA, metadataB, contentBuilder);
-		 this.categoricalVariablesSimilarity(metadataA, metadataB, contentBuilder);
-		 this.ordinalVariablesSimilarity(metadataA, metadataB, contentBuilder);
-	}
+  public Map<String, Integer> featureTypes = new HashMap<>();
+  public Map<String, Integer> featureWeights = new HashMap<>();
 
-	/* for normalization */
-	public abstract void normalizeSpatialVariables(Map<String, Object> metadata, Map<String, Object> updatedValues);
+  public void normalizeMetadataVariables(Map<String, Object> metadata, Map<String, Object> updatedValues) {
 
-	public abstract void normalizeTemporalVariables(Map<String, Object> metadata, Map<String, Object> updatedValues);
+    this.normalizeSpatialVariables(metadata, updatedValues);
+    this.normalizeTemporalVariables(metadata, updatedValues);
+    this.normalizeOtherVariables(metadata, updatedValues);
+  }
 
-	public abstract void normalizeOtherVariables(Map<String, Object> metadata, Map<String, Object> updatedValues);
+  public void inital() {
+    this.initFeatureType();
+    this.initFeatureWeight();
+  }
 
-	/* for similarity */
-	public abstract void initFeatureType();
+  public void featureSimilarity(Map<String, Object> metadataA, Map<String, Object> metadataB, XContentBuilder contentBuilder) {
+    this.spatialSimilarity(metadataA, metadataB, contentBuilder);
+    this.temporalSimilarity(metadataA, metadataB, contentBuilder);
+    this.categoricalVariablesSimilarity(metadataA, metadataB, contentBuilder);
+    this.ordinalVariablesSimilarity(metadataA, metadataB, contentBuilder);
+  }
 
-	public abstract void initFeatureWeight();
-	
-	public abstract void spatialSimilarity(Map<String, Object> metadataA, Map<String, Object> metadataB, XContentBuilder contentBuilder);
-  
-	public abstract void temporalSimilarity(Map<String, Object> metadataA, Map<String, Object> metadataB, XContentBuilder contentBuilder);
+  /* for normalization */
+  public abstract void normalizeSpatialVariables(Map<String, Object> metadata, Map<String, Object> updatedValues);
 
-	public abstract void categoricalVariablesSimilarity(Map<String, Object> metadataA, Map<String, Object> metadataB, XContentBuilder contentBuilder);
-  
-	public abstract void ordinalVariablesSimilarity(Map<String, Object> metadataA, Map<String, Object> metadataB, XContentBuilder contentBuilder);
+  public abstract void normalizeTemporalVariables(Map<String, Object> metadata, Map<String, Object> updatedValues);
+
+  public abstract void normalizeOtherVariables(Map<String, Object> metadata, Map<String, Object> updatedValues);
+
+  /* for similarity */
+  public abstract void initFeatureType();
+
+  public abstract void initFeatureWeight();
+
+  public abstract void spatialSimilarity(Map<String, Object> metadataA, Map<String, Object> metadataB, XContentBuilder contentBuilder);
+
+  public abstract void temporalSimilarity(Map<String, Object> metadataA, Map<String, Object> metadataB, XContentBuilder contentBuilder);
+
+  public abstract void categoricalVariablesSimilarity(Map<String, Object> metadataA, Map<String, Object> metadataB, XContentBuilder contentBuilder);
+
+  public abstract void ordinalVariablesSimilarity(Map<String, Object> metadataA, Map<String, Object> metadataB, XContentBuilder contentBuilder);
 }

@@ -65,12 +65,7 @@ public class ImportMetadata extends DiscoveryStepAbstract {
     String mappingJson = "{\r\n   \"dynamic_templates\": " + "[\r\n      " + "{\r\n         \"strings\": " + "{\r\n            \"match_mapping_type\": \"string\","
         + "\r\n            \"mapping\": {\r\n               \"type\": \"string\"," + "\r\n               \"analyzer\": \"csv\"\r\n            }" + "\r\n         }\r\n      }\r\n   ]\r\n}";
 
-    es.getClient().admin().indices().
-    preparePutMapping(props.getProperty(MudrodConstants.ES_INDEX_NAME))
-    .setType(MudrodConstants.RECOM_METADATA_TYPE)
-    .setSource(mappingJson)
-    .execute()
-    .actionGet();
+    es.getClient().admin().indices().preparePutMapping(props.getProperty(MudrodConstants.ES_INDEX_NAME)).setType(MudrodConstants.RECOM_METADATA_TYPE).setSource(mappingJson).execute().actionGet();
   }
 
   /**
@@ -92,8 +87,7 @@ public class ImportMetadata extends DiscoveryStepAbstract {
           String jsonTxt = IOUtils.toString(is);
           JsonParser parser = new JsonParser();
           JsonElement item = parser.parse(jsonTxt);
-          IndexRequest ir = new IndexRequest(props.getProperty(MudrodConstants.ES_INDEX_NAME), 
-              MudrodConstants.RECOM_METADATA_TYPE).source(item.toString());
+          IndexRequest ir = new IndexRequest(props.getProperty(MudrodConstants.ES_INDEX_NAME), MudrodConstants.RECOM_METADATA_TYPE).source(item.toString());
 
           es.getBulkProcessor().add(ir);
         } catch (IOException e) {
