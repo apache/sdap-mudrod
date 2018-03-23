@@ -41,16 +41,6 @@ public class Ranker extends MudrodAbstract implements Serializable {
   }
 
   /**
-   * Method of comparing results based on final score
-   */
-  public class ResultComparator implements Comparator<SResult> {
-    @Override
-    public int compare(SResult o1, SResult o2) {
-      return o2.below.compareTo(o1.below);
-    }
-  }
-
-  /**
    * Method of calculating mean value
    *
    * @param attribute  the attribute name that need to be calculated on
@@ -147,42 +137,32 @@ public class Ranker extends MudrodAbstract implements Serializable {
       }
     }
 
-    // using collection.sort directly would cause an "not transitive" error
-    // this is because the training model is not a overfitting model
-    for (int j = 0; j < resultList.size(); j++) {
-      for (int k = 0; k < resultList.size(); k++) {
-        if (k != j) {
-          resultList.get(j).below += comp(resultList.get(j), resultList.get(k));
-        }
-      }
-    }
-
     Collections.sort(resultList, new ResultComparator());
     return resultList;
   }
-
+  
   /**
-   * Method of compare two search resutls
-   *
-   * @param o1 search result 1
-   * @param o2 search result 2
-   * @return 1 if o1 is greater than o2, 0 otherwise
+   * Method of comparing results based on final score
    */
-  public int comp(SResult o1, SResult o2) {
-    List<Double> instList = new ArrayList<>();
-    for (int i = 0; i < SResult.rlist.length; i++) {
-      double o2Score = SResult.get(o2, SResult.rlist[i]);
-      double o1Score = SResult.get(o1, SResult.rlist[i]);
-      instList.add(o2Score - o1Score);
-    }
+  public class ResultComparator implements Comparator<SResult> {
+    @Override
+    public int compare(SResult o1, SResult o2) {
+      List<Double> instList = new ArrayList<>();
+      for (int i = 0; i < SResult.rlist.length; i++) {
+        double o2Score = SResult.get(o2, SResult.rlist[i]);
+        double o1Score = SResult.get(o1, SResult.rlist[i]);
+        instList.add(o2Score - o1Score);
+      }
 
-    double[] ins = instList.stream().mapToDouble(i -> i).toArray();
-    LabeledPoint insPoint = new LabeledPoint(99.0, Vectors.dense(ins));
-    double prediction = le.classify(insPoint);
-    if (equalComp(prediction, 1)) { //different from weka where the return value is 1 or 2
-      return 0;
-    } else {
-      return 1;
+      double[] ins = instList.stream().mapToDouble(i -> i).toArray();
+      LabeledPoint insPoint = new LabeledPoint(99.0, Vectors.dense(ins));
+      int prediction = (int)le.classify(insPoint);
+      
+      if (prediction==1) { //different from weka where the return value is 1 or 2
+        return 1;
+      } else {
+        return 0;
+      }
     }
   }
 
