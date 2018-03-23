@@ -146,11 +146,16 @@ public class Ranker extends MudrodAbstract implements Serializable {
    */
   public class ResultComparator implements Comparator<SResult> {
     @Override
+    /**
+     * @param o1  one item from the search result list
+     * @param o2 another item from the search result list
+     * @return 1 meaning o1>o2, 0 meaning o1=o2
+     */
     public int compare(SResult o1, SResult o2) {
       List<Double> instList = new ArrayList<>();
-      for (int i = 0; i < SResult.rlist.length; i++) {
-        double o2Score = SResult.get(o2, SResult.rlist[i]);
-        double o1Score = SResult.get(o1, SResult.rlist[i]);
+      for (String str: SResult.rlist) {
+        double o2Score = SResult.get(o2, str);
+        double o1Score = SResult.get(o1, str);
         instList.add(o2Score - o1Score);
       }
 
@@ -158,11 +163,7 @@ public class Ranker extends MudrodAbstract implements Serializable {
       LabeledPoint insPoint = new LabeledPoint(99.0, Vectors.dense(ins));
       int prediction = (int)le.classify(insPoint);
       
-      if (prediction==1) { //different from weka where the return value is 1 or 2
-        return 1;
-      } else {
-        return 0;
-      }
+      return prediction;
     }
   }
 
