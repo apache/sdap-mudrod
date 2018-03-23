@@ -16,6 +16,7 @@ package org.apache.sdap.mudrod.metadata.process;
 import org.apache.sdap.mudrod.discoveryengine.DiscoveryStepAbstract;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
+import org.apache.sdap.mudrod.main.MudrodConstants;
 import org.apache.sdap.mudrod.semantics.SVDAnalyzer;
 import org.apache.sdap.mudrod.utils.LinkageTriple;
 import org.slf4j.Logger;
@@ -63,18 +64,18 @@ public class MetadataAnalyzer extends DiscoveryStepAbstract implements Serializa
   @Override
   public Object execute() {
     try {
-      LOG.info("*****************Metadata Analyzer starts******************");
+      LOG.info("Metadata Analyzer starts.");
       startTime = System.currentTimeMillis();
 
       SVDAnalyzer analyzer = new SVDAnalyzer(props, es, spark);
-      int svdDimension = Integer.parseInt(props.getProperty("metadataSVDDimension"));
-      String metadataMatrixFile = props.getProperty("metadataMatrix");
-      String svdMatrixFileName = props.getProperty("metadataSVDMatrix_tmp");
+      int svdDimension = Integer.parseInt(props.getProperty(MudrodConstants.METADATA_SVD_DIM));
+      String metadataMatrixFile = props.getProperty(MudrodConstants.METADATA_MATRIX_PATH);
+      String svdMatrixFileName = props.getProperty(MudrodConstants.METADATA_SVD_PATH);
 
       analyzer.getSVDMatrix(metadataMatrixFile, svdDimension, svdMatrixFileName);
       List<LinkageTriple> triples = analyzer.calTermSimfromMatrix(svdMatrixFileName);
 
-      analyzer.saveToES(triples, props.getProperty("indexName"), props.getProperty("metadataLinkageType"));
+      analyzer.saveToES(triples, props.getProperty(MudrodConstants.ES_INDEX_NAME), MudrodConstants.METADATA_LINKAGE_TYPE);
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -82,7 +83,7 @@ public class MetadataAnalyzer extends DiscoveryStepAbstract implements Serializa
 
     endTime = System.currentTimeMillis();
     es.refreshIndex();
-    LOG.info("*****************Metadata Analyzer ends******************Took {}s", (endTime - startTime) / 1000);
+    LOG.info("Metadata Analyzer ends. Took {}s", (endTime - startTime) / 1000);
     return null;
   }
 }

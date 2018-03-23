@@ -41,28 +41,28 @@ public class OntologyDiscoveryEngine extends DiscoveryEngineAbstract {
    * Method of preprocessing ontology
    */
   public void preprocess() {
-    LOG.info("*****************Ontology preprocessing starts******************");
+    LOG.info("Ontology preprocessing starts");
     startTime = System.currentTimeMillis();
 
     DiscoveryStepAbstract at = new AggregateTriples(this.props, this.es, this.spark);
     at.execute();
 
     endTime = System.currentTimeMillis();
-    LOG.info("*****************Ontology preprocessing ends******************Took {}s", (endTime - startTime) / 1000);
+    LOG.info("Ontology preprocessing ends. Took {}s", (endTime - startTime) / 1000);
   }
 
   /**
    * Method of processing ontology
    */
   public void process() {
-    LOG.info("*****************Ontology processing starts******************");
+    LOG.info("Ontology processing starts.");
     startTime = System.currentTimeMillis();
 
     DiscoveryStepAbstract ol = new OntologyLinkCal(this.props, this.es, this.spark);
     ol.execute();
 
     endTime = System.currentTimeMillis();
-    LOG.info("*****************Ontology processing ends******************Took {}s", (endTime - startTime) / 1000);
+    LOG.info("Ontology processing ends. Took {}s", (endTime - startTime) / 1000);
   }
 
   public void output() {
