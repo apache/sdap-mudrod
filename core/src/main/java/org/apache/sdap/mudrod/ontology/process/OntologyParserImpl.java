@@ -32,12 +32,12 @@ import java.util.regex.Pattern;
  * implementation for <a href="http://www.w3.org/TR/owl-features/">W3C OWL</a> 
  * files.
  */
-public class OwlParser implements OntologyParser {
+public class OntologyParserImpl implements OntologyParser {
   
   private Ontology ont;
   private List<OntClass> roots = new ArrayList<>();
 
-  public OwlParser() {
+  public OntologyParserImpl() {
     //default constructor
   }
 
@@ -122,7 +122,7 @@ public class OwlParser implements OntologyParser {
       //assume ontology has root classes
       processSingle(m);
     } else {
-      //check for presence of aggregate/collection ontologies such as sweetAll.owl
+      //check for presence of aggregate/collection ontologies such as sweetAll.ttl
       processCollection(m);
     }
 

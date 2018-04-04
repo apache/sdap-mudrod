@@ -129,7 +129,7 @@
     <findbugs.version>3.0.4</findbugs.version>
     <xml.maven.version>1.0.1</xml.maven.version>
     <jacoco.version>0.8.0</jacoco.version>
-    <jena.version>3.3.0</jena.version>
+    <jena.version>3.6.0</jena.version>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <elastic.version>5.2.0</elastic.version>
   </properties>
@@ -493,6 +493,12 @@
         <artifactId>jena-core</artifactId>
         <version>${jena.version}</version>
         <scope>compile</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jena</groupId>
+        <artifactId>apache-jena-libs</artifactId>
+        <type>pom</type>
+        <version>${jena.version}</version>
       </dependency>
       <!-- End of Jena dependencies -->
       <!-- Misc dependencies -->
