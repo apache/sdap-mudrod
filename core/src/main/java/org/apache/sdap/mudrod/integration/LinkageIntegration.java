@@ -220,7 +220,7 @@ public class LinkageIntegration extends DiscoveryStepAbstract {
     SearchResponse usrhis = es.getClient().prepareSearch(props.getProperty(INDEX_NAME)).setTypes(model).setQuery(QueryBuilders.termQuery("keywords", input)).addSort(WEIGHT, SortOrder.DESC).setSize(11)
         .execute().actionGet();
 
-    LOG.info("\n************************ {} results***************************", model);
+    LOG.info("{} results", model);
     for (SearchHit hit : usrhis.getHits().getHits()) {
       Map<String, Object> result = hit.getSource();
       String keywords = (String) result.get("keywords");
