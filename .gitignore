@@ -15,3 +15,4 @@ core/.externalToolBuilders/Maven_Ant_Builder.launch
 core/maven-eclipse.xml
 service/.classpath
 web/.classpath
+.metadata/
