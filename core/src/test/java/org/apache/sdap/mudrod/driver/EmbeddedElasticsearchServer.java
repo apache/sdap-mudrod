@@ -21,7 +21,6 @@ import org.apache.sdap.mudrod.main.MudrodEngine;
 import java.io.File;
 import java.io.IOException;
 
-
 public class EmbeddedElasticsearchServer {
 
   private static final String DEFAULT_DATA_DIRECTORY = "/Users/kevin/elasticsearch-5.2.2/data";
@@ -31,24 +30,20 @@ public class EmbeddedElasticsearchServer {
   private final String dataDirectory;
 
   public EmbeddedElasticsearchServer() {
-      this(DEFAULT_DATA_DIRECTORY);
+    this(DEFAULT_DATA_DIRECTORY);
   }
 
   public EmbeddedElasticsearchServer(String dataDirectory) {
-      this.dataDirectory = dataDirectory;
-      MudrodEngine mudrodEngine = new MudrodEngine();
-      
-      Settings.Builder elasticsearchSettings = Settings.builder()
-              .put("http.enabled", "false")
-              .put("path.data", dataDirectory)
-              .put("path.home", DEFAULT_PATH_DIRECTORY)
-              .put(mudrodEngine.loadConfig());
+    this.dataDirectory = dataDirectory;
+    MudrodEngine mudrodEngine = new MudrodEngine();
 
-      node = new Node(elasticsearchSettings.build());
+    Settings.Builder elasticsearchSettings = Settings.builder().put("http.enabled", "false").put("path.data", dataDirectory).put("path.home", DEFAULT_PATH_DIRECTORY).put(mudrodEngine.loadConfig());
+
+    node = new Node(elasticsearchSettings.build());
   }
 
   public Client getClient() {
-      return node.client();
+    return node.client();
   }
 
   public void shutdown() {
@@ -57,14 +52,14 @@ public class EmbeddedElasticsearchServer {
     } catch (IOException e) {
       System.out.println(e);
     }
-      deleteDataDirectory();
+    deleteDataDirectory();
   }
 
   private void deleteDataDirectory() {
-      try {
-          FileUtils.deleteDirectory(new File(dataDirectory));
-      } catch (IOException e) {
-          throw new RuntimeException("Could not delete data directory of embedded elasticsearch server", e);
-      }
+    try {
+      FileUtils.deleteDirectory(new File(dataDirectory));
+    } catch (IOException e) {
+      throw new RuntimeException("Could not delete data directory of embedded elasticsearch server", e);
+    }
   }
 }
