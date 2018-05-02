@@ -20,7 +20,7 @@
     <version>10</version>
   </parent>
 
-  <groupId>org.apache.sdap.mudrod</groupId>
+  <groupId>org.apache.sdap</groupId>
   <artifactId>mudrod-parent</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
@@ -135,8 +135,10 @@
   </properties>
 
   <modules>
+    <module>analysis</module>
     <module>core</module>
     <module>service</module>
+    <module>storage</module>
     <module>web</module>
   </modules>
 
@@ -416,6 +418,14 @@
   </reporting>
   <dependencyManagement>
     <dependencies>
+      <!-- Internal Dependencies -->
+      <dependency>
+        <groupId>org.apache.sdap</groupId>
+        <artifactId>mudrod-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- End Internal Dependencies -->
+
       <!-- Elasticsearch dependencies -->
       <dependency>
         <groupId>org.elasticsearch</groupId>
