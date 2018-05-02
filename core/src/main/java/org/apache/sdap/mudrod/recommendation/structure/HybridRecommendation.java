@@ -33,13 +33,11 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 /**
- * Recommend metadata using combination all two methods, including content-based
- * similarity and session-level similarity
+ * Recommend metadata using combination of content-based
+ * similarity and session-level similarity.
  */
 public class HybridRecommendation extends DiscoveryStepAbstract {
-  /**
-   *
-   */
+
   private static final long serialVersionUID = 1L;
   // recommended metadata list
   protected transient List<LinkedTerm> termList = new ArrayList<>();
@@ -50,17 +48,17 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
   private static final String WEIGHT = "weight";
 
   /**
-   * recommended data class Date: Sep 12, 2016 2:25:28 AM
+   * recommended data class
    */
   class LinkedTerm {
-    public String term = null;
-    public double weight = 0;
-    public String model = null;
+    private String term;
+    private double weight = 0;
+    private String model;
 
     public LinkedTerm(String str, double w, String m) {
-      term = str;
-      weight = w;
-      model = m;
+      this.term = str;
+      this.weight = w;
+      this.model = m;
     }
   }
 
@@ -79,7 +77,7 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
   }
 
   /**
-   * Get recommended data for a giving dataset
+   * Get recommended data for a given dataset
    *
    * @param input: a giving dataset
    * @param num:   the number of recommended dataset
@@ -104,15 +102,15 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
     JsonElement sessionSimJson = mapToJson(sortedSessionSimMap, num);
     resultJson.add("sessionSim", sessionSimJson);
 
-    Map<String, Double> hybirdSimMap = new HashMap<String, Double>();
+    Map<String, Double> hybirdSimMap = new HashMap<>();
 
     for (String name : sortedAbstractSimMap.keySet()) {
-      hybirdSimMap.put(name, sortedAbstractSimMap.get(name) /** 0.4 */);
+      hybirdSimMap.put(name, sortedAbstractSimMap.get(name));
     }
 
     for (String name : sortedVariableSimMap.keySet()) {
       if (hybirdSimMap.get(name) != null) {
-        double sim = hybirdSimMap.get(name) + sortedVariableSimMap.get(name) /** 0.3 */;
+        double sim = hybirdSimMap.get(name) + sortedVariableSimMap.get(name);
         hybirdSimMap.put(name, Double.parseDouble(df.format(sim)));
       } else {
         double sim = sortedVariableSimMap.get(name);
@@ -122,7 +120,7 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
 
     for (String name : sortedSessionSimMap.keySet()) {
       if (hybirdSimMap.get(name) != null) {
-        double sim = hybirdSimMap.get(name) + sortedSessionSimMap.get(name) /** 0.1 */;
+        double sim = hybirdSimMap.get(name) + sortedSessionSimMap.get(name);
         hybirdSimMap.put(name, Double.parseDouble(df.format(sim)));
       } else {
         double sim = sortedSessionSimMap.get(name);
@@ -164,13 +162,11 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
     }
 
     String nodesJson = gson.toJson(nodes);
-    JsonElement nodesElement = gson.fromJson(nodesJson, JsonElement.class);
-
-    return nodesElement;
+    return gson.fromJson(nodesJson, JsonElement.class);
   }
 
   /**
-   * Get recommend dataset for a giving dataset
+   * Get recommend dataset for a given dataset
    *
    * @param type  recommend method
    * @param input a giving dataset
@@ -206,8 +202,12 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
    */
   public List<LinkedTerm> getRelatedDataFromES(String type, String input, int num) {
 
-    SearchRequestBuilder builder = es.getClient().prepareSearch(props.getProperty(INDEX_NAME)).setTypes(type).setQuery(QueryBuilders.termQuery("concept_A", input)).addSort(WEIGHT, SortOrder.DESC)
-        .setSize(num);
+    SearchRequestBuilder builder = es.getClient()
+            .prepareSearch(props.getProperty(INDEX_NAME))
+            .setTypes(type)
+            .setQuery(QueryBuilders.termQuery("concept_A", input))
+            .addSort(WEIGHT, SortOrder.DESC)
+            .setSize(num);
 
     SearchResponse usrhis = builder.execute().actionGet();
 
@@ -266,7 +266,6 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
     ESDriver es = new ESDriver(me.getConfig());
     HybridRecommendation test = new HybridRecommendation(props, es, null);
 
-    // String input = "NSCAT_LEVEL_1.7_V2";
     String input = "AQUARIUS_L3_SSS_SMIA_MONTHLY-CLIMATOLOGY_V4";
     JsonObject json = test.getRecomDataInJson(input, 10);
 
