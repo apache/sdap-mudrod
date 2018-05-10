@@ -16,13 +16,13 @@
 
 /* App Module */
 
-var mudrod = angular.module('mudrodApp', [
+var sdapSearchApp = angular.module('sdapSearchApp', [
     'ngRoute',
-    'mudrodControllers',
-    'mudrodServices'
+    'searchControllers',
+    'searchServices'
 ]);
 
-mudrod.filter('urlencode', function() {
+sdapSearchApp.filter('urlencode', function() {
     return function(input) {
         if(input) {
             return window.encodeURIComponent(input);
@@ -32,7 +32,7 @@ mudrod.filter('urlencode', function() {
 });
 
 
-mudrod.config(['$routeProvider',
+sdapSearchApp.config(['$routeProvider',
     function ($routeProvider) {
         $routeProvider.when('/', {
             templateUrl: 'partials/search.html'

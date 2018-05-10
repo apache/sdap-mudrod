@@ -15,9 +15,9 @@
 'use strict';
 
 /* Controllers */
-var mudrodControllers = angular.module('mudrodControllers', []);
+var searchControllers = angular.module('searchControllers', []);
 
-mudrodControllers.controller('searchCtrl', ['$scope', '$rootScope', '$location', '$route', 'Autocomplete', 'SearchOptions',
+searchControllers.controller('searchCtrl', ['$scope', '$rootScope', '$location', '$route', 'Autocomplete', 'SearchOptions',
     function ($scope, $rootScope, $location, $route, Autocomplete, SearchOptions) {
 
         $scope.hidethis = true;
@@ -60,7 +60,7 @@ mudrodControllers.controller('searchCtrl', ['$scope', '$rootScope', '$location',
         }, true);
     }]);
 
-mudrodControllers.controller('vocabularyCtrl', ['$scope', '$rootScope', 'VocabList',
+searchControllers.controller('vocabularyCtrl', ['$scope', '$rootScope', 'VocabList',
     function vocabularyCtrl($scope, $rootScope, VocabList) {
 
         var word = $rootScope.searchOptions.query;
@@ -75,7 +75,7 @@ mudrodControllers.controller('vocabularyCtrl', ['$scope', '$rootScope', 'VocabLi
         );
     }]);
 
-mudrodControllers.controller('metadataViewCtrl', ['$rootScope', '$scope', '$location', '$routeParams', 'MetaData', 'PagerService', 'SearchOptions',
+searchControllers.controller('metadataViewCtrl', ['$rootScope', '$scope', '$location', '$routeParams', 'MetaData', 'PagerService', 'SearchOptions',
     function metadataViewCtrl($rootScope, $scope, $location, $routeParams, MetaData, PagerService, SearchOptions) {
 
         $scope.searchComplete = false;
@@ -165,7 +165,7 @@ mudrodControllers.controller('metadataViewCtrl', ['$rootScope', '$scope', '$loca
         }
     }]);
 
-mudrodControllers.controller('datasetViewCtrl', ['$rootScope', '$scope', '$routeParams', 'DatasetDetail', 'SearchOptions',
+searchControllers.controller('datasetViewCtrl', ['$rootScope', '$scope', '$routeParams', 'DatasetDetail', 'SearchOptions',
     function datasetViewCtrl($rootScope, $scope, $routeParams, DatasetDetail, SearchOptions) {
         var shortname = $routeParams.shortname;
 
@@ -192,7 +192,7 @@ mudrodControllers.controller('datasetViewCtrl', ['$rootScope', '$scope', '$route
         );
     }]);
 
-mudrodControllers.controller('hRecommendationCtrl', ['$scope', '$routeParams', 'HRecommendation',
+searchControllers.controller('hRecommendationCtrl', ['$scope', '$routeParams', 'HRecommendation',
     function hRecommendationCtrl($scope, $routeParams, HRecommendation) {
         var shortname = $routeParams.shortname;
         HRecommendation.get({shortname: shortname},
