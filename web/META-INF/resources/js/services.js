@@ -16,44 +16,44 @@
 
 /* Services */
 
-var mudrodServices = angular.module('mudrodServices', ['ngResource']);
+var searchServices = angular.module('searchServices', ['ngResource']);
 
-mudrodServices.factory('MetaData', ['$resource',
+searchServices.factory('MetaData', ['$resource',
     function($resource) {
         return $resource("services/metadata/search/", {}, {
             get: {method: 'GET', cache: false, isArray: false}
         });
     }]);
 
-mudrodServices.factory('VocabList', ['$resource',
+searchServices.factory('VocabList', ['$resource',
     function($resource) {
         return $resource("services/vocabulary/search/", {}, {
             get: {method: 'GET', cache: false, isArray: false}            
         });
     }]);
 
-mudrodServices.factory('Autocomplete', ['$resource',
+searchServices.factory('Autocomplete', ['$resource',
     function($resource) {
         return $resource("services/autocomplete/query", {}, {
             get: {method: 'GET', cache: false, isArray: true}            
         });
     }]);
 
-mudrodServices.factory('DatasetDetail', ['$resource',
+searchServices.factory('DatasetDetail', ['$resource',
     function($resource) {
         return $resource("services/datasetdetail/search/", {}, {
             get: {method: 'GET', cache: false, isArray: false}
         });
     }]);
 
-mudrodServices.factory('HRecommendation', ['$resource',
+searchServices.factory('HRecommendation', ['$resource',
     function($resource) {
         return $resource("services/hrecommendation/search/", {}, {
             get: {method: 'GET', cache: false, isArray: false}
         });
     }]);
 
-mudrodServices.factory('SearchOptions', function(){
+searchServices.factory('SearchOptions', function(){
 	var searchOptions = {'opt':'Or'};
 	return {
 	    getSearchOptions: function () {
@@ -65,7 +65,7 @@ mudrodServices.factory('SearchOptions', function(){
 	};
 });
 
-mudrodServices.factory('PagerService',
+searchServices.factory('PagerService',
     function() {
         // service definition
         var service = {};

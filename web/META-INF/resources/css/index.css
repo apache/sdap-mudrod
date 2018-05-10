@@ -55,15 +55,15 @@ a:link, a:visited {
 .view-area-fixed {
     width: 100%;
     padding-top: 1em;
-    background-size: cover;
     background: transparent url('../images/OceanWave.jpg') no-repeat fixed 0 0;
+    background-size: cover;
 }
 
 .view-area-scroll {
     width: 100%;
     height: 800px;
-    background-size: cover;
     background: transparent url('../images/OceanWave.jpg') no-repeat scroll 0 0;
+    background-size: cover;
 }
 
 .landing-dialog {
@@ -409,29 +409,24 @@ li {
     border-radius: 4px;
 }
 
-.mudrod-navbar {
+.search-navbar {
     margin-bottom: 0;
     padding-left: 1em;
     padding-right: 1em;
 }
 
-.mudrod-navbar #searchForm {
+.search-navbar #searchForm {
     width: 50%;
 }
 
-.mudrod-navbar #searchForm .form-group {
+.search-navbar #searchForm .form-group {
     width: 100%;
 }
 
-.mudrod-navbar #searchForm .form-group input {
+.search-navbar #searchForm .form-group input {
     width: 45%;
 }
 
-.mudrod-navbar .nav-item {
+.search-navbar .nav-item {
     margin: 1em 0 0 1em;
-}
-
-.mudrod-footer {
-    color: white;
-    padding-left: 2em;
 }
