@@ -34,14 +34,13 @@ Fork whichever repository you wish to contribute to by clicking on the 'Fork' bu
 On your computer, follow these steps to setup a local repository for working on ACS:
 
 ``` bash
-$ git clone https://github.com/YOUR_ACCOUNT/incubator-sdap-*.git
-$ cd incubator-sdap-*
-$ git remote add upstream https://github.com/apache/incubator-sdap-*.git
+$ git clone https://github.com/YOUR_ACCOUNT/incubator-sdap-mudrod.git
+$ cd incubator-sdap-mudrod
+$ git remote add upstream https://github.com/apache/incubator-sdap-mudrod.git
 $ git checkout master
 $ git fetch upstream
 $ git rebase upstream/master
 ```
-N.B. make sure that you replace ```incubator-sdap-*``` with the actual project you wish to contribute to!!!
 
 Making changes
 --------------
