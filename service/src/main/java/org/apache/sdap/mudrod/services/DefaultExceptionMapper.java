@@ -38,7 +38,10 @@ public class DefaultExceptionMapper implements ExceptionMapper<Throwable> {
     UUID errorId = UUID.randomUUID();
     LOG.error("Internal server error " + errorId.toString(), e);
 
-    String errorString = "An error occurred while processing your request. Please contact the system administrator and provide the following error log ID " + errorId.toString();
+    String errorString = 
+            "An error occurred while processing your request. "
+            + "Please contact the system administrator and provide "
+            + "the following error log ID " + errorId.toString();
 
     return Response.serverError().entity(new Gson().toJson(errorString)).build();
   }

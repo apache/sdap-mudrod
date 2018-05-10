@@ -263,7 +263,14 @@ public class ImportLogFile extends LogAbstract {
       IndexRequest ir;
       try {
         ir = new IndexRequest(index, type)
-            .source(jsonBuilder().startObject().field("LogType", MudrodConstants.FTP_LOG).field("IP", ip).field("Time", date).field("Request", request).field("Bytes", Long.parseLong(bytes)).endObject());
+            .source(jsonBuilder()
+                    .startObject()
+                    .field("LogType", MudrodConstants.FTP_LOG)
+                    .field("IP", ip)
+                    .field("Time", date)
+                    .field("Request", request)
+                    .field("Bytes", Long.parseLong(bytes))
+                    .endObject());
         es.getBulkProcessor().add(ir);
       } catch (NumberFormatException e) {
         LOG.error("Error whilst processing numbers", e);
@@ -307,8 +314,7 @@ public class ImportLogFile extends LogAbstract {
     if (!crawlerDe.checkKnownCrawler(agent)) {
       boolean tag = false;
       String[] mimeTypes = props.getProperty(MudrodConstants.BLACK_LIST_REQUEST).split(",");
-      for(String str:mimeTypes)
-      {
+      for(String str:mimeTypes) {
         if (request.contains(str.trim())) {
           tag = true;
           break;
@@ -325,9 +331,18 @@ public class ImportLogFile extends LogAbstract {
   private void executeBulkRequest(IndexRequest ir, String index, String type, Matcher matcher, Date date, String bytes) {
     IndexRequest newIr = ir;
     try {
-      newIr = new IndexRequest(index, type).source(
-          jsonBuilder().startObject().field("LogType", MudrodConstants.HTTP_LOG).field("IP", matcher.group(1)).field("Time", date).field("Request", matcher.group(5)).field("Response", matcher.group(6))
-              .field("Bytes", Integer.parseInt(bytes)).field("Referer", matcher.group(8)).field("Browser", matcher.group(9)).endObject());
+      newIr = new IndexRequest(index, type)
+              .source(jsonBuilder()
+                      .startObject()
+                      .field("LogType", MudrodConstants.HTTP_LOG)
+                      .field("IP", matcher.group(1))
+                      .field("Time", date)
+                      .field("Request", matcher.group(5))
+                      .field("Response", matcher.group(6))
+                      .field("Bytes", Integer.parseInt(bytes))
+                      .field("Referer", matcher.group(8))
+                      .field("Browser", matcher.group(9))
+                      .endObject());
 
       es.getBulkProcessor().add(newIr);
     } catch (NumberFormatException e) {

@@ -1,68 +1,116 @@
 {
-  "_default_": {
-    "properties": {
-      "keywords": {
-        "type": "text",
-        "analyzer": "csv",
-        "fielddata": true
-      },
-      "views": {
-        "type": "string",
-        "analyzer": "csv"
-      },
-      "downloads": {
-        "type": "string",
-        "analyzer": "csv"
-      },
-      "RequestUrl": {
-        "type": "string",
-        "include_in_all": false,
-        "index": "no"
-      },
-      "IP": {
-        "type": "keyword",
-        "index": "not_analyzed"
-      },
-      "Browser": {
-        "type": "string",
-        "include_in_all": false,
-        "index": "no"
-      },
-      "SessionURL": {
-        "type": "string",
-        "include_in_all": false,
-        "index": "no"
-      },
-      "Referer": {
-        "type": "string",
-        "index": "not_analyzed"
-      },
-      "SessionID": {
-        "type": "string",
-        "index": "not_analyzed"
-      },
-      "Response": {
-        "type": "string",
-        "include_in_all": false,
-        "index": "no"
-      },
-      "Request": {
-        "type": "string",
-        "include_in_all": false,
-        "index": "no"
-      },
-      "Coordinates": {
-        "type": "geo_point",
-        "include_in_all": false,
-        "index": "no"
-      },
-      "LogType": {
-        "type": "string",
-        "index": "not_analyzed"
-      },
-      "Dataset-Metadata": {
-        "type": "completion"
-      }
+    "mappings": {
+        "doc": {
+            "dynamic_templates": [
+                {
+                    "geo_point_mapping": {
+                        "match_mapping_type": "nested",
+                        "match": "Point",
+                        "mapping": {
+                            "type": "geo_point"
+                        }
+                    },
+                    "geo_shape_mapping": {
+                        "match_mapping_type": "nested",
+                        "match": "Polygon",
+                        "mapping": {
+                            "type": "geo_shape"
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "eonet_event": {
+        "properties": {
+            "sources": {
+                "type": "nested",
+                "fields": {
+                    "id": {
+                        "ignore_above": 256,
+                        "type": "keyword"
+                    },
+                    "url": {
+                        "ignore_above": 256,
+                        "type": "keyword"
+                    }
+                }
+            },
+            "geometries": {
+                "type": "nested",
+                "fields": {
+                    "date": {
+                        "ignore_above": 256,
+                        "type": "date"
+                    },
+                    "type": {
+                        "ignore_above": 256,
+                        "type": "keyword"
+                    },
+                    "coordinates": {
+                        "ignore_above": 256,
+                        "dynamic": true
+                    }
+                }
+            },
+            "link": {
+                "type": "text",
+                "fields": {
+                    "keyword": {
+                        "ignore_above": 256,
+                        "type": "keyword"
+                    }
+                }
+            },
+            "closed": {
+                "type": "text",
+                "fields": {
+                    "keyword": {
+                        "ignore_above": 256,
+                        "type": "keyword"
+                    }
+                }
+            },
+            "description": {
+                "type": "text",
+                "fields": {
+                    "keyword": {
+                        "ignore_above": 256,
+                        "type": "keyword"
+                    }
+                }
+            },
+            "categories": {
+                "type": "nested",
+                "fields": {
+                    "id": {
+                        "ignore_above": 256,
+                        "type": "integer"
+                    },
+                    "title": {
+                        "ignore_above": 256,
+                        "type": "keyword"
+                    }
+                }
+            },
+            "id": {
+                "type": "text",
+                "fields": {
+                    "keyword": {
+                        "ignore_above": 256,
+                        "type": "keyword"
+                    }
+                }
+            },
+            "title": {
+                "type": "completion",
+                "fields": {
+                    "keyword": {
+                        "ignore_above": 256,
+                        "type": "keyword"
+                    }
+                }
+            }
+        }
     }
-  }
 }
