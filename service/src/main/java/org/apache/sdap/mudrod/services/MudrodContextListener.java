@@ -59,11 +59,12 @@ public class MudrodContextListener implements ServletContextListener {
     Properties props = me.loadConfig();
     me.setESDriver(new ESDriver(props));
     me.setSparkDriver(new SparkDriver(props));
+    ESDriver es = me.getESDriver();
 
     ServletContext ctx = arg0.getServletContext();
-    Searcher searcher = new Searcher(props, me.getESDriver(), null);
-    Ranker ranker = new Ranker(props, me.getESDriver(), me.getSparkDriver());
-    EONETIngester eonetIngester = new EONETIngester();
+    Searcher searcher = new Searcher(props, es, null);
+    Ranker ranker = new Ranker(props, es, me.getSparkDriver());
+    EONETIngester eonetIngester = new EONETIngester(props, es, null);
     ctx.setAttribute("MudrodInstance", me);
     ctx.setAttribute("MudrodSearcher", searcher);
     ctx.setAttribute("MudrodRanker", ranker);
