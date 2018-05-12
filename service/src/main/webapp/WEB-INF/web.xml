@@ -26,12 +26,13 @@
             <param-name>jaxrs.serviceClasses</param-name>
             <param-value>
                 org.apache.sdap.mudrod.services.autocomplete.AutoCompleteResource,
-                org.apache.sdap.mudrod.services.search.SearchDatasetDetailResource,
+                org.apache.sdap.mudrod.services.eonet.EONETIngestionResource,
+                org.apache.sdap.mudrod.services.ontology.OntologyResource,
                 org.apache.sdap.mudrod.services.recommendation.HybridRecomDatasetsResource,
+                org.apache.sdap.mudrod.services.search.SearchDatasetDetailResource,
                 org.apache.sdap.mudrod.services.search.SearchMetadataResource,
                 org.apache.sdap.mudrod.services.search.SearchVocabResource,
                 org.apache.sdap.mudrod.services.search.SessionDetailResource,
-                org.apache.sdap.mudrod.services.ontology.OntologyResource,
             </param-value>
         </init-param>
         <init-param>

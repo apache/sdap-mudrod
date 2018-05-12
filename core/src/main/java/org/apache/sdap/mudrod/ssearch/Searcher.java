@@ -43,8 +43,8 @@ public class Searcher extends MudrodAbstract implements Serializable {
    * 
    */
   private static final long serialVersionUID = 1L;
-  DecimalFormat NDForm = new DecimalFormat("#.##");
-  final Integer MAX_CHAR = 700;
+  DecimalFormat ndForm = new DecimalFormat("#.##");
+  static final Integer MAX_CHAR = 700;
 
   public Searcher(Properties props, ESDriver es, SparkDriver spark) {
     super(props, es, spark);
@@ -92,52 +92,58 @@ public class Searcher extends MudrodAbstract implements Serializable {
    */
   @SuppressWarnings("unchecked")
   public List<SResult> searchByQuery(String index, String type, String query, String queryOperator, String rankOption) {
-    boolean exists = es.getClient().admin().indices().prepareExists(index).execute().actionGet().isExists();
+    boolean exists = es.getClient()
+            .admin()
+            .indices()
+            .prepareExists(index)
+            .execute()
+            .actionGet()
+            .isExists();
     if (!exists) {
       return new ArrayList<>();
     }
 
     SortOrder order = null;
-    String sortFiled = "";
+    String sortField;
     switch (rankOption) {
     case "Rank-AllTimePopularity":
-      sortFiled = "Dataset-AllTimePopularity";
+      sortField = "Dataset-AllTimePopularity";
       order = SortOrder.DESC;
       break;
     case "Rank-MonthlyPopularity":
-      sortFiled = "Dataset-MonthlyPopularity";
+      sortField = "Dataset-MonthlyPopularity";
       order = SortOrder.DESC;
       break;
     case "Rank-UserPopularity":
-      sortFiled = "Dataset-UserPopularity";
+      sortField = "Dataset-UserPopularity";
       order = SortOrder.DESC;
       break;
     case "Rank-LongName-Full":
-      sortFiled = "Dataset-LongName.raw";
+      sortField = "Dataset-LongName";
       order = SortOrder.ASC;
       break;
     case "Rank-ShortName-Full":
-      sortFiled = "Dataset-ShortName.raw";
+      sortField = "Dataset-ShortName";
       order = SortOrder.ASC;
       break;
     case "Rank-GridSpatialResolution":
-      sortFiled = "Dataset-GridSpatialResolution";
+      sortField = "Dataset-GridSpatialResolution";
       order = SortOrder.DESC;
       break;
     case "Rank-SatelliteSpatialResolution":
-      sortFiled = "Dataset-SatelliteSpatialResolution";
+      sortField = "Dataset-SatelliteSpatialResolution";
       order = SortOrder.DESC;
       break;
     case "Rank-StartTimeLong-Long":
-      sortFiled = "DatasetCoverage-StartTimeLong-Long";
+      sortField = "DatasetCoverage-StartTimeLong-Long";
       order = SortOrder.ASC;
       break;
     case "Rank-StopTimeLong-Long":
-      sortFiled = "DatasetCoverage-StopTimeLong-Long";
+      sortField = "DatasetCoverage-StopTimeLong-Long";
       order = SortOrder.DESC;
       break;
     default:
-      sortFiled = "Dataset-ShortName.raw";
+      sortField = "Dataset-ShortName";
       order = SortOrder.ASC;
       break;
     }
@@ -146,12 +152,18 @@ public class Searcher extends MudrodAbstract implements Serializable {
     BoolQueryBuilder qb = dp.createSemQuery(query, 1.0, queryOperator);
     List<SResult> resultList = new ArrayList<>();
 
-    SearchRequestBuilder builder = es.getClient().prepareSearch(index).setTypes(type).setQuery(qb).addSort(sortFiled, order).setSize(500).setTrackScores(true);
+    SearchRequestBuilder builder = es.getClient()
+            .prepareSearch(index)
+            .setTypes(type)
+            .setQuery(qb)
+            .addSort(sortField, order)
+            .setSize(500)
+            .setTrackScores(true);
     SearchResponse response = builder.execute().actionGet();
 
     for (SearchHit hit : response.getHits().getHits()) {
       Map<String, Object> result = hit.getSource();
-      Double relevance = Double.valueOf(NDForm.format(hit.getScore()));
+      Double relevance = Double.valueOf(ndForm.format(hit.getScore()));
       String shortName = (String) result.get("Dataset-ShortName");
       String longName = (String) result.get("Dataset-LongName");
 

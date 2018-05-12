@@ -128,7 +128,7 @@ public class ESDriver implements Serializable {
 
   public void destroyBulkProcessor() {
     try {
-      getBulkProcessor().awaitClose(20, TimeUnit.MINUTES);
+      getBulkProcessor().awaitClose(10, TimeUnit.MINUTES);
       setBulkProcessor(null);
       refreshIndex();
     } catch (InterruptedException e) {
