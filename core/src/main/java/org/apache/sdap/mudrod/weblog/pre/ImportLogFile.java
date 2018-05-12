@@ -157,7 +157,6 @@ public class ImportLogFile extends LogAbstract {
    * @param ftplogpath  path to the parent directory containing ftp logs
    */
   public void readFileInParallel(String httplogpath, String ftplogpath) {
-
     importHttpfile(httplogpath);
     importFtpfile(ftplogpath);
   }
@@ -165,14 +164,12 @@ public class ImportLogFile extends LogAbstract {
   public void importHttpfile(String httplogpath) {
     // import http logs
     JavaRDD<String> accessLogs = spark.sc.textFile(httplogpath, this.partition).map(s -> ApacheAccessLog.parseFromLogLine(s, props)).filter(ApacheAccessLog::checknull);
-
     JavaEsSpark.saveJsonToEs(accessLogs, logIndex + "/" + this.httpType);
   }
 
   public void importFtpfile(String ftplogpath) {
     // import ftp logs
     JavaRDD<String> ftpLogs = spark.sc.textFile(ftplogpath, this.partition).map(s -> FtpLog.parseFromLogLine(s, props)).filter(FtpLog::checknull);
-
     JavaEsSpark.saveJsonToEs(ftpLogs, logIndex + "/" + this.ftpType);
   }
 
