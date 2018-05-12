@@ -98,8 +98,6 @@ public interface MudrodConstants {
   
   public static final String ONTOLOGY_INPUT_PATH = "mudrod.ontology.input.path";
 
-  public static final String PROCESS_TYPE = "mudrod.processing.type";
-
   /** Defined on CLI */
   public static final String METADATA_DOWNLOAD = "mudrod.metadata.download";
   

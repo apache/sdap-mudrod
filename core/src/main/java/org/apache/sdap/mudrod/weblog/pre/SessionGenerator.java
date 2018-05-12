@@ -16,7 +16,7 @@ package org.apache.sdap.mudrod.weblog.pre;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.main.MudrodConstants;
-import org.apache.sdap.mudrod.weblog.structure.Session;
+import org.apache.sdap.mudrod.weblog.structure.session.Session;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.Function2;
@@ -93,21 +93,15 @@ public class SessionGenerator extends LogAbstract {
   }
 
   public void genSessionByReferer(int timeThres) throws InterruptedException, IOException {
-    String processingType = props.getProperty(MudrodConstants.PROCESS_TYPE);
-    if (processingType.equals("sequential")) {
-      genSessionByRefererInSequential(timeThres);
-    } else if (processingType.equals("parallel")) {
+    
       genSessionByRefererInParallel(timeThres);
-    }
+  
   }
 
   public void combineShortSessions(int timeThres) throws InterruptedException, IOException {
-    String processingType = props.getProperty(MudrodConstants.PROCESS_TYPE);
-    if (processingType.equals("sequential")) {
-      combineShortSessionsInSequential(timeThres);
-    } else if (processingType.equals("parallel")) {
+   
       combineShortSessionsInParallel(timeThres);
-    }
+    
   }
 
   /**
