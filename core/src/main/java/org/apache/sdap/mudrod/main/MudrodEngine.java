@@ -30,10 +30,6 @@ import org.apache.sdap.mudrod.discoveryengine.WeblogDiscoveryEngine;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.integration.LinkageIntegration;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +43,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
-import java.util.List;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -183,7 +178,8 @@ public class MudrodEngine {
     FileUtils.copyURLToFile(scmArchive, archiveFile);
 
     // Decompress archive
-    int BUFFER_SIZE = 512000;
+    int bufferSize = 512000;
+    @SuppressWarnings("resource")
     ZipInputStream zipIn = new ZipInputStream(new FileInputStream(archiveFile));
     ZipEntry entry;
     while ((entry = zipIn.getNextEntry()) != null) {
@@ -200,10 +196,10 @@ public class MudrodEngine {
           LOG.error("Unable to create directory '{}', during extraction of archive contents.", f.getParentFile().getAbsolutePath());
         }
         int count;
-        byte data[] = new byte[BUFFER_SIZE];
+        byte data[] = new byte[bufferSize];
         FileOutputStream fos = new FileOutputStream(new File(tempDir, entry.getName()), false);
-        try (BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER_SIZE)) {
-          while ((count = zipIn.read(data, 0, BUFFER_SIZE)) != -1) {
+        try (BufferedOutputStream dest = new BufferedOutputStream(fos, bufferSize)) {
+          while ((count = zipIn.read(data, 0, bufferSize)) != -1) {
             dest.write(data, 0, count);
           }
         }
