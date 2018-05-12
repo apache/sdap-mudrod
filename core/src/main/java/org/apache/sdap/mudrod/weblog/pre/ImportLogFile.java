@@ -55,6 +55,11 @@ public class ImportLogFile extends LogAbstract {
   public static final int NUM_FIELDS = 9;
   Pattern p = Pattern.compile(logEntryPattern);
   transient Matcher matcher;
+  
+  @Override
+  public Object execute(Object o) {
+    return null;
+  }
 
   /**
    * Constructor supporting a number of parameters documented below.
@@ -171,10 +176,5 @@ public class ImportLogFile extends LogAbstract {
     // import ftp logs
     JavaRDD<String> ftpLogs = spark.sc.textFile(ftplogpath, this.partition).map(s -> FtpLog.parseFromLogLine(s, props)).filter(FtpLog::checknull);
     JavaEsSpark.saveJsonToEs(ftpLogs, logIndex + "/" + this.ftpType);
-  }
-
-  @Override
-  public Object execute(Object o) {
-    return null;
   }
 }
