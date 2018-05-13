@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sdap.mudrod.weblog.structure;
+package org.apache.sdap.mudrod.weblog.structure.session;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -20,7 +20,7 @@ import com.google.gson.JsonObject;
 import org.apache.sdap.mudrod.discoveryengine.MudrodAbstract;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.main.MudrodConstants;
-
+import org.apache.sdap.mudrod.weblog.structure.log.RequestUrl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +68,7 @@ public class SessionTree extends MudrodAbstract {
    */
   public SessionTree(Properties props, ESDriver es, SessionNode rootData, String sessionID, String cleanupType) {
     super(props, es, null);
-    root = new SessionNode("root", "root", "", props.getProperty(MudrodConstants.BASE_URL), "", 0);
+    root = new SessionNode(props, "root", "root", "", "", 0);
     tmpnode = root;
     this.sessionID = sessionID;
     this.cleanupType = cleanupType;
@@ -84,7 +84,7 @@ public class SessionTree extends MudrodAbstract {
    */
   public SessionTree(Properties props, ESDriver es, String sessionID, String cleanupType) {
     super(props, es, null);
-    root = new SessionNode("root", "root", "", props.getProperty(MudrodConstants.BASE_URL), "", 0);
+    root = new SessionNode(props, "root", "root", "", "", 0);
     root.setParent(root);
     tmpnode = root;
     this.sessionID = sessionID;
@@ -99,15 +99,15 @@ public class SessionTree extends MudrodAbstract {
    */
   public SessionNode insert(SessionNode node) {
     // begin with datasetlist
-    if (props.getProperty(MudrodConstants.SEARCH_MARKER).equals(node.getKey())) {
+    if (MudrodConstants.SEARCH_MARKER.equals(node.getKey())) {
       this.binsert = true;
     }
     if (!this.binsert) {
       return null;
     }
     // remove unrelated node
-    if (!props.getProperty(MudrodConstants.SEARCH_MARKER).equals(node.getKey()) &&
-            !props.getProperty(MudrodConstants.VIEW_MARKER).equals(node.getKey()) &&
+    if (!MudrodConstants.SEARCH_MARKER.equals(node.getKey()) &&
+            !MudrodConstants.VIEW_MARKER.equals(node.getKey()) &&
             !MudrodConstants.FTP_LOG.equals(node.getKey())) {
       return null;
     }
@@ -125,7 +125,7 @@ public class SessionTree extends MudrodAbstract {
 
     // record insert node
     tmpnode = node;
-    if ("dataset".equals(node.getKey())) {
+    if (MudrodConstants.VIEW_MARKER.equals(node.getKey())) {
       latestDatasetnode = node;
     }
 
@@ -190,7 +190,7 @@ public class SessionTree extends MudrodAbstract {
    *
    * @return {@link ClickStream}
    */
-  public List<ClickStream> getClickStreamList() {
+  public List<ClickStream> getClickStreamList(Properties props) {
 
     List<ClickStream> clickthroughs = new ArrayList<>();
     List<SessionNode> viewnodes = this.getViewNodes(this.root);
@@ -198,7 +198,7 @@ public class SessionTree extends MudrodAbstract {
       SessionNode parent = viewnode.getParent();
       List<SessionNode> children = viewnode.getChildren();
 
-      if (!"datasetlist".equals(parent.getKey())) {
+      if (!MudrodConstants.SEARCH_MARKER.equals(parent.getKey())) {
         continue;
       }
 
@@ -413,7 +413,7 @@ public class SessionTree extends MudrodAbstract {
   private List<SessionNode> getViewNodes(SessionNode node) {
 
     List<SessionNode> viewnodes = new ArrayList<>();
-    if ("dataset".equals(node.getKey())) {
+    if (MudrodConstants.VIEW_MARKER.equals(node.getKey())) {
       viewnodes.add(node);
     }
 
@@ -428,7 +428,7 @@ public class SessionTree extends MudrodAbstract {
   }
 
   private List<SessionNode> getQueryNodes(SessionNode node) {
-    return this.getNodes(node, "datasetlist");
+    return this.getNodes(node, MudrodConstants.SEARCH_MARKER);
   }
 
   private List<SessionNode> getNodes(SessionNode node, String nodeKey) {

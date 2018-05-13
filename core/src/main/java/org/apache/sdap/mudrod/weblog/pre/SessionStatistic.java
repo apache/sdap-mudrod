@@ -16,7 +16,7 @@ package org.apache.sdap.mudrod.weblog.pre;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.main.MudrodConstants;
-import org.apache.sdap.mudrod.weblog.structure.RequestUrl;
+import org.apache.sdap.mudrod.weblog.structure.log.RequestUrl;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.Function2;
@@ -81,27 +81,7 @@ public class SessionStatistic extends LogAbstract {
   }
 
   public void processSession() throws InterruptedException, IOException, ExecutionException {
-    String processingType = props.getProperty(MudrodConstants.PROCESS_TYPE);
-    if ("sequential".equals(processingType)) {
-      processSessionInSequential();
-    } else if ("parallel".equals(processingType)) {
       processSessionInParallel();
-    }
-  }
-
-  public void processSessionInSequential() throws IOException, InterruptedException, ExecutionException {
-    es.createBulkProcessor();
-    Terms sessions = this.getSessionTerms();
-    int sessionCount = 0;
-    for (Terms.Bucket entry : sessions.getBuckets()) {
-      if (entry.getDocCount() >= 3 && !"invalid".equals(entry.getKey())) {
-        String sessionid = entry.getKey().toString();
-        int sessionNum = processSession(es, sessionid);
-        sessionCount += sessionNum;
-      }
-    }
-    LOG.info("Final Session count: {}", Integer.toString(sessionCount));
-    es.destroyBulkProcessor();
   }
 
   /**

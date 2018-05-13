@@ -79,7 +79,7 @@ public class CrawlerDetection extends LogAbstract {
     LOG.info("Starting Crawler detection {}.", httpType);
     startTime = System.currentTimeMillis();
     try {
-      checkByRate();
+      checkByRateInParallel();
     } catch (InterruptedException | IOException e) {
       LOG.error("Encountered an error whilst detecting Web crawlers.", e);
     }
@@ -101,40 +101,6 @@ public class CrawlerDetection extends LogAbstract {
       if (agent.toLowerCase().contains(crawlers[i].trim())) return true;
     }  
     return false;
-  }
-
-  public void checkByRate() throws InterruptedException, IOException {
-    String processingType = props.getProperty(MudrodConstants.PROCESS_TYPE);
-    if (processingType.equals("sequential")) {
-      checkByRateInSequential();
-    } else if (processingType.equals("parallel")) {
-      checkByRateInParallel();
-    }
-  }
-
-  /**
-   * Check crawler by request sending rate, which is read from configruation
-   * file
-   *
-   * @throws InterruptedException InterruptedException
-   * @throws IOException          IOException
-   */
-  public void checkByRateInSequential() throws InterruptedException, IOException {
-    es.createBulkProcessor();
-
-    int rate = Integer.parseInt(props.getProperty(MudrodConstants.REQUEST_RATE));
-
-    Terms users = this.getUserTerms(this.httpType);
-    LOG.info("Original User count: {}", Integer.toString(users.getBuckets().size()));
-
-    int userCount = 0;
-    for (Terms.Bucket entry : users.getBuckets()) {
-      String user = entry.getKey().toString();
-      int count = checkByRate(es, user);
-      userCount += count;
-    }
-    es.destroyBulkProcessor();
-    LOG.info("User count: {}", Integer.toString(userCount));
   }
 
   void checkByRateInParallel() throws InterruptedException, IOException {

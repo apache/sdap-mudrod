@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sdap.mudrod.weblog.structure;
+package org.apache.sdap.mudrod.weblog.structure.session;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -188,8 +188,10 @@ public class Session /*extends MudrodAbstract*/ implements Comparable<Session> {
     } catch (UnsupportedEncodingException e) {
       LOG.error("Erro whilst obtaining the Session Tree: {}", e);
     }
+    
+    //tree.printTree(tree.root);
 
-    List<ClickStream> clickthroughs = tree.getClickStreamList();
+    List<ClickStream> clickthroughs = tree.getClickStreamList(props);
     return clickthroughs;
   }
 
@@ -215,7 +217,7 @@ public class Session /*extends MudrodAbstract*/ implements Comparable<Session> {
       String logType = (String) result.get("LogType");
       String referer = (String) result.get("Referer");
 
-      SessionNode node = new SessionNode(request, logType, referer, props.getProperty(MudrodConstants.BASE_URL), time, seq);
+      SessionNode node = new SessionNode(props, request, logType, referer, time, seq);
       tree.insert(node);
       seq++;
     }

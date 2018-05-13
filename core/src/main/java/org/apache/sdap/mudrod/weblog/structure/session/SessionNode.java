@@ -11,13 +11,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sdap.mudrod.weblog.structure;
+package org.apache.sdap.mudrod.weblog.structure.session;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.sdap.mudrod.main.MudrodConstants;
 
 /**
  * ClassName: SessionNode Function: Functions related to a node in a session
@@ -65,13 +67,13 @@ public class SessionNode {
    * @param time:    request time of node
    * @param seq:     sequence of this node
    */
-  public SessionNode(String request, String logType, String referer, String basicUrl, String time, int seq) {
+  public SessionNode(Properties props, String request, String logType, String referer, String time, int seq) {
     this.logType = logType;
     this.time = time;
     this.seq = seq;
     this.setRequest(request);
-    this.setReferer(referer, basicUrl);
-    this.setKey(request, logType);
+    this.setReferer(referer, props.getProperty(MudrodConstants.BASE_URL));
+    this.setKey(props, request, logType);
   }
 
   /**
@@ -94,7 +96,7 @@ public class SessionNode {
    */
   public void setRequest(String req) {
     this.request = req;
-    if (this.logType.equals("PO.DAAC")) {
+    if (this.logType.equals(MudrodConstants.HTTP_LOG)) {
       this.parseRequest(req);
     }
   }
@@ -156,19 +158,19 @@ public class SessionNode {
    * @param request request url
    * @param logType url type
    */
-  public void setKey(String request, String logType) {
+  public void setKey(Properties props, String request, String logType) {
     this.key = "";
-    String datasetlist = "/datasetlist?";
-    String dataset = "/dataset/";
+    String datasetlist = props.getProperty(MudrodConstants.SEARCH_MARKER);
+    String dataset = props.getProperty(MudrodConstants.VIEW_MARKER);
     if (logType.equals("ftp")) {
       this.key = "ftp";
     } else if (logType.equals("root")) {
       this.key = "root";
     } else {
       if (request.contains(datasetlist)) {
-        this.key = "datasetlist";
+        this.key = MudrodConstants.SEARCH_MARKER;
       } else if (request.contains(dataset) /* || request.contains(granule) */) {
-        this.key = "dataset";
+        this.key = MudrodConstants.VIEW_MARKER;
       }
     }
   }
