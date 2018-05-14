@@ -50,7 +50,7 @@ public class UserHistoryAnalyzer extends DiscoveryStepAbstract {
 
     SemanticAnalyzer sa = new SemanticAnalyzer(props, es, spark);
     List<LinkageTriple> tripleList = sa.calTermSimfromMatrix(props.getProperty(MudrodConstants.USER_HISTORY_PATH));
-    sa.saveToES(tripleList, props.getProperty(MudrodConstants.ES_INDEX_NAME), props.getProperty(MudrodConstants.USE_HISTORY_LINKAGE_TYPE));
+    sa.saveToES(tripleList, props.getProperty(MudrodConstants.ES_INDEX_NAME), props.getProperty(MudrodConstants.USER_HISTORY_LINKAGE_TYPE));
 
     endTime = System.currentTimeMillis();
     es.refreshIndex();

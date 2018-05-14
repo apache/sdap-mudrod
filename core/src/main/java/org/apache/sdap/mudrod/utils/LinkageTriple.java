@@ -57,7 +57,6 @@ public class LinkageTriple implements Serializable {
   public static DecimalFormat df = new DecimalFormat("#.00");
 
   public LinkageTriple() {
-    // TODO Auto-generated constructor stub
   }
 
   /**
@@ -96,8 +95,13 @@ public class LinkageTriple implements Serializable {
       } else {
         jsonBuilder.field("keywords", triple.keyA + "," + triple.keyB);
       }
-
-      jsonBuilder.field("weight", Double.parseDouble(df.format(triple.weight)));
+      double tripleWeight = 0;
+      try {
+        tripleWeight = Double.parseDouble(df.format(triple.weight));
+      } catch (NumberFormatException  e) {
+        // do nothing, triple weight is 0 as it cannot be parsed
+      }
+      jsonBuilder.field("weight", tripleWeight);
       jsonBuilder.endObject();
 
       IndexRequest ir = new IndexRequest(index, type).source(jsonBuilder);
