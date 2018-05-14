@@ -27,7 +27,6 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.metrics.stats.Stats;
 import org.elasticsearch.search.aggregations.metrics.stats.StatsAggregationBuilder;
 import org.joda.time.DateTime;
@@ -38,7 +37,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -81,7 +85,7 @@ public class SessionStatistic extends LogAbstract {
   }
 
   public void processSession() throws InterruptedException, IOException, ExecutionException {
-      processSessionInParallel();
+    processSessionInParallel();
   }
 
   /**
@@ -160,7 +164,13 @@ public class SessionStatistic extends LogAbstract {
     BoolQueryBuilder filterSearch = new BoolQueryBuilder();
     filterSearch.must(QueryBuilders.termQuery("SessionID", sessionId));
 
-    SearchResponse sr = es.getClient().prepareSearch(logIndex).setTypes(inputType).setQuery(filterSearch).addAggregation(statsAgg).execute().actionGet();
+    SearchResponse sr = es.getClient()
+            .prepareSearch(logIndex)
+            .setTypes(inputType)
+            .setQuery(filterSearch)
+            .addAggregation(statsAgg)
+            .execute()
+            .actionGet();
 
     Stats agg = sr.getAggregations().get("Stats");
     min = agg.getMinAsString();
@@ -231,9 +241,9 @@ public class SessionStatistic extends LogAbstract {
             String view = findDataset(request);
             if ("".equals(views)) 
               views = view;
-             else if (!views.contains(view)) 
-                views = views + "," + view;          
-           }          
+            else if (!views.contains(view)) 
+              views = views + "," + view;
+          }
         }
         if (MudrodConstants.FTP_LOG.equals(logType)) {
           ftpRequestCount++;
@@ -257,7 +267,11 @@ public class SessionStatistic extends LogAbstract {
 
       }
 
-      scrollResp = es.getClient().prepareSearchScroll(scrollResp.getScrollId()).setScroll(new TimeValue(600000)).execute().actionGet();
+      scrollResp = es.getClient()
+              .prepareSearchScroll(scrollResp.getScrollId())
+              .setScroll(new TimeValue(600000))
+              .execute()
+              .actionGet();
       // Break condition: No hits are returned
       if (scrollResp.getHits().getHits().length == 0) {
         break;
@@ -269,12 +283,17 @@ public class SessionStatistic extends LogAbstract {
     }
 
     if (searchDataListRequestCount != 0 && 
-        searchDataListRequestCount <= Integer.parseInt(props.getProperty(MudrodConstants.SEARCH_F)) && 
-        searchDataRequestCount != 0 && 
-        searchDataRequestCount <= Integer.parseInt(props.getProperty(MudrodConstants.VIEW_F)) && 
-        ftpRequestCount <= Integer.parseInt(props.getProperty(MudrodConstants.DOWNLOAD_F))) 
+            searchDataListRequestCount <= Integer.parseInt(props.getProperty(MudrodConstants.SEARCH_F)) && 
+            searchDataRequestCount != 0 && 
+            searchDataRequestCount <= Integer.parseInt(props.getProperty(MudrodConstants.VIEW_F)) && 
+            ftpRequestCount <= Integer.parseInt(props.getProperty(MudrodConstants.DOWNLOAD_F))) 
     {
-      String sessionURL = props.getProperty(MudrodConstants.SESSION_PORT) + props.getProperty(MudrodConstants.SESSION_URL) + "?sessionid=" + sessionId + "&sessionType=" + outputType + "&requestType=" + inputType;
+      String sessionURL = props.getProperty(
+              MudrodConstants.SESSION_PORT)
+              + props.getProperty(MudrodConstants.SESSION_URL)
+              + "?sessionid=" + sessionId
+              + "&sessionType=" + outputType
+              + "&requestType=" + inputType;
       sessionCount = 1;
 
       IndexRequest ir = new IndexRequest(logIndex, outputType).source(

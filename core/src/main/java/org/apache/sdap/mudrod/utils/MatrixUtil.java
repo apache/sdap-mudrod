@@ -457,8 +457,11 @@ public class MatrixUtil {
     }
     try {
       file.createNewFile();
-      FileWriter fw = new FileWriter(file.getAbsoluteFile());
-      BufferedWriter bw = new BufferedWriter(fw);
+    } catch (IOException e1) {
+      e1.printStackTrace();
+    }
+    try (FileWriter fw = new FileWriter(file.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(fw);){
       String coltitle = " Num" + ",";
       for (int j = 0; j < colnum; j++) {
         coltitle += "\"" + colKeys.get(j) + "\",";
@@ -475,12 +478,8 @@ public class MatrixUtil {
         row = row.substring(0, row.length() - 1);
         bw.write(row + "\n");
       }
-
-      bw.close();
-
     } catch (IOException e) {
       e.printStackTrace();
-
     }
   }
 }
