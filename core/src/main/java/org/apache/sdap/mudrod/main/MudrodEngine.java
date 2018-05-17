@@ -178,33 +178,35 @@ public class MudrodEngine {
       throw new IOException("Unable to locate " + archiveName + " as a classpath resource.");
     }
     File tempDir = Files.createTempDirectory("mudrod").toFile();
-    assert tempDir.setWritable(true);
+    boolean bWritable = tempDir.setWritable(true);
+    assert bWritable;
     File archiveFile = new File(tempDir, archiveName);
     FileUtils.copyURLToFile(scmArchive, archiveFile);
 
     // Decompress archive
     int BUFFER_SIZE = 512000;
-    ZipInputStream zipIn = new ZipInputStream(new FileInputStream(archiveFile));
-    ZipEntry entry;
-    while ((entry = zipIn.getNextEntry()) != null) {
-      File f = new File(tempDir, entry.getName());
-      // If the entry is a directory, create the directory.
-      if (entry.isDirectory() && !f.exists()) {
-        boolean created = f.mkdirs();
-        if (!created) {
-          LOG.error("Unable to create directory '{}', during extraction of archive contents.", f.getAbsolutePath());
-        }
-      } else if (!entry.isDirectory()) {
-        boolean created = f.getParentFile().mkdirs();
-        if (!created && !f.getParentFile().exists()) {
-          LOG.error("Unable to create directory '{}', during extraction of archive contents.", f.getParentFile().getAbsolutePath());
-        }
-        int count;
-        byte data[] = new byte[BUFFER_SIZE];
-        FileOutputStream fos = new FileOutputStream(new File(tempDir, entry.getName()), false);
-        try (BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER_SIZE)) {
-          while ((count = zipIn.read(data, 0, BUFFER_SIZE)) != -1) {
-            dest.write(data, 0, count);
+    try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(archiveFile))) {
+      ZipEntry entry;
+      while ((entry = zipIn.getNextEntry()) != null) {
+        File f = new File(tempDir, entry.getName());
+        // If the entry is a directory, create the directory.
+        if (entry.isDirectory() && !f.exists()) {
+          boolean created = f.mkdirs();
+          if (!created) {
+            LOG.error("Unable to create directory '{}', during extraction of archive contents.", f.getAbsolutePath());
+          }
+        } else if (!entry.isDirectory()) {
+          boolean created = f.getParentFile().mkdirs();
+          if (!created && !f.getParentFile().exists()) {
+            LOG.error("Unable to create directory '{}', during extraction of archive contents.", f.getParentFile().getAbsolutePath());
+          }
+          int count;
+          byte data[] = new byte[BUFFER_SIZE];
+          FileOutputStream fos = new FileOutputStream(new File(tempDir, entry.getName()), false);
+          try (BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER_SIZE)) {
+            while ((count = zipIn.read(data, 0, BUFFER_SIZE)) != -1) {
+              dest.write(data, 0, count);
+            }
           }
         }
       }
