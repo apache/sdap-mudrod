@@ -89,6 +89,7 @@ public class SessionGenerator extends LogAbstract {
       e.printStackTrace();
     } catch (InterruptedException e) {
       e.printStackTrace();
+      Thread.currentThread().interrupt();
     }
   }
 
@@ -381,7 +382,7 @@ public class SessionGenerator extends LogAbstract {
     SearchResponse checkReferer = es.getClient().prepareSearch(logIndex).setTypes(this.cleanupType).setScroll(new TimeValue(60000)).setQuery(filterCheck).setSize(0).execute().actionGet();
 
     long numInvalid = checkReferer.getHits().getTotalHits();
-    double invalidRate = numInvalid / docCount;
+    double invalidRate = (double)numInvalid / docCount;
 
     if (invalidRate >= 0.8) {
       deleteInvalid(es, user);
