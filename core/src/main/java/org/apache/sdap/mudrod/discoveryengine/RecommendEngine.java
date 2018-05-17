@@ -44,7 +44,7 @@ public class RecommendEngine extends DiscoveryEngineAbstract {
 
     endTime = System.currentTimeMillis();
 
-    LOG.info("Recommendation preprocessing ends. Took {}s {}", (endTime - startTime) / 1000);
+    LOG.info("Recommendation preprocessing ends. Took {}s", (endTime - startTime) / 1000);
   }
 
   @Override
@@ -65,7 +65,7 @@ public class RecommendEngine extends DiscoveryEngineAbstract {
 
     endTime = System.currentTimeMillis();
 
-    LOG.info("Recommendation processing ends. Took {}s {}", (endTime - startTime) / 1000);
+    LOG.info("Recommendation processing ends. Took {}s", (endTime - startTime) / 1000);
   }
 
   @Override
