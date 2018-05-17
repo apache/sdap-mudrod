@@ -16,8 +16,8 @@ package org.apache.sdap.mudrod.weblog.pre;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.main.MudrodConstants;
-import org.apache.sdap.mudrod.weblog.structure.ApacheAccessLog;
-import org.apache.sdap.mudrod.weblog.structure.FtpLog;
+import org.apache.sdap.mudrod.weblog.structure.log.ApacheAccessLog;
+import org.apache.sdap.mudrod.weblog.structure.log.FtpLog;
 import org.apache.spark.api.java.JavaRDD;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.spark.rdd.api.java.JavaEsSpark;
@@ -55,6 +55,11 @@ public class ImportLogFile extends LogAbstract {
   public static final int NUM_FIELDS = 9;
   Pattern p = Pattern.compile(logEntryPattern);
   transient Matcher matcher;
+  
+  @Override
+  public Object execute(Object o) {
+    return null;
+  }
 
   /**
    * Constructor supporting a number of parameters documented below.
@@ -146,31 +151,7 @@ public class ImportLogFile extends LogAbstract {
       return;
     }
 
-    String processingType = props.getProperty(MudrodConstants.PROCESS_TYPE, "parallel");
-    if (processingType.equals("sequential")) {
-      readFileInSequential(httplogpath, ftplogpath);
-    } else if (processingType.equals("parallel")) {
-      readFileInParallel(httplogpath, ftplogpath);
-    }
-  }
-
-  /**
-   * Read the FTP or HTTP log path with the intention of processing lines from
-   * log files.
-   *
-   * @param httplogpath path to the parent directory containing http logs
-   * @param ftplogpath  path to the parent directory containing ftp logs
-   */
-  public void readFileInSequential(String httplogpath, String ftplogpath) {
-    es.createBulkProcessor();
-    try {
-      readLogFile(httplogpath, "http", logIndex, httpType);
-      readLogFile(ftplogpath, "FTP", logIndex, ftpType);
-
-    } catch (IOException e) {
-      LOG.error("Error whilst reading log file.", e);
-    }
-    es.destroyBulkProcessor();
+    readFileInParallel(httplogpath, ftplogpath);
   }
 
   /**
@@ -181,7 +162,6 @@ public class ImportLogFile extends LogAbstract {
    * @param ftplogpath  path to the parent directory containing ftp logs
    */
   public void readFileInParallel(String httplogpath, String ftplogpath) {
-
     importHttpfile(httplogpath);
     importFtpfile(ftplogpath);
   }
@@ -189,156 +169,12 @@ public class ImportLogFile extends LogAbstract {
   public void importHttpfile(String httplogpath) {
     // import http logs
     JavaRDD<String> accessLogs = spark.sc.textFile(httplogpath, this.partition).map(s -> ApacheAccessLog.parseFromLogLine(s, props)).filter(ApacheAccessLog::checknull);
-
     JavaEsSpark.saveJsonToEs(accessLogs, logIndex + "/" + this.httpType);
   }
 
   public void importFtpfile(String ftplogpath) {
     // import ftp logs
     JavaRDD<String> ftpLogs = spark.sc.textFile(ftplogpath, this.partition).map(s -> FtpLog.parseFromLogLine(s, props)).filter(FtpLog::checknull);
-
     JavaEsSpark.saveJsonToEs(ftpLogs, logIndex + "/" + this.ftpType);
-  }
-
-  /**
-   * Process a log path on local file system which contains the relevant
-   * parameters as below.
-   *
-   * @param fileName the {@link java.lang.String} path to the log directory on file
-   *                 system
-   * @param protocol whether to process 'http' or 'FTP'
-   * @param index    the index name to write logs to
-   * @param type     one of the available protocols from which Mudrod logs are obtained.
-   * @throws IOException if there is an error reading anything from the fileName provided.
-   */
-  public void readLogFile(String fileName, String protocol, String index, String type) throws IOException {
-    BufferedReader br = new BufferedReader(new FileReader(fileName));
-    int count = 0;
-    try {
-      String line = br.readLine();
-      while (line != null) {
-        if ("FTP".equals(protocol)) {
-          parseSingleLineFTP(line, index, type);
-        } else {
-          parseSingleLineHTTP(line, index, type);
-        }
-        line = br.readLine();
-        count++;
-      }
-    } catch (FileNotFoundException e) {
-      LOG.error("File not found.", e);
-    } catch (IOException e) {
-      LOG.error("Error reading input directory.", e);
-    } finally {
-      br.close();
-      LOG.info("Num of {} entries:\t{}", protocol, count);
-    }
-  }
-
-  /**
-   * Parse a single FTP log entry
-   *
-   * @param log   a single log line
-   * @param index the index name we wish to persist the log line to
-   * @param type  one of the available protocols from which Mudrod logs are obtained.
-   */
-  public void parseSingleLineFTP(String log, String index, String type) {
-    String ip = log.split(" +")[6];
-
-    String time = log.split(" +")[1] + ":" + log.split(" +")[2] + ":" + log.split(" +")[3] + ":" + log.split(" +")[4];
-
-    time = switchtoNum(time);
-    SimpleDateFormat formatter = new SimpleDateFormat("MM:dd:HH:mm:ss:yyyy");
-    Date date = null;
-    try {
-      date = formatter.parse(time);
-    } catch (ParseException e) {
-      LOG.error("Error whilst parsing the date.", e);
-    }
-    String bytes = log.split(" +")[7];
-
-    String request = log.split(" +")[8].toLowerCase();
-
-    if (!request.contains("/misc/") && !request.contains("readme")) {
-      IndexRequest ir;
-      try {
-        ir = new IndexRequest(index, type)
-            .source(jsonBuilder().startObject().field("LogType", MudrodConstants.FTP_LOG).field("IP", ip).field("Time", date).field("Request", request).field("Bytes", Long.parseLong(bytes)).endObject());
-        es.getBulkProcessor().add(ir);
-      } catch (NumberFormatException e) {
-        LOG.error("Error whilst processing numbers", e);
-      } catch (IOException e) {
-        LOG.error("IOError whilst adding to the bulk processor.", e);
-      }
-    }
-
-  }
-
-  /**
-   * Parse a single HTTP log entry
-   *
-   * @param log   a single log line
-   * @param index the index name we wish to persist the log line to
-   * @param type  one of the available protocols from which Mudrod logs are obtained.
-   */
-  public void parseSingleLineHTTP(String log, String index, String type) {
-    matcher = p.matcher(log);
-    if (!matcher.matches() || NUM_FIELDS != matcher.groupCount()) {
-      return;
-    }
-    String time = matcher.group(4);
-    time = switchtoNum(time);
-    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy:HH:mm:ss");
-    Date date = null;
-    try {
-      date = formatter.parse(time);
-    } catch (ParseException e) {
-      LOG.error("Error whilst attempting to parse date.", e);
-    }
-
-    String bytes = matcher.group(7);
-    if ("-".equals(bytes)) {
-      bytes = "0";
-    }
-
-    String request = matcher.group(5).toLowerCase();
-    String agent = matcher.group(9);
-    CrawlerDetection crawlerDe = new CrawlerDetection(this.props, this.es, this.spark);
-    if (!crawlerDe.checkKnownCrawler(agent)) {
-      boolean tag = false;
-      String[] mimeTypes = props.getProperty(MudrodConstants.BLACK_LIST_REQUEST).split(",");
-      for(String str:mimeTypes)
-      {
-        if (request.contains(str.trim())) {
-          tag = true;
-          break;
-        }
-      }
-
-      if (!tag) {
-        IndexRequest ir = null;
-        executeBulkRequest(ir, index, type, matcher, date, bytes);
-      }
-    }
-  }
-
-  private void executeBulkRequest(IndexRequest ir, String index, String type, Matcher matcher, Date date, String bytes) {
-    IndexRequest newIr = ir;
-    try {
-      newIr = new IndexRequest(index, type).source(
-          jsonBuilder().startObject().field("LogType", MudrodConstants.HTTP_LOG).field("IP", matcher.group(1)).field("Time", date).field("Request", matcher.group(5)).field("Response", matcher.group(6))
-              .field("Bytes", Integer.parseInt(bytes)).field("Referer", matcher.group(8)).field("Browser", matcher.group(9)).endObject());
-
-      es.getBulkProcessor().add(newIr);
-    } catch (NumberFormatException e) {
-      LOG.error("Error whilst processing numbers", e);
-    } catch (IOException e) {
-      LOG.error("IOError whilst adding to the bulk processor.", e);
-    }
-  }
-
-  @Override
-  public Object execute(Object o) {
-    return null;
   }
 }

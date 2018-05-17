@@ -171,7 +171,7 @@ public class LinkageIntegration extends DiscoveryStepAbstract {
    * the similarities from different sources
    */
   public Map<String, List<LinkedTerm>> aggregateRelatedTermsFromAllmodel(String input) {
-    aggregateRelatedTerms(input, MudrodConstants.USE_HISTORY_LINKAGE_TYPE);
+    aggregateRelatedTerms(input, MudrodConstants.USER_HISTORY_LINKAGE_TYPE);
     aggregateRelatedTerms(input, MudrodConstants.CLICK_STREAM_LINKAGE_TYPE);
     aggregateRelatedTerms(input, MudrodConstants.METADATA_LINKAGE_TYPE);
     aggregateRelatedTermsSWEET(input, MudrodConstants.ONTOLOGY_LINKAGE_TYPE);
@@ -180,7 +180,7 @@ public class LinkageIntegration extends DiscoveryStepAbstract {
   }
 
   public int getModelweight(String model) {
-    if (model.equals(MudrodConstants.USE_HISTORY_LINKAGE_TYPE)) {
+    if (model.equals(MudrodConstants.USER_HISTORY_LINKAGE_TYPE)) {
       return Integer.parseInt(props.getProperty(MudrodConstants.USER_HISTORY_W));
     }
 

@@ -81,7 +81,11 @@ public class MetadataTFIDFGenerator extends DiscoveryStepAbstract {
 
     LabeledRowMatrix wordtfidfMatrix = opt.tFIDFTokens(metadataWords, spark);
 
-    MatrixUtil.exportToCSV(wordtfidfMatrix.rowMatrix, wordtfidfMatrix.rowkeys, wordtfidfMatrix.colkeys, props.getProperty(MudrodConstants.METADATA_WORD_MATRIX_PATH));
+    MatrixUtil.exportToCSV(
+            wordtfidfMatrix.rowMatrix,
+            wordtfidfMatrix.rowkeys,
+            wordtfidfMatrix.colkeys,
+            props.getProperty(MudrodConstants.METADATA_WORD_MATRIX_PATH));
 
     return wordtfidfMatrix;
   }
@@ -100,7 +104,11 @@ public class MetadataTFIDFGenerator extends DiscoveryStepAbstract {
 
     LabeledRowMatrix tokentfidfMatrix = opt.tFIDFTokens(metadataTokens, spark);
 
-    MatrixUtil.exportToCSV(tokentfidfMatrix.rowMatrix, tokentfidfMatrix.rowkeys, tokentfidfMatrix.colkeys, props.getProperty(MudrodConstants.METADATA_TERM_MATRIX_PATH));
+    MatrixUtil.exportToCSV(
+            tokentfidfMatrix.rowMatrix,
+            tokentfidfMatrix.rowkeys,
+            tokentfidfMatrix.colkeys,
+            props.getProperty(MudrodConstants.METADATA_TERM_MATRIX_PATH));
 
     return tokentfidfMatrix;
   }
