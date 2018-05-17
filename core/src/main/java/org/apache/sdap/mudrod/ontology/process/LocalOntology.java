@@ -62,10 +62,8 @@ public class LocalOntology implements Ontology {
     //only initialize all the static variables
     //if first time called to this ontology constructor
     if (ontology == null) {
-      if (LOG.isInfoEnabled()) {
-        LOG.info("Creating new ontology");
-      }
-      parser = new OwlParser();
+      LOG.info("Creating new ontology client and parser implementation.");
+      parser = new OntologyParserImpl();
       ontology = this;
     }
     if (ontologyModel == null)
@@ -87,24 +85,25 @@ public class LocalOntology implements Ontology {
   }
 
   /**
-   * Load the default <i>sweetAll.owl</i> ontology
-   * from <a href="https://raw.githubusercontent.com/ESIPFed/sweet/master/2.4/sweetAll.owl">
-   * https://raw.githubusercontent.com/ESIPFed/sweet/master/2.4/sweetAll.owl</a>
+   * Load the default <i>sweetAll.ttl</i> ontology
+   * from <a href="http://sweetontology.net/sweetAll.ttl">
+   * http://sweetontology.net/sweetAll.ttl</a>
    */
   @Override
   public void load() {
     URL ontURL = null;
     try {
-      ontURL = new URL("https://raw.githubusercontent.com/ESIPFed/sweet/master/2.4/sweetAll.owl");
-      //ontURL = new URL("https://raw.githubusercontent.com/ESIPFed/sweet/master/2.4/reprDataProduct.owl");
+      ontURL = new URL("http://sweetontology.net/sweetAll.ttl");
     } catch (MalformedURLException e) {
       LOG.error("Error when attempting to create URL resource: ", e);
     }
     ontArrayList = new ArrayList<>();
-    try {
-      ontArrayList.add(ontURL.toURI().toString());
-    } catch (URISyntaxException e) {
-      LOG.error("Error in URL syntax, please check your Ontology resource: ", e);
+    if (ontURL != null) {
+      try {
+        ontArrayList.add(ontURL.toURI().toString());
+      } catch (URISyntaxException e) {
+        LOG.error("Error in URL syntax, please check your Ontology resource: ", e);
+      }
     }
     if (!ontArrayList.isEmpty()) {
       load(ontArrayList.stream().toArray(String[]::new));
@@ -126,8 +125,21 @@ public class LocalOntology implements Ontology {
   }
 
   private void load(Object m, String url) {
+    String lang = null;
     try {
-      ((OntModel) m).read(url, null, null);
+      switch (url.substring(url.lastIndexOf('.') + 1)) {
+        case "ttl":
+        lang = "TURTLE";
+        break;
+        //null represents the default language, "RDF/XML".
+        //"RDF/XML-ABBREV" is a synonym for "RDF/XML".
+        case "rdf":
+        case "owl": {
+          lang = "RDF/XML";
+          break;
+        }
+      }
+      ((OntModel) m).read(url, null, lang);
       LOG.info("Successfully processed {}", url);
     } catch (Exception e) {
       LOG.error("Failed whilst attempting to read ontology {}: Error: ", url, e);
@@ -141,7 +153,7 @@ public class LocalOntology implements Ontology {
    */
   public OntologyParser getParser() {
     if (parser == null) {
-      parser = new OwlParser();
+      parser = new OntologyParserImpl();
     }
     return parser;
   }
@@ -229,6 +241,7 @@ public class LocalOntology implements Ontology {
    * @return an {@link java.util.Iterator} containing synonyms string tokens
    * or an empty if no synonyms exist for the given queryKeyPhrase.
    */
+  @SuppressWarnings("unchecked")
   @Override
   public Iterator synonyms(String queryKeyPhrase) {
 
