@@ -179,7 +179,7 @@ public class MudrodEngine {
     FileUtils.copyURLToFile(scmArchive, archiveFile);
 
     // Decompress archive
-    int BUFFER_SIZE = 512000;
+    int buffer_size = 512000;
     try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(archiveFile))) {
       ZipEntry entry;
       while ((entry = zipIn.getNextEntry()) != null) {
@@ -196,10 +196,10 @@ public class MudrodEngine {
             LOG.error("Unable to create directory '{}', during extraction of archive contents.", f.getParentFile().getAbsolutePath());
           }
           int count;
-          byte data[] = new byte[BUFFER_SIZE];
+          byte data[] = new byte[buffer_size];
           FileOutputStream fos = new FileOutputStream(new File(tempDir, entry.getName()), false);
-          try (BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER_SIZE)) {
-            while ((count = zipIn.read(data, 0, BUFFER_SIZE)) != -1) {
+          try (BufferedOutputStream dest = new BufferedOutputStream(fos, buffer_size)) {
+            while ((count = zipIn.read(data, 0, buffer_size)) != -1) {
               dest.write(data, 0, count);
             }
           }
