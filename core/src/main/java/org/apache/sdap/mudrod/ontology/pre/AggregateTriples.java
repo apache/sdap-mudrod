@@ -62,30 +62,28 @@ public class AggregateTriples extends DiscoveryStepAbstract {
       e2.printStackTrace();
     }
 
-    FileWriter fw;
-    try {
-      fw = new FileWriter(file.getAbsoluteFile());
+    try(FileWriter fw = new FileWriter(file.getAbsoluteFile())){
       bw = new BufferedWriter(fw);
+      File[] files = new File(this.props.getProperty(MudrodConstants.ONTOLOGY_INPUT_PATH)).listFiles();
+      for (File file_in : files) {
+        String ext = FilenameUtils.getExtension(file_in.getAbsolutePath());
+        if ("owl".equals(ext)) {
+          try {
+            loadxml(file_in.getAbsolutePath());
+            getAllClass();
+          } catch (JDOMException e1) {
+            e1.printStackTrace();
+          } catch (IOException e1) {
+            e1.printStackTrace();
+          }
+  
+        }
+      }
     } catch (IOException e) {
+      // TODO Auto-generated catch block
       e.printStackTrace();
     }
-
-    File[] files = new File(this.props.getProperty(MudrodConstants.ONTOLOGY_INPUT_PATH)).listFiles();
-    for (File file_in : files) {
-      String ext = FilenameUtils.getExtension(file_in.getAbsolutePath());
-      if ("owl".equals(ext)) {
-        try {
-          loadxml(file_in.getAbsolutePath());
-          getAllClass();
-        } catch (JDOMException e1) {
-          e1.printStackTrace();
-        } catch (IOException e1) {
-          e1.printStackTrace();
-        }
-
-      }
-    }
-
+    
     try {
       bw.close();
     } catch (IOException e) {
