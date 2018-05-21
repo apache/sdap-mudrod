@@ -102,7 +102,9 @@ public class LocalOntology implements Ontology {
     }
     ontArrayList = new ArrayList<>();
     try {
-      ontArrayList.add(ontURL.toURI().toString());
+      if(ontURL != null){
+        ontArrayList.add(ontURL.toURI().toString());
+      }
     } catch (URISyntaxException e) {
       LOG.error("Error in URL syntax, please check your Ontology resource: ", e);
     }
