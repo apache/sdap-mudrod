@@ -67,80 +67,77 @@ public class HistoryGenerator extends LogAbstract {
 
       file.createNewFile();
 
-      FileWriter fw = new FileWriter(file.getAbsoluteFile());
-      BufferedWriter bw = new BufferedWriter(fw);
-      bw.write("Num" + ",");
-
-      // step 1: write first row of csv
-      List<String> logIndexList = es.getIndexListWithPrefix(props.getProperty(MudrodConstants.LOG_INDEX));
-
-      String[] logIndices = logIndexList.toArray(new String[0]);
-      String[] statictypeArray = new String[] { this.sessionStats };
-      int docCount = es.getDocCount(logIndices, statictypeArray);
-      
-      LOG.info("{}: {}", this.sessionStats, docCount);      
-
-      if (docCount==0) 
-      { 
-        bw.close(); 
-        file.delete();
-        return;
-      }
-
-      SearchResponse sr = es.getClient().prepareSearch(logIndices).setTypes(statictypeArray).setQuery(QueryBuilders.matchAllQuery()).setSize(0)
-          .addAggregation(AggregationBuilders.terms("IPs").field("IP").size(docCount)).execute().actionGet();
-      Terms ips = sr.getAggregations().get("IPs");
-      List<String> ipList = new ArrayList<>();
-      for (Terms.Bucket entry : ips.getBuckets()) {
-        if (entry.getDocCount() > Integer.parseInt(props.getProperty(MudrodConstants.QUERY_MIN))) { // filter
-          // out
-          // less
-          // active users/ips
-          ipList.add(entry.getKey().toString());
+      try (FileWriter fw = new FileWriter(file.getAbsoluteFile());
+          BufferedWriter bw = new BufferedWriter(fw);) {
+        // Process the input and produce the output
+        bw.write("Num" + ",");
+  
+        // step 1: write first row of csv
+        List<String> logIndexList = es.getIndexListWithPrefix(props.getProperty(MudrodConstants.LOG_INDEX));
+  
+        String[] logIndices = logIndexList.toArray(new String[0]);
+        String[] statictypeArray = new String[] { this.sessionStats };
+        int docCount = es.getDocCount(logIndices, statictypeArray);
+        
+        LOG.info("{}: {}", this.sessionStats, docCount);      
+  
+        if (docCount==0) 
+        { 
+          file.delete();
+          return;
         }
-      }
-      bw.write(String.join(",", ipList) + "\n");
-
-      // step 2: step the rest rows of csv
-      SearchRequestBuilder sr2Builder = es.getClient().prepareSearch(logIndices).setTypes(statictypeArray).setQuery(QueryBuilders.matchAllQuery()).setSize(0)
-          .addAggregation(AggregationBuilders.terms("KeywordAgg").field("keywords").size(docCount).subAggregation(AggregationBuilders.terms("IPAgg").field("IP").size(docCount)));
-
-      SearchResponse sr2 = sr2Builder.execute().actionGet();
-      Terms keywords = sr2.getAggregations().get("KeywordAgg");
-
-      for (Terms.Bucket keyword : keywords.getBuckets()) {
-
-        Map<String, Integer> ipMap = new HashMap<>();
-        Terms ipAgg = keyword.getAggregations().get("IPAgg");
-
-        int distinctUser = ipAgg.getBuckets().size();
-        if (distinctUser >= Integer.parseInt(props.getProperty(MudrodConstants.QUERY_MIN))) {
-          bw.write(keyword.getKey() + ",");
-          for (Terms.Bucket IP : ipAgg.getBuckets()) {
-
-            ipMap.put(IP.getKey().toString(), 1);
+  
+        SearchResponse sr = es.getClient().prepareSearch(logIndices).setTypes(statictypeArray).setQuery(QueryBuilders.matchAllQuery()).setSize(0)
+            .addAggregation(AggregationBuilders.terms("IPs").field("IP").size(docCount)).execute().actionGet();
+        Terms ips = sr.getAggregations().get("IPs");
+        List<String> ipList = new ArrayList<>();
+        for (Terms.Bucket entry : ips.getBuckets()) {
+          if (entry.getDocCount() > Integer.parseInt(props.getProperty(MudrodConstants.QUERY_MIN))) { // filter
+            // out
+            // less
+            // active users/ips
+            ipList.add(entry.getKey().toString());
           }
-          for (String anIpList : ipList) {
-            if (ipMap.containsKey(anIpList)) {
-              bw.write(ipMap.get(anIpList) + ",");
-            } else {
-              bw.write("0,");
+        }
+        bw.write(String.join(",", ipList) + "\n");
+  
+        // step 2: step the rest rows of csv
+        SearchRequestBuilder sr2Builder = es.getClient().prepareSearch(logIndices).setTypes(statictypeArray).setQuery(QueryBuilders.matchAllQuery()).setSize(0)
+            .addAggregation(AggregationBuilders.terms("KeywordAgg").field("keywords").size(docCount).subAggregation(AggregationBuilders.terms("IPAgg").field("IP").size(docCount)));
+  
+        SearchResponse sr2 = sr2Builder.execute().actionGet();
+        Terms keywords = sr2.getAggregations().get("KeywordAgg");
+  
+        for (Terms.Bucket keyword : keywords.getBuckets()) {
+  
+          Map<String, Integer> ipMap = new HashMap<>();
+          Terms ipAgg = keyword.getAggregations().get("IPAgg");
+  
+          int distinctUser = ipAgg.getBuckets().size();
+          if (distinctUser >= Integer.parseInt(props.getProperty(MudrodConstants.QUERY_MIN))) {
+            bw.write(keyword.getKey() + ",");
+            for (Terms.Bucket IP : ipAgg.getBuckets()) {
+              ipMap.put(IP.getKey().toString(), 1);
             }
+            for (String anIpList : ipList) {
+              if (ipMap.containsKey(anIpList)) {
+                bw.write(ipMap.get(anIpList) + ",");
+              } else {
+                bw.write("0,");
+              }
+            }
+            bw.write("\n");
           }
-          bw.write("\n");
         }
-      }
-
-      bw.close();
-    } catch (IOException e) {
+      } 
+    }
+    catch (IOException e) {
       e.printStackTrace();
     }
-
   }
 
   @Override
   public Object execute(Object o) {
     return null;
   }
-
 }
