@@ -32,7 +32,7 @@ import java.io.*;
 import java.util.Properties;
 
 /**
- * ClassName: ApiHarvester Function: Harvest metadata from PO.DAACweb service.
+ * Harvest metadata from PO.DAAC Webservices.
  */
 public class ApiHarvester extends DiscoveryStepAbstract {
 
@@ -70,7 +70,7 @@ public class ApiHarvester extends DiscoveryStepAbstract {
   }
 
   /**
-   * addMetadataMapping: Add mapping to index metadata in Elasticsearch. Please
+   * Add mapping to index metadata in Elasticsearch. Please
    * invoke this method before import metadata to Elasticsearch.
    */
   public void addMetadataMapping() {
@@ -84,7 +84,7 @@ public class ApiHarvester extends DiscoveryStepAbstract {
   }
 
   /**
-   * importToES: Index metadata into elasticsearch from local file directory.
+   * Index metadata into elasticsearch from local file directory.
    * Please make sure metadata have been harvest from web service before
    * invoking this method.
    */
@@ -118,12 +118,12 @@ public class ApiHarvester extends DiscoveryStepAbstract {
   }
 
   /**
-   * harvestMetadatafromWeb: Harvest metadata from PO.DAAC web service.
+   * Harvest metadata from PO.DAAC web service.
    */
   private void harvestMetadatafromWeb() {
     LOG.info("Metadata download started.");
     int startIndex = 0;
-    int doc_length = 0;
+    int docLength = 0;
     JsonParser parser = new JsonParser();
     do {
       String searchAPI = props.getProperty(MudrodConstants.METADATA_DOWNLOAD_URL);
@@ -135,7 +135,7 @@ public class ApiHarvester extends DiscoveryStepAbstract {
       JsonObject responseObject = json.getAsJsonObject();
       JsonArray docs = responseObject.getAsJsonObject("response").getAsJsonArray("docs");
 
-      doc_length = docs.size();
+      docLength = docs.size();
 
       File file = new File(props.getProperty(MudrodConstants.RAW_METADATA_PATH));
       if (!file.exists()) {
@@ -145,7 +145,7 @@ public class ApiHarvester extends DiscoveryStepAbstract {
           LOG.error("Failed to create directory!");
         }
       }
-      for (int i = 0; i < doc_length; i++) {
+      for (int i = 0; i < docLength; i++) {
         JsonElement item = docs.get(i);
         int docId = startIndex + i;
         File itemfile = new File(props.getProperty(MudrodConstants.RAW_METADATA_PATH) + "/" + docId + ".json");
@@ -167,7 +167,7 @@ public class ApiHarvester extends DiscoveryStepAbstract {
         Thread.currentThread().interrupt();
       }
 
-    } while (doc_length != 0);
+    } while (docLength != 0);
     
     LOG.info("Metadata downloading finished");
   }

@@ -1,4 +1,4 @@
-package org.apache.sdap.mudrod.weblog.structure;
+package org.apache.sdap.mudrod.weblog.structure.session;
 
 import java.io.Serializable;
 import java.util.Map;

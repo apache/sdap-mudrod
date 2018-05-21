@@ -67,7 +67,7 @@ public class HistoryGenerator extends LogAbstract {
 
       file.createNewFile();
 
-      try (FileWriter fw = new FileWriter(file.getAbsoluteFile());
+try (FileWriter fw = new FileWriter(file.getAbsoluteFile());
           BufferedWriter bw = new BufferedWriter(fw);) {
         // Process the input and produce the output
         bw.write("Num" + ",");
@@ -97,6 +97,37 @@ public class HistoryGenerator extends LogAbstract {
             // less
             // active users/ips
             ipList.add(entry.getKey().toString());
+        }
+      }
+      bw.write(String.join(",", ipList) + "\n");
+
+      // step 2: step the rest rows of csv
+      SearchRequestBuilder sr2Builder = es.getClient()
+              .prepareSearch(logIndices)
+              .setTypes(statictypeArray)
+              .setQuery(QueryBuilders.matchAllQuery())
+              .setSize(0)
+              .addAggregation(AggregationBuilders.terms("KeywordAgg")
+                      .field("keywords")
+                      .size(docCount)
+                      .subAggregation(AggregationBuilders.terms("IPAgg")
+                              .field("IP")
+                              .size(docCount)));
+
+      SearchResponse sr2 = sr2Builder.execute().actionGet();
+      Terms keywords = sr2.getAggregations().get("KeywordAgg");
+
+      for (Terms.Bucket keyword : keywords.getBuckets()) {
+
+        Map<String, Integer> ipMap = new HashMap<>();
+        Terms ipAgg = keyword.getAggregations().get("IPAgg");
+
+        int distinctUser = ipAgg.getBuckets().size();
+        if (distinctUser >= Integer.parseInt(props.getProperty(MudrodConstants.QUERY_MIN))) {
+          bw.write(keyword.getKey() + ",");
+          for (Terms.Bucket IP : ipAgg.getBuckets()) {
+
+            ipMap.put(IP.getKey().toString(), 1);
           }
         }
         bw.write(String.join(",", ipList) + "\n");
@@ -132,6 +163,7 @@ public class HistoryGenerator extends LogAbstract {
       } 
     }
     catch (IOException e) {
+
       e.printStackTrace();
     }
   }
