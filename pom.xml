@@ -20,7 +20,7 @@
     <version>10</version>
   </parent>
 
-  <groupId>org.apache.sdap.mudrod</groupId>
+  <groupId>org.apache.sdap</groupId>
   <artifactId>mudrod-parent</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
