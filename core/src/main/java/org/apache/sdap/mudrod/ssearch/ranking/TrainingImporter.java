@@ -17,6 +17,7 @@ import org.apache.sdap.mudrod.discoveryengine.MudrodAbstract;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.main.MudrodConstants;
+import org.apache.sdap.mudrod.main.MudrodEngine;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -86,8 +87,8 @@ public class TrainingImporter extends MudrodAbstract {
           }
         }
       }
-      
-      es.destroyBulkProcessor();
     }
+    
+    es.destroyBulkProcessor();
   }
 }
