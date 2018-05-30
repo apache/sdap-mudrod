@@ -65,11 +65,11 @@ public class AggregateTriples extends DiscoveryStepAbstract {
     try(FileWriter fw = new FileWriter(file.getAbsoluteFile())){
       bw = new BufferedWriter(fw);
       File[] files = new File(this.props.getProperty(MudrodConstants.ONTOLOGY_INPUT_PATH)).listFiles();
-      for (File file_in : files) {
-        String ext = FilenameUtils.getExtension(file_in.getAbsolutePath());
+      for (File fileIn : files) {
+        String ext = FilenameUtils.getExtension(fileIn.getAbsolutePath());
         if ("owl".equals(ext)) {
           try {
-            loadxml(file_in.getAbsolutePath());
+            loadXml(fileIn.getAbsolutePath());
             getAllClass();
           } catch (JDOMException e1) {
             e1.printStackTrace();
@@ -80,7 +80,6 @@ public class AggregateTriples extends DiscoveryStepAbstract {
         }
       }
     } catch (IOException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     
@@ -107,7 +106,7 @@ public class AggregateTriples extends DiscoveryStepAbstract {
    * @throws JDOMException JDOMException
    * @throws IOException   IOException
    */
-  public void loadxml(String filePathName) throws JDOMException, IOException {
+  public void loadXml(String filePathName) throws JDOMException, IOException {
     SAXBuilder saxBuilder = new SAXBuilder();
     File file = new File(filePathName);
 
