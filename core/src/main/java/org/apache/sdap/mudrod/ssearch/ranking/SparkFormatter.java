@@ -44,9 +44,4 @@ public class SparkFormatter {
       e.printStackTrace();
     }
   }
-
-  public static void main(String[] args) {
-    SparkFormatter sf = new SparkFormatter();
-    sf.toSparkSVMformat("C:/mudrodCoreTestData/rankingResults/inputDataForSVM.csv", "C:/mudrodCoreTestData/rankingResults/inputDataForSVM_spark.txt");
-  }
 }
