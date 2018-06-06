@@ -35,7 +35,7 @@ public class MetadataDiscoveryEngine extends DiscoveryEngineAbstract implements 
   private static final long serialVersionUID = 1L;
   private static final Logger LOG = LoggerFactory.getLogger(MetadataDiscoveryEngine.class);
 
-  public MetadataDiscoveryEngine(Properties props, ESDriver es, SparkDriver spark) {
+  public MetadataDiscoveryEngine(Properties props, StorageDriver es, SparkDriver spark) {
     super(props, es, spark);
   }
 

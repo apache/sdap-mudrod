@@ -135,7 +135,6 @@
   </properties>
 
   <modules>
-    <module>analysis</module>
     <module>core</module>
     <module>service</module>
     <module>storage</module>

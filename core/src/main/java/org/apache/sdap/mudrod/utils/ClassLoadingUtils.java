@@ -46,7 +46,7 @@ public class ClassLoadingUtils {
    * @param contextClass The name of a context class to use.
    * @param className    The name of the class to load.
    * @return The class or null if no class loader could load the class.
-   * @throws ClassNotFoundException Aif and only if no definition for the class with the specified name could be found.
+   * @throws ClassNotFoundException if and only if no definition for the class with the specified name could be found.
    */
   public static Class<?> loadClass(Class<?> contextClass, String className) throws ClassNotFoundException {
     Class<?> clazz = null;

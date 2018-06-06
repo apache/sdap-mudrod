@@ -17,9 +17,9 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.main.MudrodConstants;
+import org.apache.sdap.mudrod.storage.StorageDriver;
 import org.apache.sdap.mudrod.weblog.pre.*;
 import org.apache.sdap.mudrod.weblog.process.ClickStreamAnalyzer;
 import org.apache.sdap.mudrod.weblog.process.UserHistoryAnalyzer;
@@ -46,7 +46,7 @@ public class WeblogDiscoveryEngine extends DiscoveryEngineAbstract {
   private static final Logger LOG = LoggerFactory.getLogger(WeblogDiscoveryEngine.class);
   public String timeSuffix = null;
 
-  public WeblogDiscoveryEngine(Properties props, ESDriver es, SparkDriver spark) {
+  public WeblogDiscoveryEngine(Properties props, StorageDriver sd, SparkDriver spark) {
     super(props, es, spark);
     LOG.info("Started Mudrod Weblog Discovery Engine.");
   }

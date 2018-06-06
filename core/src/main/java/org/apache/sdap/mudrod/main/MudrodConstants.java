@@ -137,6 +137,8 @@ public interface MudrodConstants {
   public static final String SPARK_APP_NAME = "mudrod.spark.app.name";
 
   public static final String SPARK_MASTER = "mudrod.spark.master";
+  
+  public static final String STORAGE_DRIVER = "mudrod.storage.driver";
 
   public static final String RANKING_MODEL = "mudrod.ranking.model";
 
