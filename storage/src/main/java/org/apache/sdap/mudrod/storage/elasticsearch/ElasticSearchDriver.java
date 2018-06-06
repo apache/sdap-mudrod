@@ -11,14 +11,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sdap.mudrod.driver;
+package org.apache.sdap.mudrod.storage.elasticsearch;
 
-import com.carrotsearch.hppc.cursors.ObjectObjectCursor;
-import com.google.gson.GsonBuilder;
+import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.sdap.mudrod.main.MudrodConstants;
-import org.apache.sdap.mudrod.main.MudrodEngine;
+import org.apache.sdap.mudrod.storage.StorageDriver;
 import org.apache.sdap.mudrod.utils.ESTransportClient;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse.AnalyzeToken;
@@ -57,46 +75,24 @@ import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.net.InetAddress;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+import com.carrotsearch.hppc.cursors.ObjectObjectCursor;
+import com.google.gson.GsonBuilder;
 
 /**
- * Driver implementation for all Elasticsearch functionality.
+ *
  */
-public class ESDriver implements Serializable {
+public class ElasticSearchDriver implements StorageDriver {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ESDriver.class);
-  private static final long serialVersionUID = 1L;
+  private static final Logger LOG = LoggerFactory.getLogger(ElasticSearchDriver.class);
   private transient Client client = null;
   private transient Node node = null;
   private transient BulkProcessor bulkProcessor = null;
 
   /**
-   * Default constructor for this class. To load client configuration call
-   * substantiated constructor.
+   * @param props 
+   * 
    */
-  public ESDriver() {
-    // Default constructor, to load configuration call ESDriver(props)
-  }
-
-  /**
-   * Substantiated constructor which accepts a {@link java.util.Properties}
-   *
-   * @param props a populated properties object.
-   */
-  public ESDriver(Properties props) {
+  public ElasticSearchDriver(Properties props) {
     try {
       setClient(makeClient(props));
     } catch (IOException e) {
@@ -104,6 +100,10 @@ public class ESDriver implements Serializable {
     }
   }
 
+  /* (non-Javadoc)
+   * @see org.apache.sdap.mudrod.storage.StorageDriver#createBulkProcessor()
+   */
+  @Override
   public void createBulkProcessor() {
     LOG.debug("Creating BulkProcessor with maxBulkDocs={}, maxBulkLength={}", 1000, 2500500);
     setBulkProcessor(BulkProcessor.builder(getClient(), new BulkProcessor.Listener() {
@@ -123,34 +123,58 @@ public class ESDriver implements Serializable {
         throw new RuntimeException("Caught exception in bulk: " + request.getDescription() + ", failure: " + failure, failure);
       }
     }).setBulkActions(1000).setBulkSize(new ByteSizeValue(2500500, ByteSizeUnit.GB)).setBackoffPolicy(BackoffPolicy.exponentialBackoff(TimeValue.timeValueMillis(100), 10)).setConcurrentRequests(1)
-        .build());
+            .build());
+
   }
 
+  /* (non-Javadoc)
+   * @see org.apache.sdap.mudrod.storage.StorageDriver#destroyBulkProcessor()
+   */
+  @Override
   public void destroyBulkProcessor() {
     try {
-      getBulkProcessor().awaitClose(10, TimeUnit.MINUTES);
+      getBulkProcessor().awaitClose(20, TimeUnit.MINUTES);
       setBulkProcessor(null);
       refreshIndex();
     } catch (InterruptedException e) {
       LOG.error("Error destroying the Bulk Processor.", e);
     }
+
   }
 
+  /* (non-Javadoc)
+   * @see org.apache.sdap.mudrod.storage.StorageDriver#putMapping(java.lang.String, java.lang.String, java.lang.String)
+   */
+  @Override
   public void putMapping(String indexName, String settingsJson, String mappingJson) throws IOException {
-
-    boolean exists = getClient().admin().indices().prepareExists(indexName).execute().actionGet().isExists();
+    boolean exists = getClient()
+            .admin()
+            .indices()
+            .prepareExists(indexName)
+            .execute()
+            .actionGet()
+            .isExists();
     if (exists) {
       return;
     }
 
     getClient().admin().indices().prepareCreate(indexName).setSettings(Settings.builder().loadFromSource(settingsJson)).execute().actionGet();
     getClient().admin().indices().preparePutMapping(indexName).setType("_default_").setSource(mappingJson).execute().actionGet();
+
   }
 
+  /* (non-Javadoc)
+   * @see org.apache.sdap.mudrod.storage.StorageDriver#customAnalyzing(java.lang.String, java.lang.String)
+   */
+  @Override
   public String customAnalyzing(String indexName, String str) throws InterruptedException, ExecutionException {
     return this.customAnalyzing(indexName, "cody", str);
   }
 
+  /* (non-Javadoc)
+   * @see org.apache.sdap.mudrod.storage.StorageDriver#customAnalyzing(java.lang.String, java.lang.String, java.lang.String)
+   */
+  @Override
   public String customAnalyzing(String indexName, String analyzer, String str) throws InterruptedException, ExecutionException {
     String[] strList = str.toLowerCase().split(",");
     for (int i = 0; i < strList.length; i++) {
@@ -164,6 +188,10 @@ public class ESDriver implements Serializable {
     return String.join(",", strList);
   }
 
+  /* (non-Javadoc)
+   * @see org.apache.sdap.mudrod.storage.StorageDriver#customAnalyzing(java.lang.String, java.util.List)
+   */
+  @Override
   public List<String> customAnalyzing(String indexName, List<String> list) throws InterruptedException, ExecutionException {
     if (list == null) {
       return list;
@@ -176,32 +204,28 @@ public class ESDriver implements Serializable {
     return customlist;
   }
 
+  /* (non-Javadoc)
+   * @see org.apache.sdap.mudrod.storage.StorageDriver#deleteType(java.lang.String, java.lang.String)
+   */
+  @Override
+  public void deleteType(String index, String type) {
+    this.deleteAllByQuery(index, type, QueryBuilders.matchAllQuery());
+
+  }
+
   public void deleteAllByQuery(String index, String type, QueryBuilder query) {
-    ImmutableOpenMap<String, MappingMetaData> mappings = getClient()
-            .admin()
-            .cluster()
-            .prepareState()
-            .execute()
-            .actionGet()
-            .getState()
-            .metaData()
-            .index(index)
-            .getMappings();
-    
+    ImmutableOpenMap<String, MappingMetaData> mappings = getClient().admin()
+            .cluster().prepareState().execute().actionGet()
+            .getState().metaData().index(index).getMappings();
+
     //check if the type exists
     if (!mappings.containsKey(type))
       return;
-    
+
     createBulkProcessor();
-    SearchResponse scrollResp = getClient()
-            .prepareSearch(index)
-            .setSearchType(SearchType.QUERY_AND_FETCH)
-            .setTypes(type)
-            .setScroll(new TimeValue(60000))
-            .setQuery(query)
-            .setSize(10000)
-            .execute()
-            .actionGet();
+    SearchResponse scrollResp = getClient().prepareSearch(index).setSearchType(
+            SearchType.QUERY_AND_FETCH).setTypes(type).setScroll(
+                    new TimeValue(60000)).setQuery(query).setSize(10000).execute().actionGet();
 
     while (true) {
       for (SearchHit hit : scrollResp.getHits().getHits()) {
@@ -209,7 +233,8 @@ public class ESDriver implements Serializable {
         getBulkProcessor().add(deleteRequest);
       }
 
-      scrollResp = getClient().prepareSearchScroll(scrollResp.getScrollId()).setScroll(new TimeValue(600000)).execute().actionGet();
+      scrollResp = getClient().prepareSearchScroll(scrollResp.getScrollId())
+              .setScroll(new TimeValue(600000)).execute().actionGet();
       if (scrollResp.getHits().getHits().length == 0) {
         break;
       }
@@ -218,10 +243,10 @@ public class ESDriver implements Serializable {
     destroyBulkProcessor();
   }
 
-  public void deleteType(String index, String type) {
-    this.deleteAllByQuery(index, type, QueryBuilders.matchAllQuery());
-  }
-
+  /* (non-Javadoc)
+   * @see org.apache.sdap.mudrod.storage.StorageDriver#getTypeListWithPrefix(java.lang.Object, java.lang.Object)
+   */
+  @Override
   public List<String> getTypeListWithPrefix(Object object, Object object2) {
     ArrayList<String> typeList = new ArrayList<>();
     GetMappingsResponse res;
@@ -239,8 +264,11 @@ public class ESDriver implements Serializable {
     return typeList;
   }
 
+  /* (non-Javadoc)
+   * @see org.apache.sdap.mudrod.storage.StorageDriver#getIndexListWithPrefix(java.lang.Object)
+   */
+  @Override
   public List<String> getIndexListWithPrefix(Object object) {
-
     LOG.info("Retrieving index list with prefix: {}", object.toString());
     String[] indices = client.admin().indices().getIndex(new GetIndexRequest()).actionGet().getIndices();
 
@@ -254,12 +282,19 @@ public class ESDriver implements Serializable {
     return indexList;
   }
 
-  public String searchByQuery(String index, String type, String query) throws IOException, InterruptedException, ExecutionException {
+  /* (non-Javadoc)
+   * @see org.apache.sdap.mudrod.storage.StorageDriver#searchByQuery(java.lang.String, java.lang.String, java.lang.String)
+   */
+  @Override
+  public String searchByQuery(String index, String type, String query) {
     return searchByQuery(index, type, query, false);
   }
 
-  @SuppressWarnings("unchecked")
-  public String searchByQuery(String index, String type, String query, Boolean bDetail) throws IOException, InterruptedException, ExecutionException {
+  /* (non-Javadoc)
+   * @see org.apache.sdap.mudrod.storage.StorageDriver#searchByQuery(java.lang.String, java.lang.String, java.lang.String, java.lang.Boolean)
+   */
+  @Override
+  public String searchByQuery(String index, String type, String query, Boolean bDetail) {
     boolean exists = getClient().admin().indices().prepareExists(index).execute().actionGet().isExists();
     if (!exists) {
       return null;
@@ -312,7 +347,7 @@ public class ESDriver implements Serializable {
       Map<String, Object> source = hit.getSource();
 
       Map<String, Object> searchResult = source.entrySet().stream().filter(entry -> fieldsToReturn.keySet().contains(entry.getKey()))
-          .collect(Collectors.toMap(entry -> fieldsToReturn.get(entry.getKey()), Entry::getValue));
+              .collect(Collectors.toMap(entry -> fieldsToReturn.get(entry.getKey()), Entry::getValue));
 
       // searchResult is now a map where the key = value from fieldsToReturn and the value = value from search result
 
@@ -335,8 +370,8 @@ public class ESDriver implements Serializable {
         // Time Span Formatting
         LocalDate startDate = Instant.ofEpochMilli((Long) searchResult.get("DatasetCoverage-StartTimeLong-Long")).atZone(ZoneId.of("Z")).toLocalDate();
         LocalDate endDate = "".equals(searchResult.get("Dataset-DatasetCoverage-StopTimeLong")) ?
-            null :
-            Instant.ofEpochMilli(Long.parseLong(searchResult.get("Dataset-DatasetCoverage-StopTimeLong").toString())).atZone(ZoneId.of("Z")).toLocalDate();
+                null :
+                Instant.ofEpochMilli(Long.parseLong(searchResult.get("Dataset-DatasetCoverage-StopTimeLong").toString())).atZone(ZoneId.of("Z")).toLocalDate();
         searchResult.put("Time Span", startDate.format(DateTimeFormatter.ISO_DATE) + " to " + (endDate == null ? "Present" : endDate.format(DateTimeFormatter.ISO_DATE)));
 
         // Temporal resolution can come from one of two fields
@@ -357,7 +392,7 @@ public class ESDriver implements Serializable {
 
         // Measurement is a list of hierarchies that goes Topic -> Term -> Variable -> Variable Detail. Need to construct these hierarchies.
         List<List<String>> measurements = buildMeasurementHierarchies((List<String>) searchResult.get("Topic"), (List<String>) searchResult.get("DatasetParameter-Term-Full"),
-            (List<String>) searchResult.get("DatasetParameter-Variable-Full"), (List<String>) searchResult.get("DatasetParameter-VariableDetail"));
+                (List<String>) searchResult.get("DatasetParameter-Variable-Full"), (List<String>) searchResult.get("DatasetParameter-VariableDetail"));
 
         searchResult.put("Measurements", measurements);
 
@@ -402,8 +437,8 @@ public class ESDriver implements Serializable {
    *
    * @return A List where each element is a single hierarchy (as a List) built from the provided input lists.
    */
-  private List<List<String>> buildMeasurementHierarchies(List<String> topics, List<String> terms, List<String> variables, List<String> variableDetails) {
-
+  @Override
+  public List<List<String>> buildMeasurementHierarchies(List<String> topics, List<String> terms, List<String> variables, List<String> variableDetails) {
     List<List<String>> measurements = new ArrayList<>();
 
     for (int x = 0; x < topics.size(); x++) {
@@ -422,16 +457,19 @@ public class ESDriver implements Serializable {
     }
 
     return measurements;
-
   }
 
+  /* (non-Javadoc)
+   * @see org.apache.sdap.mudrod.storage.StorageDriver#autoComplete(java.lang.String, java.lang.String)
+   */
+  @Override
   public List<String> autoComplete(String index, String term) {
     boolean exists = this.getClient().admin().indices().prepareExists(index).execute().actionGet().isExists();
     if (!exists) {
       return new ArrayList<>();
     }
 
-    Set<String> suggestHS = new HashSet<String>();
+    Set<String> suggestHS = new HashSet<>();
     List<String> suggestList = new ArrayList<>();
 
     // please make sure that the completion field is configured in the ES mapping
@@ -453,10 +491,18 @@ public class ESDriver implements Serializable {
     return suggestList;
   }
 
+  /* (non-Javadoc)
+   * @see org.apache.sdap.mudrod.storage.StorageDriver#close()
+   */
+  @Override
   public void close() {
     client.close();
   }
 
+  /* (non-Javadoc)
+   * @see org.apache.sdap.mudrod.storage.StorageDriver#refreshIndex()
+   */
+  @Override
   public void refreshIndex() {
     client.admin().indices().prepareRefresh().execute().actionGet();
   }
@@ -501,17 +547,6 @@ public class ESDriver implements Serializable {
     }
 
     return client;
-  }
-
-  /**
-   * Main method used to invoke the ESDriver implementation.
-   *
-   * @param args no arguments are required to invoke the Driver.
-   */
-  public static void main(String[] args) {
-    MudrodEngine mudrodEngine = new MudrodEngine();
-    ESDriver es = new ESDriver(mudrodEngine.loadConfig());
-    es.getTypeListWithPrefix("podaacsession", "sessionstats");
   }
 
   /**
@@ -572,12 +607,20 @@ public class ESDriver implements Serializable {
     return ur;
   }
 
+  /* (non-Javadoc)
+   * @see org.apache.sdap.mudrod.storage.StorageDriver#getDocCount(java.lang.String, java.lang.String[])
+   */
+  @Override
   public int getDocCount(String index, String... type) {
     MatchAllQueryBuilder search = QueryBuilders.matchAllQuery();
     String[] indexArr = new String[] { index };
     return this.getDocCount(indexArr, type, search);
   }
 
+  /* (non-Javadoc)
+   * @see org.apache.sdap.mudrod.storage.StorageDriver#getDocCount(java.lang.String[], java.lang.String[])
+   */
+  @Override
   public int getDocCount(String[] index, String[] type) {
     MatchAllQueryBuilder search = QueryBuilders.matchAllQuery();
     return this.getDocCount(index, type, search);
@@ -589,4 +632,5 @@ public class ESDriver implements Serializable {
     int docCount = (int) countSr.getHits().getTotalHits();
     return docCount;
   }
+
 }

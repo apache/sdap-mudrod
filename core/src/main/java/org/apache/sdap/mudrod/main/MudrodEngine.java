@@ -27,9 +27,11 @@ import org.apache.sdap.mudrod.discoveryengine.MetadataDiscoveryEngine;
 import org.apache.sdap.mudrod.discoveryengine.OntologyDiscoveryEngine;
 import org.apache.sdap.mudrod.discoveryengine.RecommendEngine;
 import org.apache.sdap.mudrod.discoveryengine.WeblogDiscoveryEngine;
-import org.apache.sdap.mudrod.driver.ESDriver;
+import org.apache.sdap.mudrod.driver.StorageDriver;
+import org.apache.sdap.mudrod.driver.StorageDriverFactory;
 import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.integration.LinkageIntegration;
+import org.apache.sdap.mudrod.utils.ClassLoadingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +59,7 @@ public class MudrodEngine {
 
   private static final Logger LOG = LoggerFactory.getLogger(MudrodEngine.class);
   private Properties props = new Properties();
-  private ESDriver es = null;
+  private StorageDriver sd = null;
   private SparkDriver spark = null;
   private static final String LOG_INGEST = "logIngest";
   private static final String META_INGEST = "metaIngest";
@@ -75,13 +77,17 @@ public class MudrodEngine {
   }
 
   /**
-   * Start the {@link ESDriver}. Should only be called after call to
+   * Start the {@link StorageDriver}. Should only be called after call to
    * {@link MudrodEngine#loadConfig()}
    *
-   * @return fully provisioned {@link ESDriver}
+   * @return fully provisioned {@link StorageDriver}
+ * @throws Exception 
+ * @throws ClassNotFoundException 
    */
-  public ESDriver startESDriver() {
-    return new ESDriver(props);
+  public StorageDriver startStorageDriver() throws ClassNotFoundException, Exception {
+    return StorageDriverFactory.createDataStore(
+    		ClassLoadingUtils.loadClass(props.getProperty(MudrodConstants.STORAGE_DRIVER, "org.apache.sdap.mudrod.storage.solr.SolrDriver")),
+    		props);
   }
 
   /**
@@ -105,12 +111,12 @@ public class MudrodEngine {
   }
 
   /**
-   * Retreive the Mudrod {@link ESDriver}
+   * Retreive the Mudrod {@link StorageDriver}
    *
-   * @return the {@link ESDriver} instance.
+   * @return the {@link StorageDriver} instance.
    */
-  public ESDriver getESDriver() {
-    return this.es;
+  public StorageDriver getStorageDriver() {
+    return this.sd;
   }
 
   /**
@@ -119,8 +125,8 @@ public class MudrodEngine {
    * @param es
    *          an ES driver instance
    */
-  public void setESDriver(ESDriver es) {
-    this.es = es;
+  public void setStorageDriver(StorageDriver sd) {
+    this.sd = sd;
   }
 
   private InputStream locateConfig() {
@@ -215,7 +221,7 @@ public class MudrodEngine {
    * for weblog
    */
   public void startLogIngest() {
-    DiscoveryEngineAbstract wd = new WeblogDiscoveryEngine(props, es, spark);
+    DiscoveryEngineAbstract wd = new WeblogDiscoveryEngine(props, sd, spark);
     wd.preprocess();
     wd.process();
     LOG.info("Logs have been ingested successfully");
@@ -225,26 +231,26 @@ public class MudrodEngine {
    * updating and analysing metadata to metadata similarity results
    */
   public void startMetaIngest() {
-    DiscoveryEngineAbstract md = new MetadataDiscoveryEngine(props, es, spark);
+    DiscoveryEngineAbstract md = new MetadataDiscoveryEngine(props, sd, spark);
     md.preprocess();
     md.process();
 
-    DiscoveryEngineAbstract recom = new RecommendEngine(props, es, spark);
+    DiscoveryEngineAbstract recom = new RecommendEngine(props, sd, spark);
     recom.preprocess();
     recom.process();
     LOG.info("Metadata has been ingested successfully.");
   }
 
   public void startFullIngest() {
-    DiscoveryEngineAbstract wd = new WeblogDiscoveryEngine(props, es, spark);
+    DiscoveryEngineAbstract wd = new WeblogDiscoveryEngine(props, sd, spark);
     wd.preprocess();
     wd.process();
 
-    DiscoveryEngineAbstract md = new MetadataDiscoveryEngine(props, es, spark);
+    DiscoveryEngineAbstract md = new MetadataDiscoveryEngine(props, sd, spark);
     md.preprocess();
     md.process();
 
-    DiscoveryEngineAbstract recom = new RecommendEngine(props, es, spark);
+    DiscoveryEngineAbstract recom = new RecommendEngine(props, sd, spark);
     recom.preprocess();
     recom.process();
     LOG.info("Full ingest has finished successfully.");
@@ -255,30 +261,30 @@ public class MudrodEngine {
    * weblog, ontology and metadata, linkage discovery and integration.
    */
   public void startProcessing() {
-    DiscoveryEngineAbstract wd = new WeblogDiscoveryEngine(props, es, spark);
+    DiscoveryEngineAbstract wd = new WeblogDiscoveryEngine(props, sd, spark);
     wd.process();
 
-    DiscoveryEngineAbstract od = new OntologyDiscoveryEngine(props, es, spark);
+    DiscoveryEngineAbstract od = new OntologyDiscoveryEngine(props, sd, spark);
     od.preprocess();
     od.process();
 
-    DiscoveryEngineAbstract md = new MetadataDiscoveryEngine(props, es, spark);
+    DiscoveryEngineAbstract md = new MetadataDiscoveryEngine(props, sd, spark);
     md.preprocess();
     md.process();
 
-    LinkageIntegration li = new LinkageIntegration(props, es, spark);
+    LinkageIntegration li = new LinkageIntegration(props, sd, spark);
     li.execute();
 
-    DiscoveryEngineAbstract recom = new RecommendEngine(props, es, spark);
+    DiscoveryEngineAbstract recom = new RecommendEngine(props, sd, spark);
     recom.process();
   }
 
   /**
-   * Close the connection to the {@link ESDriver} instance.
+   * Close the connection to the {@link StorageDriver} instance.
    */
   public void end() {
-    if (es != null) {
-      es.close();
+    if (sd != null) {
+      sd.close();
     }
   }
 
@@ -367,7 +373,8 @@ public class MudrodEngine {
         me.props.put(MudrodConstants.ES_HTTP_PORT, esHttpPort);
       }
 
-      me.es = new ESDriver(me.getConfig());
+      //check out logic presewnted in #startStorageDriver
+      me.sd = new StorageDriver(?, me.getConfig());
       me.spark = new SparkDriver(me.getConfig());
       loadPathConfig(me, dataDir);
       if (processingType != null) {

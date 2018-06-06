@@ -17,3 +17,9 @@ service/.classpath
 web/.classpath
 web/.externalToolBuilders/
 web/maven-eclipse.xml
+storage/lib
+storage/.classpath
+storage/.externalToolBuilders/Maven_Ant_Builder.launch
+storage/.gitignore
+storage/maven-eclipse.xml
+storage/target
