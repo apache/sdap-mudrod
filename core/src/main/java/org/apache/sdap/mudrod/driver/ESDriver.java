@@ -133,6 +133,7 @@ public class ESDriver implements Serializable {
       refreshIndex();
     } catch (InterruptedException e) {
       LOG.error("Error destroying the Bulk Processor.", e);
+      Thread.currentThread().interrupt();
     }
   }
 
@@ -489,12 +490,11 @@ public class ESDriver implements Serializable {
 
     Client client = null;
 
-    // Prefer TransportClient
-    if (hosts != null && port > 1) {
+    if (hosts != null && port > 1) {  
       TransportClient transportClient = new ESTransportClient(settings);
       for (String host : hosts)
         transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), port));
-      client = transportClient;
+      return transportClient;
     } else if (clusterName != null) {
       node = new Node(settings);
       client = node.client();
