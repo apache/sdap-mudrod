@@ -18,7 +18,6 @@ import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.main.MudrodConstants;
 import org.apache.sdap.mudrod.semantics.SVDAnalyzer;
-import org.apache.sdap.mudrod.ssearch.ClickstreamImporter;
 import org.apache.sdap.mudrod.utils.LinkageTriple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,8 +61,8 @@ public class ClickStreamAnalyzer extends DiscoveryStepAbstract {
         svd.saveToES(tripleList, props.getProperty(MudrodConstants.ES_INDEX_NAME), MudrodConstants.CLICK_STREAM_LINKAGE_TYPE);
       
         // Store click stream in ES for the ranking use
-        ClickstreamImporter cs = new ClickstreamImporter(props, es, spark);
-        cs.importfromCSVtoES();
+        //ClickstreamImporter cs = new ClickstreamImporter(props, es, spark);
+        //cs.importfromCSVtoES();
       }
     } catch (Exception e) {
       LOG.error("Encountered an error during execution of ClickStreamAnalyzer.", e);

@@ -20,7 +20,7 @@ import com.google.gson.JsonObject;
 import org.apache.sdap.mudrod.discoveryengine.MudrodAbstract;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
-import org.apache.sdap.mudrod.ssearch.structure.SResult;
+import org.apache.sdap.mudrod.ranking.structure.SResult;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;

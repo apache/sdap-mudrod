@@ -11,47 +11,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sdap.mudrod.ssearch.ranking;
+package org.apache.sdap.mudrod.ranking.common;
 
+import org.apache.sdap.mudrod.discoveryengine.MudrodAbstract;
+import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
+import org.apache.sdap.mudrod.main.MudrodConstants;
+import org.apache.sdap.mudrod.ranking.ranksvm.SVMLearner;
 import org.apache.spark.SparkContext;
 import org.apache.spark.mllib.classification.SVMModel;
 import org.apache.spark.mllib.regression.LabeledPoint;
 
 import java.io.Serializable;
+import java.util.Properties;
 
 /**
  * Supports the ability to importing classifier into memory
  */
-public class Learner implements Serializable {
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
-  SVMModel model = null;
-  transient SparkContext sc = null;
+public class LearnerFactory extends MudrodAbstract {
 
-  /**
-   * Constructor to load in spark SVM classifier
-   *
-   * @param classifierName classifier type
-   * @param skd            an instance of spark driver
-   * @param svmSgdModel    path to a trained model
-   */
-  public Learner(SparkDriver skd, String svmSgdModel) {
-      sc = skd.sc.sc();
-      sc.addFile(svmSgdModel, true);
-      model = SVMModel.load(sc, svmSgdModel);
-  }
+  public LearnerFactory(Properties props, ESDriver es, SparkDriver spark) {
+		super(props, es, spark);
+		// TODO Auto-generated constructor stub
+	}
 
-  /**
+/**
    * Method of classifying instance
    *
    * @param p the instance that needs to be classified
    * @return the class id
    */
-  public double classify(LabeledPoint p) {
-    return model.predict(p.features());
+  
+  public Learner createLearner(){
+	  if("1".equals(props.getProperty(MudrodConstants.RANKING_ML)))
+	      return new SVMLearner(props, es, spark, props.getProperty(MudrodConstants.RANKING_MODEL));
+	  
+	  return null;
+	  
   }
+  
 
 }

@@ -51,6 +51,13 @@
             <artifactId>mudrod-web</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
+        <!-- ranking module -->
+        <dependency>
+            <groupId>org.apache.sdap.mudrod</groupId>
+            <artifactId>mudrod-ranking</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Logging dependencies -->
         <dependency>

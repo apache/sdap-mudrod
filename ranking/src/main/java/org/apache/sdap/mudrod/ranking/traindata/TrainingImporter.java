@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sdap.mudrod.ranking.offline.train;
+package org.apache.sdap.mudrod.ranking.traindata;
 
 import org.apache.sdap.mudrod.discoveryengine.MudrodAbstract;
 import org.apache.sdap.mudrod.driver.ESDriver;

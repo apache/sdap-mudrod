@@ -23,8 +23,8 @@ import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.main.MudrodEngine;
 import org.apache.sdap.mudrod.ontology.Ontology;
 import org.apache.sdap.mudrod.ontology.OntologyFactory;
-import org.apache.sdap.mudrod.ssearch.Ranker;
-import org.apache.sdap.mudrod.ssearch.Searcher;
+import org.apache.sdap.mudrod.ranking.common.Ranker;
+import org.apache.sdap.mudrod.ranking.common.Searcher;
 
 import java.util.Properties;
 

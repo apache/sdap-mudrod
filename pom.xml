@@ -136,6 +136,7 @@
 
   <modules>
     <module>core</module>
+    <module>ranking</module>
     <module>service</module>
     <module>web</module>
   </modules>

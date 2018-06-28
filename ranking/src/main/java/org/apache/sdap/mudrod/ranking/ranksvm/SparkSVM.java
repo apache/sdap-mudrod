@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sdap.mudrod.ranking.offline.train;
+package org.apache.sdap.mudrod.ranking.ranksvm;
 
 import org.apache.sdap.mudrod.main.MudrodEngine;
 import org.apache.spark.api.java.JavaRDD;
@@ -43,7 +43,5 @@ public class SparkSVM {
     model.save(jsc.sc(), SparkSVM.class.getClassLoader().getResource("javaSVMWithSGDModel").toString());
 
     jsc.sc().stop();
-
   }
-
 }

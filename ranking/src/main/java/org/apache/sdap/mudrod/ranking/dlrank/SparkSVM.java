@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sdap.mudrod.ssearch.ranking;
+package org.apache.sdap.mudrod.ranking.dlrank;
 
 import org.apache.sdap.mudrod.main.MudrodEngine;
 import org.apache.spark.api.java.JavaRDD;

@@ -17,8 +17,7 @@ import org.apache.sdap.mudrod.discoveryengine.MudrodAbstract;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.main.MudrodConstants;
-import org.apache.sdap.mudrod.ssearch.ranking.Learner;
-import org.apache.sdap.mudrod.ssearch.structure.SResult;
+import org.apache.sdap.mudrod.ranking.structure.SResult;
 import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.mllib.regression.LabeledPoint;
 
@@ -36,8 +35,9 @@ public class Ranker extends MudrodAbstract implements Serializable {
 
   public Ranker(Properties props, ESDriver es, SparkDriver spark) {
     super(props, es, spark);
-    if("1".equals(props.getProperty(MudrodConstants.RANKING_ML)))
-      le = new Learner(spark, props.getProperty(MudrodConstants.RANKING_MODEL));
+    
+    LearnerFactory factory = new LearnerFactory(props, es, spark);
+    le = factory.createLearner();
   }
 
   /**
@@ -160,11 +160,9 @@ public class Ranker extends MudrodAbstract implements Serializable {
       }
 
       double[] ins = instList.stream().mapToDouble(i -> i).toArray();
-      LabeledPoint insPoint = new LabeledPoint(99.0, Vectors.dense(ins));
-      int prediction = (int)le.classify(insPoint);
+      int prediction = (int)le.predict(ins);
       
       return prediction;
     }
   }
-
 }

@@ -1,4 +1,4 @@
-package org.apache.sdap.mudrod.ranking.offline.train;
+package org.apache.sdap.mudrod.ranking.dlrank;
 
 import java.io.*;
 import java.text.DecimalFormat;

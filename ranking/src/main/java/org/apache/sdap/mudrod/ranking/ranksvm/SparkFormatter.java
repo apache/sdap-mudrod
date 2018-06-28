@@ -1,4 +1,4 @@
-package org.apache.sdap.mudrod.ssearch.ranking;
+package org.apache.sdap.mudrod.ranking.ranksvm;
 
 import java.io.*;
 import java.text.DecimalFormat;
@@ -7,6 +7,7 @@ public class SparkFormatter {
   DecimalFormat NDForm = new DecimalFormat("#.###");
 
   public SparkFormatter() {
+	  
   }
 
   public void toSparkSVMformat(String inputCSVFileName, String outputTXTFileName) {
@@ -51,5 +52,4 @@ public class SparkFormatter {
     SparkFormatter sf = new SparkFormatter();
     sf.toSparkSVMformat("C:/mudrodCoreTestData/rankingResults/inputDataForSVM.csv", "C:/mudrodCoreTestData/rankingResults/inputDataForSVM_spark.txt");
   }
-
 }
