@@ -28,7 +28,7 @@ import java.util.Map;
  * the space of query-document vectors, e.g. x1, x2, x3, we transform them into a new space
  * in which a pair of documents is represented as the difference between their feature vectors.
  */
-public class ExpertData {
+public class ExpertRankTrainData {
   private static String mySourceDir;
   private static String myResultDir;
   private static boolean isMultFiles;
@@ -59,10 +59,18 @@ public class ExpertData {
    * @param multFiles true if multiple files in directory need to be processed and false if
    *                  only a single file needs to be processed
    */
-  public ExpertData(String sourceDir, String resultDir, boolean multFiles) {
+  public ExpertRankTrainData(String sourceDir, String resultDir, boolean multFiles) {
     mySourceDir = sourceDir;
     myResultDir = resultDir;
     isMultFiles = multFiles;
+  }
+  
+  /**
+   * prepare data for experts to evaluate.
+   */
+  public void prepareDataForExperts() {
+	    parseFile();
+	    writeCSVfile(myMasterList);
   }
 
   /**

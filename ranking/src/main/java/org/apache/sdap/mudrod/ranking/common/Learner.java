@@ -16,8 +16,7 @@ package org.apache.sdap.mudrod.ranking.common;
 import org.apache.sdap.mudrod.discoveryengine.MudrodAbstract;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
-import org.apache.sdap.mudrod.ranking.traindata.ExpertData;
-import org.apache.sdap.mudrod.ranking.traindata.TrainingImporter;
+import org.apache.sdap.mudrod.ranking.traindata.ExpertRankTrainData;
 import org.apache.spark.SparkContext;
 import org.apache.spark.mllib.classification.SVMModel;
 import org.apache.spark.mllib.regression.LabeledPoint;
@@ -38,32 +37,6 @@ public abstract class Learner extends MudrodAbstract {
 	}
 
 	/**
-	 * Constructor to load in spark SVM classifier
-	 *
-	 * @param classifierName
-	 *            classifier type
-	 * @param skd
-	 *            an instance of spark driver
-	 * @param svmSgdModel
-	 *            path to a trained model
-	 */
-
-	public String extractTrainDataFromExperts(String sourceDir){
-	  File sourceFile = new File(sourceDir);
-	  boolean bDir = sourceFile.isDirectory();
-	  boolean multFiles = false;
-	  if(bDir){
-		  multFiles = true;
-	  }
-	  
-	  String resultDir = sourceFile.getParent() + "/trainsets.txt";
-	  ExpertData converter = new ExpertData(sourceDir, resultDir, true);
-      converter.convert2TrainSet();
-      
-      return resultDir;
-	}
-
-	/**
 	 * Method of classifying instance
 	 *
 	 * @param p
@@ -72,7 +45,7 @@ public abstract class Learner extends MudrodAbstract {
 	 */
 	//public abstract double classify(LabeledPoint p);
 
-	public abstract String prepareTrainData(String sourceDir);
+	public abstract String customizeTrainData(String sourceDir);
 
 	public abstract void train(String trainFile);
 
