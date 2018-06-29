@@ -72,38 +72,54 @@ public class HistoryGenerator extends LogAbstract {
       bw.write("Num" + ",");
 
       // step 1: write first row of csv
-      List<String> logIndexList = es.getIndexListWithPrefix(props.getProperty(MudrodConstants.LOG_INDEX));
+      List<String> logIndexList = es.getIndexListWithPrefix(
+              props.getProperty(MudrodConstants.LOG_INDEX));
 
       String[] logIndices = logIndexList.toArray(new String[0]);
       String[] statictypeArray = new String[] { this.sessionStats };
       int docCount = es.getDocCount(logIndices, statictypeArray);
-      
-      LOG.info("{}: {}", this.sessionStats, docCount);      
 
-      if (docCount==0) 
-      { 
+      LOG.info("{}: {}", this.sessionStats, docCount);
+
+      if (docCount==0) { 
         bw.close(); 
         file.delete();
         return;
       }
 
-      SearchResponse sr = es.getClient().prepareSearch(logIndices).setTypes(statictypeArray).setQuery(QueryBuilders.matchAllQuery()).setSize(0)
-          .addAggregation(AggregationBuilders.terms("IPs").field("IP").size(docCount)).execute().actionGet();
+      SearchResponse sr = es.getClient()
+              .prepareSearch(logIndices)
+              .setTypes(statictypeArray)
+              .setQuery(QueryBuilders.matchAllQuery())
+              .setSize(0)
+              .addAggregation(AggregationBuilders.terms("IPs")
+              .field("IP")
+              .size(docCount))
+              .execute()
+              .actionGet();
       Terms ips = sr.getAggregations().get("IPs");
       List<String> ipList = new ArrayList<>();
       for (Terms.Bucket entry : ips.getBuckets()) {
-        if (entry.getDocCount() > Integer.parseInt(props.getProperty(MudrodConstants.QUERY_MIN))) { // filter
-          // out
-          // less
-          // active users/ips
+        // filter
+        if (entry.getDocCount() > Integer.parseInt(props.getProperty(MudrodConstants.QUERY_MIN))) {
+          // out less active users/ips
           ipList.add(entry.getKey().toString());
         }
       }
       bw.write(String.join(",", ipList) + "\n");
 
       // step 2: step the rest rows of csv
-      SearchRequestBuilder sr2Builder = es.getClient().prepareSearch(logIndices).setTypes(statictypeArray).setQuery(QueryBuilders.matchAllQuery()).setSize(0)
-          .addAggregation(AggregationBuilders.terms("KeywordAgg").field("keywords").size(docCount).subAggregation(AggregationBuilders.terms("IPAgg").field("IP").size(docCount)));
+      SearchRequestBuilder sr2Builder = es.getClient()
+              .prepareSearch(logIndices)
+              .setTypes(statictypeArray)
+              .setQuery(QueryBuilders.matchAllQuery())
+              .setSize(0)
+              .addAggregation(AggregationBuilders.terms("KeywordAgg")
+                      .field("keywords")
+                      .size(docCount)
+                      .subAggregation(AggregationBuilders.terms("IPAgg")
+                              .field("IP")
+                              .size(docCount)));
 
       SearchResponse sr2 = sr2Builder.execute().actionGet();
       Terms keywords = sr2.getAggregations().get("KeywordAgg");
@@ -132,6 +148,7 @@ public class HistoryGenerator extends LogAbstract {
       }
 
       bw.close();
+      fw.close();
     } catch (IOException e) {
       e.printStackTrace();
     }

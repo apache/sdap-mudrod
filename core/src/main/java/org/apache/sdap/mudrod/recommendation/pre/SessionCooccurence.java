@@ -19,7 +19,7 @@ import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.main.MudrodConstants;
 import org.apache.sdap.mudrod.utils.LabeledRowMatrix;
 import org.apache.sdap.mudrod.utils.MatrixUtil;
-import org.apache.sdap.mudrod.weblog.structure.SessionExtractor;
+import org.apache.sdap.mudrod.weblog.structure.session.SessionExtractor;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.function.PairFunction;
 import org.elasticsearch.action.search.SearchResponse;

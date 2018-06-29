@@ -1,0 +1,18 @@
+2018-05-22 14:24:36,500 ERROR main.MudrodEngine - Error whilst parsing command line.
+org.apache.commons.cli.MissingOptionException: Missing required option: dataDir
+	at org.apache.commons.cli.Parser.checkRequiredOptions(Parser.java:299)
+	at org.apache.commons.cli.Parser.parse(Parser.java:231)
+	at org.apache.commons.cli.Parser.parse(Parser.java:85)
+	at org.apache.sdap.mudrod.main.MudrodEngine.main(MudrodEngine.java:332)
+2018-05-22 14:28:10,407 ERROR main.MudrodEngine - Error whilst parsing command line.
+org.apache.commons.cli.MissingOptionException: Missing required option: dataDir
+	at org.apache.commons.cli.Parser.checkRequiredOptions(Parser.java:299)
+	at org.apache.commons.cli.Parser.parse(Parser.java:231)
+	at org.apache.commons.cli.Parser.parse(Parser.java:85)
+	at org.apache.sdap.mudrod.main.MudrodEngine.main(MudrodEngine.java:332)
+2018-05-22 14:46:12,173 ERROR main.MudrodEngine - Error whilst parsing command line.
+org.apache.commons.cli.MissingOptionException: Missing required option: dataDir
+	at org.apache.commons.cli.Parser.checkRequiredOptions(Parser.java:299)
+	at org.apache.commons.cli.Parser.parse(Parser.java:231)
+	at org.apache.commons.cli.Parser.parse(Parser.java:85)
+	at org.apache.sdap.mudrod.main.MudrodEngine.main(MudrodEngine.java:332)

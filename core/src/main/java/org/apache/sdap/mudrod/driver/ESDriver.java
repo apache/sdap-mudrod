@@ -128,11 +128,12 @@ public class ESDriver implements Serializable {
 
   public void destroyBulkProcessor() {
     try {
-      getBulkProcessor().awaitClose(20, TimeUnit.MINUTES);
+      getBulkProcessor().awaitClose(10, TimeUnit.MINUTES);
       setBulkProcessor(null);
       refreshIndex();
     } catch (InterruptedException e) {
       LOG.error("Error destroying the Bulk Processor.", e);
+      Thread.currentThread().interrupt();
     }
   }
 
@@ -177,15 +178,31 @@ public class ESDriver implements Serializable {
   }
 
   public void deleteAllByQuery(String index, String type, QueryBuilder query) {
-    ImmutableOpenMap<String, MappingMetaData> mappings = getClient().admin().cluster().prepareState().execute().actionGet()
-        .getState().metaData().index(index).getMappings();
+    ImmutableOpenMap<String, MappingMetaData> mappings = getClient()
+            .admin()
+            .cluster()
+            .prepareState()
+            .execute()
+            .actionGet()
+            .getState()
+            .metaData()
+            .index(index)
+            .getMappings();
     
     //check if the type exists
-    if (!mappings.containsKey(type)) return;
+    if (!mappings.containsKey(type))
+      return;
     
     createBulkProcessor();
-    SearchResponse scrollResp = getClient().prepareSearch(index).setSearchType(SearchType.QUERY_AND_FETCH).setTypes(type).setScroll(new TimeValue(60000)).setQuery(query).setSize(10000).execute()
-        .actionGet();
+    SearchResponse scrollResp = getClient()
+            .prepareSearch(index)
+            .setSearchType(SearchType.QUERY_AND_FETCH)
+            .setTypes(type)
+            .setScroll(new TimeValue(60000))
+            .setQuery(query)
+            .setSize(10000)
+            .execute()
+            .actionGet();
 
     while (true) {
       for (SearchHit hit : scrollResp.getHits().getHits()) {
@@ -473,12 +490,11 @@ public class ESDriver implements Serializable {
 
     Client client = null;
 
-    // Prefer TransportClient
-    if (hosts != null && port > 1) {
+    if (hosts != null && port > 1) {  
       TransportClient transportClient = new ESTransportClient(settings);
       for (String host : hosts)
         transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), port));
-      client = transportClient;
+      return transportClient;
     } else if (clusterName != null) {
       node = new Node(settings);
       client = node.client();

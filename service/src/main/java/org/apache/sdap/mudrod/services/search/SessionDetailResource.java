@@ -18,7 +18,7 @@ import com.google.gson.JsonObject;
 
 import org.apache.sdap.mudrod.main.MudrodConstants;
 import org.apache.sdap.mudrod.main.MudrodEngine;
-import org.apache.sdap.mudrod.weblog.structure.Session;
+import org.apache.sdap.mudrod.weblog.structure.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

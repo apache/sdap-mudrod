@@ -27,8 +27,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * ClassName: MetadataAnalyzer
- * Function: Calculate semantic relationship of vocabularies extracted from
+ * Calculate semantic relationship of vocabularies extracted from
  * metadata.
  */
 public class MetadataAnalyzer extends DiscoveryStepAbstract implements Serializable {

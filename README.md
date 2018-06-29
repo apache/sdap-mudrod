@@ -2,6 +2,17 @@
 ## Mining and Utilizing Dataset Relevancy from Oceanographic Datasets to Improve Data Discovery and Access
 
 [![license](https://img.shields.io/github/license/apache/incubator-sdap-mudrod.svg?maxAge=2592000?style=plastic)](http://www.apache.org/licenses/LICENSE-2.0)
+[![bugs](https://sonarcloud.io/api/project_badges/measure?project=org.apache.sdap%3Amudrod-parent&metric=bugs)](https://sonarcloud.io/project/issues?id=org.apache.sdap%3Amudrod-parent&resolved=false&types=BUG)
+[![code smells](https://sonarcloud.io/api/project_badges/measure?project=org.apache.sdap%3Amudrod-parent&metric=code_smells)](https://sonarcloud.io/project/issues?id=org.apache.sdap%3Amudrod-parent&resolved=false&types=CODE_SMELL)
+[![coverage](https://sonarcloud.io/api/project_badges/measure?project=org.apache.sdap%3Amudrod-parent&metric=coverage)](https://sonarcloud.io/component_measures?id=org.apache.sdap%3Amudrod-parent&metric=Coverage)
+[![duplicated lines](https://sonarcloud.io/api/project_badges/measure?project=org.apache.sdap%3Amudrod-parent&metric=duplicated_lines_density)](https://sonarcloud.io/component_measures?id=org.apache.sdap%3Amudrod-parent&metric=duplicated_lines_density)
+[![lines of code](https://sonarcloud.io/api/project_badges/measure?project=org.apache.sdap%3Amudrod-parent&metric=ncloc)](https://sonarcloud.io/component_measures?id=org.apache.sdap%3Amudrod-parent&metric=ncloc)
+[![maintainability rating](https://sonarcloud.io/api/project_badges/measure?project=org.apache.sdap%3Amudrod-parent&metric=sqale_rating)](https://sonarcloud.io/component_measures?id=org.apache.sdap%3Amudrod-parent&metric=Maintainability)
+[![quality gate status](https://sonarcloud.io/api/project_badges/measure?project=org.apache.sdap%3Amudrod-parent&metric=alert_status)](https://sonarcloud.io/dashboard?id=org.apache.sdap%3Amudrod-parent)
+[![reliability rating](https://sonarcloud.io/api/project_badges/measure?project=org.apache.sdap%3Amudrod-parent&metric=reliability_rating)](https://sonarcloud.io/component_measures?id=org.apache.sdap%3Amudrod-parent&metric=Reliability)
+[![security rating](https://sonarcloud.io/api/project_badges/measure?project=org.apache.sdap%3Amudrod-parent&metric=security_rating)](https://sonarcloud.io/component_measures?id=org.apache.sdap%3Amudrod-parent&metric=security_rating)
+[![technical debt](https://sonarcloud.io/api/project_badges/measure?project=org.apache.sdap%3Amudrod-parent&metric=sqale_index)](https://sonarcloud.io/component_measures?id=org.apache.sdap%3Amudrod-parent&metric=sqale_index)
+[![vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=org.apache.sdap%3Amudrod-parent&metric=vulnerabilities)](https://sonarcloud.io/project/issues?id=org.apache.sdap%3Amudrod-parent&resolved=false&types=VULNERABILITY)
 
 [MUDROD](https://esto.nasa.gov/forum/estf2015/presentations/Yang_S8P1_ESTF2015.pdf) 
 is a semantic discovery and search project part of [Apache SDAP](https://sdap.apache.org).

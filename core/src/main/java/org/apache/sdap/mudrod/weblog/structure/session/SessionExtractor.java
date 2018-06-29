@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sdap.mudrod.weblog.structure;
+package org.apache.sdap.mudrod.weblog.structure.session;
 
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
@@ -70,47 +70,7 @@ public class SessionExtractor implements Serializable {
    * @return clickstream list in JavaRDD format {@link ClickStream}
    */
   public JavaRDD<ClickStream> extractClickStreamFromES(Properties props, ESDriver es, SparkDriver spark) {
-    switch (props.getProperty(MudrodConstants.PROCESS_TYPE)) {
-      case "sequential":
-        List<ClickStream> queryList = this.getClickStreamList(props, es);
-        return spark.sc.parallelize(queryList);
-      case "parallel":
-        return getClickStreamListInParallel(props, spark, es);
-      default:
-      LOG.error("Error finding processing type for '{}'. Please check your config.xml.", props.getProperty(MudrodConstants.PROCESS_TYPE));
-    }
-    return null;
-  }
-
-  /**
-   * getClickStreamList:Extract click streams from logs stored in Elasticsearch.
-   *
-   * @param props
-   *          the Mudrod configuration
-   * @param es
-   *          the Elasticsearch driver
-   * @return clickstream list {@link ClickStream}
-   */
-  protected List<ClickStream> getClickStreamList(Properties props, ESDriver es) {
-    List<String> logIndexList = es.getIndexListWithPrefix(props.getProperty(MudrodConstants.LOG_INDEX));
-
-    List<ClickStream> result = new ArrayList<>();
-    for (String logIndex : logIndexList) {
-      List<String> sessionIdList;
-      try {
-        sessionIdList = this.getSessions(props, es, logIndex);
-        Session session = new Session(props, es);
-        for (String aSessionIdList : sessionIdList) {
-          String[] sArr = aSessionIdList.split(",");
-          List<ClickStream> datas = session.getClickStreamList(sArr[1], sArr[2], sArr[0]);
-          result.addAll(datas);
-        }
-      } catch (Exception e) {
-        LOG.error("Error during extraction of Clickstreams from log index. {}", e);
-      }
-    }
-
-    return result;
+	return getClickStreamListInParallel(props, spark, es);
   }
 
   protected JavaRDD<ClickStream> getClickStreamListInParallel(Properties props, SparkDriver spark, ESDriver es) {
