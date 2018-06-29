@@ -306,7 +306,7 @@ public class PODAACMetadataFeature extends MetadataFeature {
           List<String> newAList = new ArrayList<>(aList);
           List<String> newBList = new ArrayList<>(bList);
           newAList.retainAll(newBList);
-          similarity = newAList.size() / lengthA;
+          similarity = (double)newAList.size() / lengthA;
         }
 
       } else if (valueA instanceof String) {

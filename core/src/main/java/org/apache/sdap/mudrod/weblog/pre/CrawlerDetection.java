@@ -31,7 +31,6 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
 import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
 import org.elasticsearch.search.aggregations.bucket.histogram.Histogram.Order;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
 import org.joda.time.format.DateTimeFormatter;
@@ -40,7 +39,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -79,7 +82,7 @@ public class CrawlerDetection extends LogAbstract {
     LOG.info("Starting Crawler detection {}.", httpType);
     startTime = System.currentTimeMillis();
     try {
-      checkByRate();
+      checkByRateInParallel();
     } catch (InterruptedException | IOException e) {
       LOG.error("Encountered an error whilst detecting Web crawlers.", e);
     }
@@ -98,43 +101,10 @@ public class CrawlerDetection extends LogAbstract {
   public boolean checkKnownCrawler(String agent) {
     String[] crawlers = props.getProperty(MudrodConstants.BLACK_LIST_AGENT).split(",");
     for (int i = 0; i < crawlers.length; i++) {
-      if (agent.toLowerCase().contains(crawlers[i].trim())) return true;
+      if (agent.toLowerCase().contains(crawlers[i].trim()))
+        return true;
     }  
     return false;
-  }
-
-  public void checkByRate() throws InterruptedException, IOException {
-    String processingType = props.getProperty(MudrodConstants.PROCESS_TYPE);
-    if (processingType.equals("sequential")) {
-      checkByRateInSequential();
-    } else if (processingType.equals("parallel")) {
-      checkByRateInParallel();
-    }
-  }
-
-  /**
-   * Check crawler by request sending rate, which is read from configruation
-   * file
-   *
-   * @throws InterruptedException InterruptedException
-   * @throws IOException          IOException
-   */
-  public void checkByRateInSequential() throws InterruptedException, IOException {
-    es.createBulkProcessor();
-
-    int rate = Integer.parseInt(props.getProperty(MudrodConstants.REQUEST_RATE));
-
-    Terms users = this.getUserTerms(this.httpType);
-    LOG.info("Original User count: {}", Integer.toString(users.getBuckets().size()));
-
-    int userCount = 0;
-    for (Terms.Bucket entry : users.getBuckets()) {
-      String user = entry.getKey().toString();
-      int count = checkByRate(es, user);
-      userCount += count;
-    }
-    es.destroyBulkProcessor();
-    LOG.info("User count: {}", Integer.toString(userCount));
   }
 
   void checkByRateInParallel() throws InterruptedException, IOException {
@@ -144,20 +114,20 @@ public class CrawlerDetection extends LogAbstract {
 
     int userCount = 0;
     userCount = userRDD.mapPartitions((FlatMapFunction<Iterator<String>, Integer>) iterator -> {
-      ESDriver tmpES = new ESDriver(props);
-      tmpES.createBulkProcessor();
+      ESDriver tmpEs = new ESDriver(props);
+      tmpEs.createBulkProcessor();
       List<Integer> realUserNums = new ArrayList<>();
       while (iterator.hasNext()) {
         String s = iterator.next();
-        Integer realUser = checkByRate(tmpES, s);
+        Integer realUser = checkByRate(tmpEs, s);
         realUserNums.add(realUser);
       }
-      tmpES.destroyBulkProcessor();
-      tmpES.close();
+      tmpEs.destroyBulkProcessor();
+      tmpEs.close();
       return realUserNums.iterator();
     }).reduce((Function2<Integer, Integer, Integer>) (a, b) -> a + b);
 
-    LOG.info("User count: {}", Integer.toString(userCount));
+    LOG.info("Final user count: {}", Integer.toString(userCount));
   }
 
   private int checkByRate(ESDriver es, String user) {
@@ -169,8 +139,19 @@ public class CrawlerDetection extends LogAbstract {
     BoolQueryBuilder filterSearch = new BoolQueryBuilder();
     filterSearch.must(QueryBuilders.termQuery("IP", user));
 
-    AggregationBuilder aggregation = AggregationBuilders.dateHistogram("by_minute").field("Time").dateHistogramInterval(DateHistogramInterval.MINUTE).order(Order.COUNT_DESC);
-    SearchResponse checkRobot = es.getClient().prepareSearch(logIndex).setTypes(httpType, ftpType).setQuery(filterSearch).setSize(0).addAggregation(aggregation).execute().actionGet();
+    AggregationBuilder aggregation = AggregationBuilders
+            .dateHistogram("by_minute")
+            .field("Time")
+            .dateHistogramInterval(DateHistogramInterval.MINUTE)
+            .order(Order.COUNT_DESC);
+    SearchResponse checkRobot = es.getClient()
+            .prepareSearch(logIndex)
+            .setTypes(httpType, ftpType)
+            .setQuery(filterSearch)
+            .setSize(0)
+            .addAggregation(aggregation)
+            .execute()
+            .actionGet();
 
     Histogram agg = checkRobot.getAggregations().get("by_minute");
 

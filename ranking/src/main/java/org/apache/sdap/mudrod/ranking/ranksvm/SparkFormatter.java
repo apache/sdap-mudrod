@@ -7,7 +7,6 @@ public class SparkFormatter {
   DecimalFormat NDForm = new DecimalFormat("#.###");
 
   public SparkFormatter() {
-	  
   }
 
   public void toSparkSVMformat(String inputCSVFileName, String outputTXTFileName) {
@@ -52,4 +51,5 @@ public class SparkFormatter {
     SparkFormatter sf = new SparkFormatter();
     sf.toSparkSVMformat("C:/mudrodCoreTestData/rankingResults/inputDataForSVM.csv", "C:/mudrodCoreTestData/rankingResults/inputDataForSVM_spark.txt");
   }
+
 }

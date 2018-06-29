@@ -53,7 +53,8 @@ public class LogAbstract extends DiscoveryStepAbstract {
   }
 
   protected void initLogIndex() {
-    logIndex = props.getProperty(MudrodConstants.LOG_INDEX) + props.getProperty(MudrodConstants.TIME_SUFFIX);
+    logIndex = props.getProperty(MudrodConstants.LOG_INDEX) 
+            + props.getProperty(MudrodConstants.TIME_SUFFIX);
     httpType = MudrodConstants.HTTP_TYPE;
     ftpType = MudrodConstants.FTP_TYPE;
     cleanupType = MudrodConstants.CLEANUP_TYPE;
@@ -116,8 +117,16 @@ public class LogAbstract extends DiscoveryStepAbstract {
 
     int docCount = es.getDocCount(logIndex, type);
 
-    SearchResponse sr = es.getClient().prepareSearch(logIndex).setTypes(type).setQuery(QueryBuilders.matchAllQuery()).setSize(0)
-        .addAggregation(AggregationBuilders.terms("Users").field("IP").size(docCount)).execute().actionGet();
+    SearchResponse sr = es.getClient()
+            .prepareSearch(logIndex)
+            .setTypes(type)
+            .setQuery(QueryBuilders.matchAllQuery())
+            .setSize(0)
+            .addAggregation(AggregationBuilders.terms("Users")
+                    .field("IP")
+                    .size(docCount))
+            .execute()
+            .actionGet();
     return sr.getAggregations().get("Users");
   }
 
@@ -138,10 +147,23 @@ public class LogAbstract extends DiscoveryStepAbstract {
 
     int docCount = es.getDocCount(logIndex, httpType);
 
-    AggregationBuilder dailyAgg = AggregationBuilders.dateHistogram("by_day").field("Time").dateHistogramInterval(DateHistogramInterval.DAY).order(Order.COUNT_DESC);
+    AggregationBuilder dailyAgg = AggregationBuilders
+            .dateHistogram("by_day")
+            .field("Time")
+            .dateHistogramInterval(DateHistogramInterval.DAY)
+            .order(Order.COUNT_DESC);
 
-    SearchResponse sr = es.getClient().prepareSearch(logIndex).setTypes(httpType).setQuery(QueryBuilders.matchAllQuery()).setSize(0)
-        .addAggregation(AggregationBuilders.terms("Users").field("IP").size(docCount).subAggregation(dailyAgg)).execute().actionGet();
+    SearchResponse sr = es.getClient()
+            .prepareSearch(logIndex)
+            .setTypes(httpType)
+            .setQuery(QueryBuilders.matchAllQuery())
+            .setSize(0)
+            .addAggregation(AggregationBuilders.terms("Users")
+            .field("IP")
+            .size(docCount)
+            .subAggregation(dailyAgg))
+            .execute()
+            .actionGet();
     Terms users = sr.getAggregations().get("Users");
     Map<String, Long> userList = new HashMap<>();
     for (Terms.Bucket user : users.getBuckets()) {
@@ -201,11 +223,16 @@ public class LogAbstract extends DiscoveryStepAbstract {
 
     int docCount = es.getDocCount(this.logIndex, this.cleanupType);
 
-    SearchResponse sr = es.getClient().prepareSearch(this.logIndex).setTypes(this.cleanupType).setQuery(QueryBuilders.matchAllQuery())
-        .addAggregation(AggregationBuilders.terms("Sessions").field("SessionID").size(docCount)).execute().actionGet();
-
-    Terms Sessions = sr.getAggregations().get("Sessions");
-    return Sessions;
+    SearchResponse sr = es.getClient()
+            .prepareSearch(this.logIndex)
+            .setTypes(this.cleanupType)
+            .setQuery(QueryBuilders.matchAllQuery())
+            .addAggregation(AggregationBuilders.terms("Sessions")
+            .field("SessionID")
+            .size(docCount))
+            .execute()
+            .actionGet();
+    return sr.getAggregations().get("Sessions");
   }
 
   public List<String> getSessions() {
@@ -213,7 +240,7 @@ public class LogAbstract extends DiscoveryStepAbstract {
     Terms sessions = this.getSessionTerms();
     List<String> sessionList = new ArrayList<>();
     for (Terms.Bucket entry : sessions.getBuckets()) {
-      if (entry.getDocCount() >= 3 && !entry.getKey().equals("invalid")) {
+      if (entry.getDocCount() >= 3 && !"invalid".equals(entry.getKey())) {
         String session = (String) entry.getKey();
         sessionList.add(session);
       }

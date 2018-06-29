@@ -21,10 +21,10 @@ import javax.servlet.annotation.WebListener;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.main.MudrodEngine;
-import org.apache.sdap.mudrod.ontology.Ontology;
-import org.apache.sdap.mudrod.ontology.OntologyFactory;
 import org.apache.sdap.mudrod.ranking.common.Ranker;
 import org.apache.sdap.mudrod.ranking.common.Searcher;
+
+import org.apache.sdap.mudrod.tools.EONETIngester;
 
 import java.util.Properties;
 
@@ -60,13 +60,16 @@ public class MudrodContextListener implements ServletContextListener {
     Properties props = me.loadConfig();
     me.setESDriver(new ESDriver(props));
     me.setSparkDriver(new SparkDriver(props));
+    ESDriver es = me.getESDriver();
 
     ServletContext ctx = arg0.getServletContext();
-    Searcher searcher = new Searcher(props, me.getESDriver(), null);
-    Ranker ranker = new Ranker(props, me.getESDriver(), me.getSparkDriver());
+    Searcher searcher = new Searcher(props, es, null);
+    Ranker ranker = new Ranker(props, es, me.getSparkDriver());
+    EONETIngester eonetIngester = new EONETIngester(props, es, null);
     ctx.setAttribute("MudrodInstance", me);
     ctx.setAttribute("MudrodSearcher", searcher);
     ctx.setAttribute("MudrodRanker", ranker);
+    ctx.setAttribute("MudrodEONETIngester", eonetIngester);
   }
 
 }
