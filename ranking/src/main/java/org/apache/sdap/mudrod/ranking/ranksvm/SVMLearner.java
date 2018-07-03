@@ -116,9 +116,9 @@ public class SVMLearner extends Learner {
     LearnerFactory factory = new LearnerFactory(props, es, spark);
     Learner le = factory.createLearner();
 
-    String sourceDir = "E://data//mudrod//ranking//rankingResults//training//training_data_v4";
+    String sourceDir = arg0[0];
     String trainFile = le.customizeTrainData(sourceDir);
     le.train(trainFile);
-    //le.save();
+    le.save();
   }
 }

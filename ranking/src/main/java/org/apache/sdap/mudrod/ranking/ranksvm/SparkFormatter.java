@@ -32,12 +32,10 @@ public class SparkFormatter {
     if (file.exists()) {
       file.delete();
     }
-    try {
-      file.createNewFile();
-      FileWriter fw = new FileWriter(outputTXTFileName);
-      BufferedWriter bw = new BufferedWriter(fw);
+    try (FileWriter fw = new FileWriter(outputTXTFileName); BufferedWriter bw = new BufferedWriter(fw); BufferedReader br = new BufferedReader(new FileReader(inputCSVFileName));) {
 
-      BufferedReader br = new BufferedReader(new FileReader(inputCSVFileName));
+      file.createNewFile();
+
       br.readLine();
       String line = br.readLine();
       while (line != null) {
@@ -58,8 +56,7 @@ public class SparkFormatter {
 
         line = br.readLine();
       }
-      br.close();
-      bw.close();
+
     } catch (IOException e) {
       e.printStackTrace();
     }
