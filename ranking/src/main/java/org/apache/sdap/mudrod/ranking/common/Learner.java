@@ -27,23 +27,13 @@ import java.io.Serializable;
 import java.util.Properties;
 
 /**
- * Supports the ability to importing classifier into memory
+ * learn rank weights from train data and predict search results ranking
  */
 public abstract class Learner extends MudrodAbstract {
 
-	public Learner(Properties props, ESDriver es, SparkDriver spark) {
+  public Learner(Properties props, ESDriver es, SparkDriver spark) {
 		super(props, es, spark);
-		// TODO Auto-generated constructor stub
 	}
-
-	/**
-	 * Method of classifying instance
-	 *
-	 * @param p
-	 *            the instance that needs to be classified
-	 * @return the class id
-	 */
-	//public abstract double classify(LabeledPoint p);
 
 	public abstract String customizeTrainData(String sourceDir);
 

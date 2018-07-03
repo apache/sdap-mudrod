@@ -54,7 +54,7 @@
         
         <!-- ranking module -->
         <dependency>
-            <groupId>org.apache.sdap.mudrod</groupId>
+            <groupId>org.apache.sdap</groupId>
             <artifactId>mudrod-ranking</artifactId>
             <version>${project.version}</version>
         </dependency>

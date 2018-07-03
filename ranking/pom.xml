@@ -31,7 +31,7 @@
 	<dependencies>
         <!-- Core Module -->
         <dependency>
-            <groupId>org.apache.sdap.mudrod</groupId>
+            <groupId>org.apache.sdap</groupId>
             <artifactId>mudrod-core</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -112,23 +112,6 @@
 							<descriptors>
 								<descriptor>
 									${basedir}/src/main/assembly/zipSVMWithSGDModel.xml
-								</descriptor>
-							</descriptors>
-						</configuration>
-					</execution>
-
-					<execution>
-						<id>generateDistribution</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-						<configuration>
-							<appendAssemblyId>false</appendAssemblyId>
-							<tarLongFileMode>posix</tarLongFileMode>
-							<descriptors>
-								<descriptor>
-									${basedir}/src/main/assembly/bin.xml
 								</descriptor>
 							</descriptors>
 						</configuration>

@@ -77,7 +77,7 @@ public class ExpertRankTrainData {
    * Responsible for invoking the processing of data file(s) and their subsequent storage
    * into a user specified directory.
    */
-  public void convert2TrainSet() {
+  public void convertToTrainSet() {
     parseFile();
     writeCSVfile(myMasterList);
   }

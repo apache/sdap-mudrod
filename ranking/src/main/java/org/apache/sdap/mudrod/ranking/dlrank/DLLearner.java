@@ -30,54 +30,37 @@ import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.util.MLUtils;
 
-/**
- * Supports the ability to importing classifier into memory
- */
 public class DLLearner extends Learner {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-	transient SparkContext sc = null;
+  private static final long serialVersionUID = 1L;
+  transient SparkContext sc = null;
 
-	/**
-	 * Constructor to load in spark SVM classifier
-	 *
-	 * @param classifierName
-	 *            classifier type
-	 * @param skd
-	 *            an instance of spark driver
-	 * @param svmSgdModel
-	 *            path to a trained model
-	 */
-	public DLLearner(Properties props, ESDriver es, SparkDriver spark, String dlModel) {
-		super(props, es, spark);
+  public DLLearner(Properties props, ESDriver es, SparkDriver spark, String dlModel) {
+    super(props, es, spark);
 
-		sc = spark.sc.sc();
-		load(dlModel);
-	}
+    sc = spark.sc.sc();
+    load(dlModel);
+  }
 
-	@Override
-	public void train(String trainFile) {
+  @Override
+  public void train(String trainFile) {
 
-	}
+  }
 
-	@Override
-	public double predict(double[] value) {
-		return 0;
-	}
+  @Override
+  public double predict(double[] value) {
+    return 0;
+  }
 
-	@Override
-	public void save() {
-	}
+  @Override
+  public void save() {
+  }
 
-	@Override
-	public void load(String svmSgdModel) {
-	}
+  @Override
+  public void load(String svmSgdModel) {
+  }
 
-	@Override
-	public String customizeTrainData(String sourceDir) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  @Override
+  public String customizeTrainData(String sourceDir) {
+    return null;
+  }
 }

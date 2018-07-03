@@ -32,13 +32,13 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
  * Supports ability to import click stream data into Elasticsearch
  * through .csv file
  */
-public class ClickstreamImporter extends MudrodAbstract {
+public class ClickStreamImporter extends MudrodAbstract {
   /**
    *
    */
   private static final long serialVersionUID = 1L;
 
-  public ClickstreamImporter(Properties props, ESDriver es, SparkDriver spark) {
+  public ClickStreamImporter(Properties props, ESDriver es, SparkDriver spark) {
     super(props, es, spark);
     addClickStreamMapping();
   }
@@ -47,9 +47,9 @@ public class ClickstreamImporter extends MudrodAbstract {
    * Method to add Elasticsearch mapping for click stream data
    */
   public void addClickStreamMapping() {
-    XContentBuilder Mapping;
+    XContentBuilder mapping;
     try {
-      Mapping = jsonBuilder().startObject().startObject(
+      mapping = jsonBuilder().startObject().startObject(
               props.getProperty(MudrodConstants.CLICK_STREAM_MATRIX_TYPE)).startObject(
                       "properties").startObject("query").field("type", "string").field(
                               "index", "not_analyzed").endObject().startObject("dataID").field(
@@ -60,7 +60,7 @@ public class ClickstreamImporter extends MudrodAbstract {
       es.getClient().admin().indices().preparePutMapping(
               props.getProperty(MudrodConstants.ES_INDEX_NAME)).setType(
                       props.getProperty(MudrodConstants.CLICK_STREAM_MATRIX_TYPE)).setSource(
-                              Mapping).execute().actionGet();
+                          mapping).execute().actionGet();
     } catch (IOException e) {
       e.printStackTrace();
     }
