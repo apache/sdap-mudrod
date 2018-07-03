@@ -28,22 +28,13 @@ import java.io.Serializable;
 import java.util.Properties;
 
 /**
- * Supports the ability to importing classifier into memory
+ * Create train data from difference sources, including experts provided data, offline logs and realtime logs
  */
 public class RankTrainDataFactory extends MudrodAbstract{
 
   public RankTrainDataFactory(Properties props, ESDriver es, SparkDriver spark) {
     super(props, es, spark);
-    // TODO Auto-generated constructor stub
   }
-
-  /**
-   * Method of classifying instance
-   *
-   * @param p
-   *          the instance that needs to be classified
-   * @return the class id
-   */
 
   public String createTrainData(String sourceDir) {
 
@@ -61,15 +52,12 @@ public class RankTrainDataFactory extends MudrodAbstract{
 
     String resultDir = sourceFile.getParent() + "/trainsets.txt";
     ExpertRankTrainData converter = new ExpertRankTrainData(sourceDir, resultDir, true);
-    converter.convert2TrainSet();
+    converter.convertToTrainSet();
 
     return resultDir;
   }
 
-  // start session
-  // mode: overwrite or append
   public String createTrainDataFromOfflineLogs(String trainsetFile, int start, int mode) {
-
     return "";
   }
 }

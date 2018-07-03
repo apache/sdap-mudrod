@@ -26,29 +26,18 @@ import java.io.Serializable;
 import java.util.Properties;
 
 /**
- * Supports the ability to importing classifier into memory
+ * Create a learner due to configuration
  */
 public class LearnerFactory extends MudrodAbstract {
 
   public LearnerFactory(Properties props, ESDriver es, SparkDriver spark) {
-		super(props, es, spark);
-		// TODO Auto-generated constructor stub
-	}
-
-/**
-   * Method of classifying instance
-   *
-   * @param p the instance that needs to be classified
-   * @return the class id
-   */
-  
-  public Learner createLearner(){
-	  if("1".equals(props.getProperty(MudrodConstants.RANKING_ML)))
-	      return new SVMLearner(props, es, spark, props.getProperty(MudrodConstants.RANKING_MODEL));
-	  
-	  return null;
-	  
+    super(props, es, spark);
   }
-  
 
+  public Learner createLearner() {
+    if ("1".equals(props.getProperty(MudrodConstants.RANKING_ML)))
+      return new SVMLearner(props, es, spark, props.getProperty(MudrodConstants.RANKING_MODEL));
+
+    return null;
+  }
 }

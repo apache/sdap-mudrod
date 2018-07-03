@@ -37,89 +37,88 @@ import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.util.MLUtils;
 
 /**
- * Supports the ability to importing classifier into memory
+ * Learn ranking weights with SVM model
  */
 public class SVMLearner extends Learner {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-	SVMModel model = null;
-	transient SparkContext sc = null;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
+  SVMModel model = null;
+  transient SparkContext sc = null;
 
-	/**
-	 * Constructor to load in spark SVM classifier
-	 *
-	 * @param classifierName
-	 *            classifier type
-	 * @param skd
-	 *            an instance of spark driver
-	 * @param svmSgdModel
-	 *            path to a trained model
-	 */
-	public SVMLearner(Properties props, ESDriver es, SparkDriver spark, String svmSgdModel) {
-		super(props, es, spark);
+  /**
+   * Constructor to load in spark SVM classifier
+   *
+   * @param classifierName
+   *          classifier type
+   * @param skd
+   *          an instance of spark driver
+   * @param svmSgdModel
+   *          path to a trained model
+   */
+  public SVMLearner(Properties props, ESDriver es, SparkDriver spark, String svmSgdModel) {
+    super(props, es, spark);
 
-		sc = spark.sc.sc();
-		load(svmSgdModel);
-	}
+    sc = spark.sc.sc();
+    load(svmSgdModel);
+  }
 
-	public String customizeTrainData(String sourceDir) {
-		
-		//add other source, such as log, streaming
-		//String resultFile = this.extractTrainDataFromExperts(sourceDir);
-		RankTrainDataFactory factory = new RankTrainDataFactory(props, es, spark);
-		String resultFile = factory.createTrainData(sourceDir);
-		
-		String path = new File(resultFile).getParent();
-		String svmSparkFile = path + "/inputDataForSVM_spark.txt";
-		SparkFormatter sf = new SparkFormatter();
-		sf.toSparkSVMformat(resultFile,svmSparkFile);
-		
-		return svmSparkFile;
-	}
+  public String customizeTrainData(String sourceDir) {
+    RankTrainDataFactory factory = new RankTrainDataFactory(props, es, spark);
+    String resultFile = factory.createTrainData(sourceDir);
 
-	@Override
-	public void train(String trainFile) {
-		JavaRDD<LabeledPoint> data = MLUtils.loadLibSVMFile(sc, trainFile).toJavaRDD();
-		// Run training algorithm to build the model.
-		int numIterations = 100;
-		model = SVMWithSGD.train(data.rdd(), numIterations);
-	}
+    String path = new File(resultFile).getParent();
+    
+    String separator = System.getProperty("file.separator");
+    String svmSparkFile = path + separator + "inputDataForSVM_spark.txt";
+    SparkFormatter sf = new SparkFormatter();
+    sf.toSparkSVMformat(resultFile, svmSparkFile);
 
-	@Override
-	public double predict(double[] value) {
-		LabeledPoint p = new LabeledPoint(99.0, Vectors.dense(value));
-		return model.predict(p.features());
-	}
+    return svmSparkFile;
+  }
 
-	@Override
-	public void save() {
-		// Save model
-		String modelPath = SVMLearner.class.getClassLoader().getResource("javaSVMWithSGDModel").toString();
-		model.save(sc, modelPath);
-	}
+  @Override
+  public void train(String trainFile) {
+    JavaRDD<LabeledPoint> data = MLUtils.loadLibSVMFile(sc, trainFile).toJavaRDD();
+    // Run training algorithm to build the model.
+    int numIterations = 100;
+    model = SVMWithSGD.train(data.rdd(), numIterations);
+  }
 
-	@Override
-	public void load(String svmSgdModel) {
-		// load model
-		sc.addFile(svmSgdModel, true);
-		model = SVMModel.load(sc, svmSgdModel);
-	}
+  @Override
+  public double predict(double[] value) {
+    LabeledPoint p = new LabeledPoint(99.0, Vectors.dense(value));
+    return model.predict(p.features());
+  }
 
-	public static void main(String[] arg0) {
-		MudrodEngine me = new MudrodEngine();
-		Properties props = me.loadConfig();
+  @Override
+  public void save() {
+    // Save model
+    String modelPath = SVMLearner.class.getClassLoader().getResource("javaSVMWithSGDModel").toString();
+    model.save(sc, modelPath);
+  }
 
-		SparkDriver spark = new SparkDriver(props);
-		ESDriver es = new ESDriver(props);
+  @Override
+  public void load(String svmSgdModel) {
+    // load model
+    sc.addFile(svmSgdModel, true);
+    model = SVMModel.load(sc, svmSgdModel);
+  }
 
-		LearnerFactory factory = new LearnerFactory(props, es, spark);
-		Learner le = factory.createLearner();
-		
-		String sourceDir = "E://data//mudrod//ranking//rankingResults//training//training_data_v4";
-		String trainFile = le.customizeTrainData(sourceDir);
-		le.train(trainFile);
-		le.save();
-	}
+  public static void main(String[] arg0) {
+    MudrodEngine me = new MudrodEngine();
+    Properties props = me.loadConfig();
+
+    SparkDriver spark = new SparkDriver(props);
+    ESDriver es = new ESDriver(props);
+
+    LearnerFactory factory = new LearnerFactory(props, es, spark);
+    Learner le = factory.createLearner();
+
+    String sourceDir = "E://data//mudrod//ranking//rankingResults//training//training_data_v4";
+    String trainFile = le.customizeTrainData(sourceDir);
+    le.train(trainFile);
+    //le.save();
+  }
 }
