@@ -23,12 +23,22 @@ import org.apache.sdap.mudrod.discoveryengine.DiscoveryStepAbstract;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.main.MudrodConstants;
+import org.apache.sdap.mudrod.main.MudrodEngine;
 import org.apache.sdap.mudrod.utils.HttpRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Properties;
 
 /**
@@ -48,6 +58,7 @@ public class ApiHarvester extends DiscoveryStepAbstract {
    */
   public ApiHarvester(Properties props, ESDriver es, SparkDriver spark) {
     super(props, es, spark);
+    initMudrod("RawMetadata");
   }
 
   @Override
@@ -55,32 +66,20 @@ public class ApiHarvester extends DiscoveryStepAbstract {
     LOG.info("Starting Metadata harvesting.");
     startTime = System.currentTimeMillis();
     //remove old metadata from ES
-    es.deleteType(props.getProperty(MudrodConstants.ES_INDEX_NAME), props.getProperty(MudrodConstants.RAW_METADATA_TYPE));
+    es.deleteType(
+            props.getProperty(MudrodConstants.ES_INDEX_NAME),
+            props.getProperty(MudrodConstants.RAW_METADATA_TYPE));
+
     //harvest new metadata using PO.DAAC web services
-    if("1".equals(props.getProperty(MudrodConstants.METADATA_DOWNLOAD))) 
+    if("1".equals(props.getProperty(MudrodConstants.METADATA_DOWNLOAD)))
       harvestMetadatafromWeb();
     es.createBulkProcessor();
-    addMetadataMapping();
     importToES();
     es.destroyBulkProcessor();
     endTime = System.currentTimeMillis();
     es.refreshIndex();
     LOG.info("Metadata harvesting completed. Time elapsed: {}", (endTime - startTime) / 1000);
     return null;
-  }
-
-  /**
-   * Add mapping to index metadata in Elasticsearch. Please
-   * invoke this method before import metadata to Elasticsearch.
-   */
-  public void addMetadataMapping() {
-    String mappingJson = "{\r\n   \"dynamic_templates\": " + "[\r\n      " + "{\r\n         \"strings\": " + "{\r\n            \"match_mapping_type\": \"string\","
-        + "\r\n            \"mapping\": {\r\n               \"type\": \"text\"," + "\r\n               \"fielddata\": true," + "\r\n               \"analyzer\": \"english\","
-        + "\r\n            \"fields\": {\r\n               \"raw\": {" + "\r\n               \"type\": \"string\"," + "\r\n               \"index\": \"not_analyzed\"" + "\r\n            }"
-        + "\r\n         }\r\n " + "\r\n            }" + "\r\n         }\r\n      }\r\n   ]\r\n}";
-
-    es.getClient().admin().indices().preparePutMapping(props.getProperty(MudrodConstants.ES_INDEX_NAME)).setType(props.getProperty(MudrodConstants.RAW_METADATA_TYPE)).setSource(mappingJson).execute()
-        .actionGet();
   }
 
   /**
@@ -108,9 +107,72 @@ public class ApiHarvester extends DiscoveryStepAbstract {
   private void importSingleFileToES(InputStream is) {
     try {
       String jsonTxt = IOUtils.toString(is);
-      JsonParser parser = new JsonParser();
-      JsonElement item = parser.parse(jsonTxt);
-      IndexRequest ir = new IndexRequest(props.getProperty(MudrodConstants.ES_INDEX_NAME), props.getProperty(MudrodConstants.RAW_METADATA_TYPE)).source(item.toString());
+      JsonObject item = new JsonParser().parse(jsonTxt).getAsJsonObject();
+
+      //obtain bounding box features and add them as a new field
+      float westLon = 0;
+      float eastLon = 0;
+      float northLat = 0;
+      float southLat = 0;
+      if (!"".equals(item.get("DatasetCoverage-WestLon").getAsString())) {
+        westLon = Float.parseFloat(item.get("DatasetCoverage-WestLon").getAsString());
+      }
+      if (!"".equals(item.get("DatasetCoverage-EastLon").getAsString())) {
+        eastLon = Float.parseFloat(item.get("DatasetCoverage-EastLon").getAsString());
+      }
+      if (!"".equals(item.get("DatasetCoverage-NorthLat").getAsString())) {
+        northLat = Float.parseFloat(item.get("DatasetCoverage-NorthLat").getAsString());
+      }
+      if (!"".equals(item.get("DatasetCoverage-SouthLat").getAsString())) {
+        southLat = Float.parseFloat(item.get("DatasetCoverage-SouthLat").getAsString());
+      }
+      //normalize lat lon values
+      if (westLon < -180) {
+        westLon = -180;
+      } else {
+        //need to convert from longitudes from the 0-360 format common in climate data
+        //to the more standard -180 to +180 format.
+        westLon = ((westLon + 180) / 360) - 180;
+      }
+      String normalizedWestLon = String.valueOf(westLon);
+      String normalizedEastLon = String.valueOf((eastLon > 180) ? eastLon = 180 : eastLon);
+      String normalizedNorthLat = String.valueOf((northLat > 90) ? northLat = 90 : northLat);
+      String normalizedSouthLat = String.valueOf((southLat < -90) ? southLat = -90 : southLat);
+      //add bounding box to JSON object as the 'envelope' Geo-shape, see
+      //https://www.elastic.co/guide/en/elasticsearch/reference/6.2/geo-shape.html
+      JsonElement envelopeJsonElement = new JsonParser().parse(
+              "{\"type\" : \"envelope\", \"coordinates\" : [ [" 
+                      + normalizedWestLon + ", " + normalizedNorthLat + "], [" + normalizedEastLon + ", " + normalizedSouthLat + "] ]}");
+      item.add("location", envelopeJsonElement);
+
+      //add new date fields for start_date, if 'Dataset-DatasetCoverage-StartTimeLong' is unreliable, try
+      //'DatasetCoverage-StartTimeLong-Long' or 'DatasetCoverage-StartTimeLong'
+      Long startDateLong = null;
+      if (!"".equals(item.get("Dataset-DatasetCoverage-StartTimeLong").getAsString())) {
+        startDateLong = item.get("Dataset-DatasetCoverage-StartTimeLong").getAsLong();
+      }
+      LocalDate startDate = Instant.ofEpochMilli(startDateLong).atZone(ZoneId.systemDefault()).toLocalDate();
+      JsonElement startDateJsonElement = new JsonParser().parse(startDate.toString());
+      item.add("start_date", startDateJsonElement);
+
+      //add new date fields for stop_date, if 'Dataset-DatasetCoverage-StartTimeLong' is unreliable, try
+      //'DatasetCoverage-StopTimeLong' or 'DatasetCoverage-StopTimeLong-Long'
+      Long endDateLong = null;
+      if ("".equals(item.get("Dataset-DatasetCoverage-StopTimeLong").getAsString())) {
+        //This represents a fabricated time in the future, Monday, February 14, 2022 12:00:00 AM UTC
+        //this date time is specified such so that we are able to execute date range queries for things
+        //like event correlation. It should be noted that when interpreted by the WebUI this datetime is
+        //mapped to 'now' indicating that the dataset coverage is ongoing.
+        endDateLong = Long.parseLong("1644796800000");
+      } else {
+        endDateLong = item.get("Dataset-DatasetCoverage-StopTimeLong").getAsLong();
+      }
+      LocalDate endDate = Instant.ofEpochMilli(endDateLong).atZone(ZoneId.systemDefault()).toLocalDate();
+      JsonElement endDateJsonElement = new JsonParser().parse(endDate.toString());
+      item.add("end_date", endDateJsonElement);
+      IndexRequest ir = new IndexRequest(
+              props.getProperty(MudrodConstants.ES_INDEX_NAME),
+              props.getProperty(MudrodConstants.RAW_METADATA_TYPE)).source(item.toString());
       es.getBulkProcessor().add(ir);
     } catch (IOException e) {
       LOG.error("Error indexing metadata record!", e);
@@ -150,7 +212,8 @@ public class ApiHarvester extends DiscoveryStepAbstract {
         int docId = startIndex + i;
         File itemfile = new File(props.getProperty(MudrodConstants.RAW_METADATA_PATH) + "/" + docId + ".json");
 
-        try (FileWriter fw = new FileWriter(itemfile.getAbsoluteFile()); BufferedWriter bw = new BufferedWriter(fw)) {
+        try (FileWriter fw = new FileWriter(itemfile.getAbsoluteFile());
+                BufferedWriter bw = new BufferedWriter(fw)) {
           itemfile.createNewFile();
           bw.write(item.toString());
         } catch (IOException e) {
@@ -168,13 +231,25 @@ public class ApiHarvester extends DiscoveryStepAbstract {
       }
 
     } while (docLength != 0);
-    
+
     LOG.info("Metadata downloading finished");
   }
 
   @Override
   public Object execute(Object o) {
     return null;
+  }
+
+  /**
+   * @param args provide path to target data directory you 
+   * intend to harvest metadata to.
+   */
+  public static void main(String[] args) {
+    MudrodEngine mEngine = new MudrodEngine();
+    Properties props = mEngine.loadConfig();
+    props.put(MudrodConstants.RAW_METADATA_PATH, args[0]);
+    ApiHarvester apiHarvester = new ApiHarvester(props, mEngine.startESDriver(), null);
+    apiHarvester.execute();
   }
 
 }

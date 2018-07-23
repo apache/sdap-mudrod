@@ -15,6 +15,7 @@ package org.apache.sdap.mudrod.services.search;
 
 import org.apache.sdap.mudrod.main.MudrodConstants;
 import org.apache.sdap.mudrod.main.MudrodEngine;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,12 +60,12 @@ public class SearchDatasetDetailResource {
   public Response searchDatasetDetail(@QueryParam("shortname") String shortName) {
     Properties config = mEngine.getConfig();
     String dataDetailJson = null;
-    try {
-      String query = "Dataset-ShortName:\"" + shortName + "\"";
-      dataDetailJson = mEngine.getESDriver().searchByQuery(config.getProperty(MudrodConstants.ES_INDEX_NAME), config.getProperty(MudrodConstants.RAW_METADATA_TYPE), query, true);
-    } catch (InterruptedException | ExecutionException | IOException e) {
-      LOG.error("Error whilst searching for a Dataset-ShortName: ", e);
-    }
+    String query = "Dataset-ShortName:\"" + shortName + "\"";
+    dataDetailJson = mEngine.getESDriver().searchByQuery(
+            config.getProperty(
+                    MudrodConstants.ES_INDEX_NAME),
+            QueryBuilders.queryStringQuery(query),
+            true, config.getProperty(MudrodConstants.RAW_METADATA_TYPE));
     LOG.info("Response received: {}", dataDetailJson);
     return Response.ok(dataDetailJson, MediaType.APPLICATION_JSON).build();
   }

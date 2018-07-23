@@ -17,3 +17,4 @@ service/.classpath
 web/.classpath
 web/.externalToolBuilders/
 web/maven-eclipse.xml
+service/mudrod_service.log*

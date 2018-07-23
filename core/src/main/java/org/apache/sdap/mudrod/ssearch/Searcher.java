@@ -32,7 +32,11 @@ import org.elasticsearch.search.sort.SortOrder;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Pattern;
 
 /**
@@ -120,10 +124,6 @@ public class Searcher extends MudrodAbstract implements Serializable {
       break;
     case "Rank-LongName-Full":
       sortField = "Dataset-LongName";
-      order = SortOrder.ASC;
-      break;
-    case "Rank-ShortName-Full":
-      sortField = "Dataset-ShortName";
       order = SortOrder.ASC;
       break;
     case "Rank-GridSpatialResolution":
@@ -221,8 +221,16 @@ public class Searcher extends MudrodAbstract implements Serializable {
       SResult.set(re, "endDate", endDateTxt);
       SResult.set(re, "sensors", String.join(", ", sensors));
 
-      QueryBuilder queryLabelSearch = QueryBuilders.boolQuery().must(QueryBuilders.termQuery("query", query)).must(QueryBuilders.termQuery("dataID", shortName));
-      SearchResponse labelRes = es.getClient().prepareSearch(index).setTypes("trainingranking").setQuery(queryLabelSearch).setSize(5).execute().actionGet();
+      QueryBuilder queryLabelSearch = QueryBuilders.boolQuery()
+              .must(QueryBuilders.termQuery("query", query))
+              .must(QueryBuilders.termQuery("dataID", shortName));
+      SearchResponse labelRes = es.getClient()
+              .prepareSearch(index)
+              .setTypes("trainingranking")
+              .setQuery(queryLabelSearch)
+              .setSize(5)
+              .execute()
+              .actionGet();
       String labelString = null;
       for (SearchHit label : labelRes.getHits().getHits()) {
         Map<String, Object> labelItem = label.getSource();

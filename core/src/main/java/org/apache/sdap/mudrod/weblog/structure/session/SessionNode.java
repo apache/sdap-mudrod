@@ -22,8 +22,7 @@ import java.util.regex.Pattern;
 import org.apache.sdap.mudrod.main.MudrodConstants;
 
 /**
- * ClassName: SessionNode Function: Functions related to a node in a session
- * tree sturcture.
+ * Functions related to a node in a session tree sturcture.
  */
 public class SessionNode {
   // id: Node ID
@@ -55,12 +54,13 @@ public class SessionNode {
   protected String datasetId;
 
   public SessionNode() {
-
+    //default constuctor
   }
 
   /**
    * Creates a new instance of SessionNode.
    *
+   * @param props a populated {@link java.util.Properties} object
    * @param request: request url
    * @param logType: including two types - po.dacc, ftp
    * @param referer: previous request url
@@ -77,20 +77,21 @@ public class SessionNode {
   }
 
   /**
-   * setReferer: Set previous request url of this node
+   * Set previous request url of this node
    *
    * @param referer previous request url
+   * @param basicUrl the referer URL string to replace with ""
    */
   public void setReferer(String referer, String basicUrl) {
     if (referer == null) {
       this.referer = "";
       return;
     }
-	this.referer= referer.toLowerCase().replace(basicUrl, "");
+    this.referer = referer.toLowerCase().replace(basicUrl, "");
   }
 
   /**
-   * setRequest: Set request url of this node
+   * Set request url of this node
    *
    * @param req request url
    */
@@ -102,7 +103,7 @@ public class SessionNode {
   }
 
   /**
-   * getChildren:Get child nodes of this node
+   * Get child nodes of this node
    *
    * @return child nodes
    */
@@ -111,7 +112,7 @@ public class SessionNode {
   }
 
   /**
-   * setChildren: Set child nodes of this node
+   * Set child nodes of this node
    *
    * @param children child nodes of this node
    */
@@ -120,7 +121,7 @@ public class SessionNode {
   }
 
   /**
-   * addChildren: Add a children node
+   * Add a children node
    *
    * @param node session node
    */
@@ -129,7 +130,7 @@ public class SessionNode {
   }
 
   /**
-   * getId:Get node ID
+   * Get node ID
    *
    * @return node ID of this node
    */
@@ -138,7 +139,7 @@ public class SessionNode {
   }
 
   /**
-   * bSame:Compare this node with another node
+   * Compare this node with another node
    *
    * @param node {@link SessionNode}
    * @return boolean value, true mean the two nodes are same
@@ -152,9 +153,10 @@ public class SessionNode {
   }
 
   /**
-   * setKey:Set request type which contains three categories -
+   * Set request type which contains three categories -
    * dataset,datasetlist,ftp
    *
+   * @param props a populated {@link java.util.Properties} object
    * @param request request url
    * @param logType url type
    */
@@ -162,9 +164,9 @@ public class SessionNode {
     this.key = "";
     String datasetlist = props.getProperty(MudrodConstants.SEARCH_MARKER);
     String dataset = props.getProperty(MudrodConstants.VIEW_MARKER);
-    if (logType.equals("ftp")) {
+    if ("ftp".equals(logType)) {
       this.key = "ftp";
-    } else if (logType.equals("root")) {
+    } else if ("root".equals(logType)) {
       this.key = "root";
     } else {
       if (request.contains(datasetlist)) {
@@ -176,7 +178,7 @@ public class SessionNode {
   }
 
   /**
-   * getKey:Get request type which contains three categories -
+   * Get request type which contains three categories -
    * dataset,datasetlist,ftp
    *
    * @return request url type of this node
@@ -186,7 +188,7 @@ public class SessionNode {
   }
 
   /**
-   * getRequest:Get node request
+   * Get node request
    *
    * @return request url of this node
    */
@@ -195,7 +197,7 @@ public class SessionNode {
   }
 
   /**
-   * getReferer:Get previous request url of this node
+   * Get previous request url of this node
    *
    * @return previous request url of this node
    */
@@ -204,7 +206,7 @@ public class SessionNode {
   }
 
   /**
-   * getParent:Get parent node of this node
+   * Get parent node of this node
    *
    * @return parent node of this node
    */
@@ -213,7 +215,7 @@ public class SessionNode {
   }
 
   /**
-   * setParent: Set parent node of this node
+   * Set parent node of this node
    *
    * @param parent the previous request node of this node
    */
@@ -222,7 +224,7 @@ public class SessionNode {
   }
 
   /**
-   * getSearch:Get query of this node
+   * Get query of this node
    *
    * @return search query of this node
    */
@@ -231,7 +233,7 @@ public class SessionNode {
   }
 
   /**
-   * getFilter:Get filter facets of this node
+   * Get filter facets of this node
    *
    * @return filter values of this node
    */
@@ -240,7 +242,7 @@ public class SessionNode {
   }
 
   /**
-   * getDatasetId:Get data set ID of this node
+   * Get data set ID of this node
    *
    * @return viewing/downloading data set of this node
    */
@@ -249,7 +251,7 @@ public class SessionNode {
   }
 
   /**
-   * getSeq:Get sequence of this node
+   * Get sequence of this node
    *
    * @return request sequence of this node
    */
@@ -258,16 +260,16 @@ public class SessionNode {
   }
 
   /**
-   * getFilterStr:Get filter facets of this node
+   * Get filter facets of this node
    *
    * @return filters values of this node
    */
   public String getFilterStr() {
     String filter = "";
     if (this.filter.size() > 0) {
-      Iterator iter = this.filter.keySet().iterator();
+      Iterator<String> iter = this.filter.keySet().iterator();
       while (iter.hasNext()) {
-        String key = (String) iter.next();
+        String key = iter.next();
         String val = this.filter.get(key);
         filter += key + "=" + val + ",";
       }
@@ -279,7 +281,7 @@ public class SessionNode {
   }
 
   /**
-   * parseRequest:Parse request to extract request type
+   * Parse request to extract request type
    *
    * @param request request url of this node
    */
@@ -297,36 +299,7 @@ public class SessionNode {
   }
 
   /**
-   * parseFilterParams:Parse filter facets information
-   *
-   * @param params filter key value pairs of this node
-   */
-  private void parseFilterParams(Map<String, String> params) {
-    this.filter = new HashMap<String, String>();
-    if (params.containsKey("ids")) {
-      String idsStr = params.get("ids");
-      if (!idsStr.equals("")) {
-        idsStr = URLDecoder.decode(idsStr);
-        String[] ids = idsStr.split(":");
-        String valueStr = params.get("values");
-        if (valueStr != null) {
-          valueStr = URLDecoder.decode(valueStr);
-          String[] values = valueStr.split(":");
-          int size = ids.length;
-          for (int i = 0; i < size; i++) {
-            this.filter.put(ids[i], values[i]);
-          }
-        }
-      }
-    }
-
-    if (!this.search.equals("")) {
-      this.filter.put("search", this.search);
-    }
-  }
-
-  /**
-   * parseDatasetId:Parse Request to extract data set ID
+   * Parse Request to extract data set ID
    *
    * @param request request url
    */

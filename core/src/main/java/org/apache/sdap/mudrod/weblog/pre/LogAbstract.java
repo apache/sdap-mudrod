@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.sdap.mudrod.weblog.pre;
 
 import org.apache.commons.io.IOUtils;
@@ -61,7 +74,7 @@ public class LogAbstract extends DiscoveryStepAbstract {
     sessionStats = MudrodConstants.SESSION_STATS_TYPE;
 
     InputStream settingsStream = getClass().getClassLoader().getResourceAsStream(ES_SETTINGS);
-    InputStream mappingsStream = getClass().getClassLoader().getResourceAsStream(ES_MAPPINGS);
+    InputStream mappingsStream = getClass().getClassLoader().getResourceAsStream(ES_DEFAULT_MAPPINGS);
     JSONObject settingsJSON = null;
     JSONObject mappingJSON = null;
 
@@ -79,7 +92,7 @@ public class LogAbstract extends DiscoveryStepAbstract {
 
     try {
       if (settingsJSON != null && mappingJSON != null) {
-        this.es.putMapping(logIndex, settingsJSON.toString(), mappingJSON.toString());
+        this.es.putMapping(logIndex, "_default_", settingsJSON.toString(), mappingJSON.toString());
       }
     } catch (IOException e) {
       LOG.error("Error entering Elasticsearch Mappings!", e);

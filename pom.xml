@@ -20,7 +20,7 @@
     <version>10</version>
   </parent>
 
-  <groupId>org.apache.sdap.mudrod</groupId>
+  <groupId>org.apache.sdap</groupId>
   <artifactId>mudrod-parent</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
@@ -452,6 +452,27 @@
         <artifactId>hppc</artifactId>
         <version>0.7.1</version>
         <scope>compile</scope>
+      </dependency>
+      <!-- Optional Dependencies to support Geo Queries
+        see https://www.elastic.co/guide/en/elasticsearch/client/java-api/5.2/java-geo-queries.html
+        -->
+      <dependency>
+        <groupId>org.locationtech.spatial4j</groupId>
+        <artifactId>spatial4j</artifactId>
+        <version>0.6</version>
+        <scope>compile</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.vividsolutions</groupId>
+        <artifactId>jts</artifactId>
+        <version>1.13</version>
+        <scope>compile</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <!-- End of Elasticsearch dependencies -->
       <!-- Spark dependencies -->

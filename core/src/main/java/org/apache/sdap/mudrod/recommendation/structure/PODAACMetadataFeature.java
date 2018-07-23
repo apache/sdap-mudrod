@@ -1,4 +1,4 @@
-/*
+ /*
  * Licensed under the Apache License, Version 2.0 (the "License"); you 
  * may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at
@@ -161,8 +161,6 @@ public class PODAACMetadataFeature extends MetadataFeature {
 
   @Override
   public void initFeatureType() {
-    // TODO Auto-generated method stub
-    // Map<String, Integer> featureTypes = new HashMap<>();
     featureTypes.put("DatasetParameter-Variable", VAR_CATEGORICAL);
     featureTypes.put("DatasetRegion-Region", VAR_CATEGORICAL);
     featureTypes.put("Dataset-ProjectionType", VAR_CATEGORICAL);
@@ -184,8 +182,6 @@ public class PODAACMetadataFeature extends MetadataFeature {
 
   @Override
   public void initFeatureWeight() {
-    // TODO Auto-generated method stub
-    // Map<String, Integer> featureWeights = new HashMap<>();
     featureWeights.put("Dataset-Derivative-ProcessingLevel", 5);
     featureWeights.put("DatasetParameter-Category", 5);
     featureWeights.put("DatasetParameter-Variable", 5);
@@ -208,7 +204,6 @@ public class PODAACMetadataFeature extends MetadataFeature {
 
   @Override
   public void spatialSimilarity(Map<String, Object> metadataA, Map<String, Object> metadataB, XContentBuilder contentBuilder) {
-    // TODO Auto-generated method stub
     double topA = (double) metadataA.get("DatasetCoverage-Derivative-NorthLat");
     double bottomA = (double) metadataA.get("DatasetCoverage-Derivative-SouthLat");
     double leftA = (double) metadataA.get("DatasetCoverage-Derivative-WestLon");
@@ -235,14 +230,12 @@ public class PODAACMetadataFeature extends MetadataFeature {
     try {
       contentBuilder.field("Spatial_Covergae_Sim", similarity);
     } catch (IOException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
 
   @Override
   public void temporalSimilarity(Map<String, Object> metadataA, Map<String, Object> metadataB, XContentBuilder contentBuilder) {
-    // TODO Auto-generated method stub
     double similarity = 0.0;
     double startTimeA = Double.parseDouble((String) metadataA.get("Dataset-DatasetCoverage-StartTimeLong"));
     String endTimeAStr = (String) metadataA.get("Dataset-DatasetCoverage-StopTimeLong");
@@ -279,14 +272,12 @@ public class PODAACMetadataFeature extends MetadataFeature {
     try {
       contentBuilder.field("Temporal_Covergae_Sim", similarity);
     } catch (IOException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
 
   @Override
   public void categoricalVariablesSimilarity(Map<String, Object> metadataA, Map<String, Object> metadataB, XContentBuilder contentBuilder) {
-    // TODO Auto-generated method stub
     for (String variable : featureTypes.keySet()) {
       Integer type = featureTypes.get(variable);
       if (type != VAR_CATEGORICAL) {
@@ -318,7 +309,6 @@ public class PODAACMetadataFeature extends MetadataFeature {
       try {
         contentBuilder.field(variable + "_Sim", similarity);
       } catch (IOException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
     }
@@ -326,7 +316,6 @@ public class PODAACMetadataFeature extends MetadataFeature {
 
   @Override
   public void ordinalVariablesSimilarity(Map<String, Object> metadataA, Map<String, Object> metadataB, XContentBuilder contentBuilder) {
-    // TODO Auto-generated method stub
     for (String variable : featureTypes.keySet()) {
       Integer type = featureTypes.get(variable);
       if (type != VAR_ORDINAL) {
@@ -351,7 +340,6 @@ public class PODAACMetadataFeature extends MetadataFeature {
       try {
         contentBuilder.field(variable + "_Sim", similarity);
       } catch (IOException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
     }

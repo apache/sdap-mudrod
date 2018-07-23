@@ -85,7 +85,7 @@ public interface MudrodConstants {
   /** Defined on CLI */
   public static final String MUDROD_CONFIG = "MUDROD_CONFIG";
   /**
-   * An {@link Ontology} implementation.
+   * An {@link org.apache.sdap.mudrod.ontology.Ontology} implementation.
    */
   public static final String ONTOLOGY_IMPL = MUDROD + "ontology.implementation";
 

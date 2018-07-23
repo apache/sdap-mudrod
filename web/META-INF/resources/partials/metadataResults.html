@@ -33,7 +33,7 @@
                     <div class="panel-body" ng-controller="vocabularyCtrl">
                         <div ng-if="searchComplete && ontologyList.length > 0" ng-model="searchComplete" class="list-related-searches" ng-repeat="ontology in ontologyList">
                             <a ng-href="#/metadataView?query={{ontology['word'] | urlencode}}" title="{{ontology['word']}}">{{ontology['word'] | uppercase}} ({{ontology['weight']}})</a>
-                        </div>
+                        </div>Re
 
                         <div ng-if="searchComplete && ontologyList.length === 0" ng-model="searchComplete">
                             <span style="font-size: 1em;">No related searches found</span>
@@ -41,6 +41,31 @@
 
                         <div ng-if="!searchComplete" ng-model="searchComplete" id="spinner">
                             <img src="images/spinner.gif" title="Search in progress" style="height: 5em;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-4">
+            <div class="panel panel-primary sidenav">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" data-target="#collapse1">Related Events</a>
+                    </h4>
+                </div>
+                <div id="collapse1" class="panel-collapse collapse in">
+                    <div class="panel-body" ng-controller="vocabularyCtrl">
+                        <div ng-if="searchComplete && eventList.length > 0" ng-model="searchComplete" class="list-related-searches" ng-repeat="event in eventList">
+                            <a ng-href="#/eventView?query={{event['word'] | urlencode}}" title="{{event['word']}}">{{event['word'] | uppercase}} ({{event['weight']}})</a>
+                        </div>Re
+
+                        <div ng-if="searchComplete && eventList.length === 0" ng-model="searchComplete">
+                            <span style="font-size: 1em;">No related events found</span>
+                        </div>
+
+                        <div ng-if="!searchComplete" ng-model="searchComplete" id="spinner">
+                            <img src="images/spinner.gif" title="Events search in progress..." style="height: 5em;">
                         </div>
                     </div>
                 </div>

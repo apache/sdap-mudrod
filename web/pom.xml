@@ -18,7 +18,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.sdap.mudrod</groupId>
+        <groupId>org.apache.sdap</groupId>
         <artifactId>mudrod-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../</relativePath>

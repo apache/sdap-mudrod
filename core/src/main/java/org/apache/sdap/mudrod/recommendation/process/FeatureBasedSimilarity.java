@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.text.DecimalFormat;
 import java.util.Properties;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +48,6 @@ public class FeatureBasedSimilarity extends DiscoveryStepAbstract implements Ser
 
   private static final Logger LOG = LoggerFactory.getLogger(FeatureBasedSimilarity.class);
 
-  private DecimalFormat df = new DecimalFormat("#.000");
   // a map from variable to its type
   MetadataFeature metadata = null;
   public Map<String, Integer> variableTypes;

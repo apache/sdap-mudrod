@@ -18,7 +18,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.sdap.mudrod</groupId>
+        <groupId>org.apache.sdap</groupId>
         <artifactId>mudrod-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../</relativePath>
@@ -71,6 +71,23 @@
         <dependency>
             <groupId>com.carrotsearch</groupId>
             <artifactId>hppc</artifactId>
+        </dependency>
+        <!-- Optional Dependencies to support Geo Queries
+        see https://www.elastic.co/guide/en/elasticsearch/client/java-api/5.2/java-geo-queries.html
+        -->
+        <dependency>
+          <groupId>org.locationtech.spatial4j</groupId>
+          <artifactId>spatial4j</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>com.vividsolutions</groupId>
+          <artifactId>jts</artifactId>
+          <exclusions>
+            <exclusion>
+              <groupId>xerces</groupId>
+              <artifactId>xercesImpl</artifactId>
+            </exclusion>
+          </exclusions>
         </dependency>
         <!-- End of Elasticsearch dependencies -->
 

@@ -45,7 +45,8 @@ public abstract class MudrodAbstract implements Serializable {
   protected long endTime;
 
   protected static final String ES_SETTINGS = "elastic_settings.json";
-  protected static final String ES_MAPPINGS = "elastic_mappings.json";
+  protected static final String ES_DEFAULT_MAPPINGS = "elastic_default_mappings.json";
+  protected static final String ES_RAW_METADATA_MAPPINGS = "elastic_raw_metadata_mappings.json";
 
   public MudrodAbstract(Properties props, ESDriver es, SparkDriver spark) {
     this.props = props;
@@ -62,8 +63,27 @@ public abstract class MudrodAbstract implements Serializable {
    */
   @CheckForNull
   protected void initMudrod() {
+    initMudrod("_default_");
+  }
+
+  /**
+   * Method of setting up essential configuration for MUDROD to start
+   * @param type the 'type' of storage mapping to establish. Options include
+   * '_default_' and 'RawMetadata'.
+   */
+  @CheckForNull
+  protected void initMudrod(String type) {
     InputStream settingsStream = getClass().getClassLoader().getResourceAsStream(ES_SETTINGS);
-    InputStream mappingsStream = getClass().getClassLoader().getResourceAsStream(ES_MAPPINGS);
+    InputStream mappingsStream = null;
+    switch (type) {
+      case "RawMetadata":
+        mappingsStream = getClass().getClassLoader().getResourceAsStream(ES_RAW_METADATA_MAPPINGS);
+        break;
+      default:
+        mappingsStream = getClass().getClassLoader().getResourceAsStream(ES_DEFAULT_MAPPINGS);
+        break;
+    }
+    
     JSONObject settingsJSON = null;
     JSONObject mappingJSON = null;
 
@@ -81,7 +101,7 @@ public abstract class MudrodAbstract implements Serializable {
 
     try {
       if (settingsJSON != null && mappingJSON != null) {
-        this.es.putMapping(props.getProperty(MudrodConstants.ES_INDEX_NAME), settingsJSON.toString(), mappingJSON.toString());
+        this.es.putMapping(props.getProperty(MudrodConstants.ES_INDEX_NAME), type, settingsJSON.toString(), mappingJSON.toString());
       }
     } catch (IOException e) {
       LOG.error("Error entering Elasticsearch Mappings!", e);

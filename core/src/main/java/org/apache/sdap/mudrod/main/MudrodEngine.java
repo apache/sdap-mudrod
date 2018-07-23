@@ -30,6 +30,7 @@ import org.apache.sdap.mudrod.discoveryengine.WeblogDiscoveryEngine;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.integration.LinkageIntegration;
+import org.apache.sdap.mudrod.tools.EventIngester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +63,7 @@ public class MudrodEngine {
   private static final String LOG_INGEST = "logIngest";
   private static final String META_INGEST = "metaIngest";
   private static final String FULL_INGEST = "fullIngest";
+  private static final String EONET_INGEST = "eonetIngest";
   private static final String PROCESSING = "processingWithPreResults";
   private static final String ES_HOST = "esHost";
   private static final String ES_TCP_PORT = "esTCPPort";
@@ -234,7 +236,7 @@ public class MudrodEngine {
     LOG.info("Metadata has been ingested successfully.");
   }
 
-  public void startFullIngest() {
+  public void startFullIngest(MudrodEngine me) {
     DiscoveryEngineAbstract wd = new WeblogDiscoveryEngine(props, es, spark);
     wd.preprocess();
     wd.process();
@@ -246,6 +248,9 @@ public class MudrodEngine {
     DiscoveryEngineAbstract recom = new RecommendEngine(props, es, spark);
     recom.preprocess();
     recom.process();
+    
+    EventIngester eonet = new EventIngester(props, es, spark);
+    eonet.ingestAllEonetEvents(me);
     LOG.info("Full ingest has finished successfully.");
   }
 
@@ -270,6 +275,13 @@ public class MudrodEngine {
 
     DiscoveryEngineAbstract recom = new RecommendEngine(props, es, spark);
     recom.process();
+  }
+
+  private void startFullEonetIngest(MudrodEngine me) {
+    LOG.info("Starting full EONET ingest.");
+    EventIngester eonet = new EventIngester(props, es, spark);
+    eonet.ingestAllEonetEvents(me);
+    LOG.info("Full EONET ingest has finished successfully.");
   }
 
   /**
@@ -301,6 +313,8 @@ public class MudrodEngine {
     Option fullIngestOpt = new Option("f", FULL_INGEST, false, "begin full ingest Mudrod workflow");
     // processing only, assuming that preprocessing results is in dataDir
     Option processingOpt = new Option("p", PROCESSING, false, "begin processing with preprocessing results");
+    // EONET data ingest... assumes that log ingest has taken place.
+    Option eonetOpt = new Option("e", EONET_INGEST, false, "execute full EONET data ingestion");
 
     // argument options
     Option dataDirOpt = OptionBuilder.hasArg(true).withArgName("/path/to/data/directory").hasArgs(1).withDescription("the data directory to be processed by Mudrod").withLongOpt("dataDirectory")
@@ -321,6 +335,7 @@ public class MudrodEngine {
     options.addOption(logIngestOpt);
     options.addOption(metaIngestOpt);
     options.addOption(fullIngestOpt);
+    options.addOption(eonetOpt);
     options.addOption(processingOpt);
     options.addOption(dataDirOpt);
     options.addOption(esHostOpt);
@@ -340,6 +355,8 @@ public class MudrodEngine {
         processingType = META_INGEST;
       } else if (line.hasOption(FULL_INGEST)) {
         processingType = FULL_INGEST;
+      } else if (line.hasOption(EONET_INGEST)) {
+        processingType = EONET_INGEST;
       }
 
       String dataDir = line.getOptionValue(DATA_DIR).replace("\\", "/");
@@ -381,7 +398,10 @@ public class MudrodEngine {
           me.startMetaIngest();
           break;
         case FULL_INGEST:
-          me.startFullIngest();
+          me.startFullIngest(me);
+          break;
+        case EONET_INGEST:
+          me.startFullEonetIngest(me);
           break;
         default:
           break;

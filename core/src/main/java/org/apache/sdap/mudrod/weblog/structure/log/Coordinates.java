@@ -14,8 +14,6 @@
 package org.apache.sdap.mudrod.weblog.structure.log;
 
 public class Coordinates {
-  /*
-   * public String lat; public String lon;
-   */
+
   public String latlon;
 }

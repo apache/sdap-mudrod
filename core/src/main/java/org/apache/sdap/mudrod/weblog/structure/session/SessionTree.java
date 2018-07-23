@@ -33,7 +33,7 @@ import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
 /**
- * ClassName: SessionTree Function: Convert request list in a session to a tree
+ * Convert request list in a session to a tree
  */
 public class SessionTree extends MudrodAbstract {
 
@@ -186,8 +186,8 @@ public class SessionTree extends MudrodAbstract {
   }
 
   /**
-   * getClickStreamList: Get click stream list in the session
-   *
+   * Get click stream list in the session
+   * @param props a populated {@link java.util.Properties} object
    * @return {@link ClickStream}
    */
   public List<ClickStream> getClickStreamList(Properties props) {
