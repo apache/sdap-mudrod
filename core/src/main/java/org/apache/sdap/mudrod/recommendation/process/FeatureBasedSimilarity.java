@@ -192,7 +192,11 @@ public class FeatureBasedSimilarity extends DiscoveryStepAbstract implements Ser
           }
         }
 
-        double weight = totalSim / totalWeight;
+        double weight = 0.0;
+        if(totalWeight != 0){
+          weight = totalSim / totalWeight;
+        }
+        
         UpdateRequest ur = es.generateUpdateRequest(indexName, variableSimType, hit.getId(), "weight", weight);
         es.getBulkProcessor().add(ur);
       }

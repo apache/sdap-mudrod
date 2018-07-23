@@ -62,30 +62,27 @@ public class AggregateTriples extends DiscoveryStepAbstract {
       e2.printStackTrace();
     }
 
-    FileWriter fw;
-    try {
-      fw = new FileWriter(file.getAbsoluteFile());
+    try(FileWriter fw = new FileWriter(file.getAbsoluteFile())){
       bw = new BufferedWriter(fw);
+      File[] files = new File(this.props.getProperty(MudrodConstants.ONTOLOGY_INPUT_PATH)).listFiles();
+      for (File fileIn : files) {
+        String ext = FilenameUtils.getExtension(fileIn.getAbsolutePath());
+        if ("owl".equals(ext)) {
+          try {
+            loadXml(fileIn.getAbsolutePath());
+            getAllClass();
+          } catch (JDOMException e1) {
+            e1.printStackTrace();
+          } catch (IOException e1) {
+            e1.printStackTrace();
+          }
+  
+        }
+      }
     } catch (IOException e) {
       e.printStackTrace();
     }
-
-    File[] files = new File(this.props.getProperty(MudrodConstants.ONTOLOGY_INPUT_PATH)).listFiles();
-    for (File file_in : files) {
-      String ext = FilenameUtils.getExtension(file_in.getAbsolutePath());
-      if ("owl".equals(ext)) {
-        try {
-          loadxml(file_in.getAbsolutePath());
-          getAllClass();
-        } catch (JDOMException e1) {
-          e1.printStackTrace();
-        } catch (IOException e1) {
-          e1.printStackTrace();
-        }
-
-      }
-    }
-
+    
     try {
       bw.close();
     } catch (IOException e) {
@@ -109,7 +106,7 @@ public class AggregateTriples extends DiscoveryStepAbstract {
    * @throws JDOMException JDOMException
    * @throws IOException   IOException
    */
-  public void loadxml(String filePathName) throws JDOMException, IOException {
+  public void loadXml(String filePathName) throws JDOMException, IOException {
     SAXBuilder saxBuilder = new SAXBuilder();
     File file = new File(filePathName);
 
