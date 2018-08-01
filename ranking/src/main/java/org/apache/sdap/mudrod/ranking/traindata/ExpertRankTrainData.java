@@ -151,7 +151,7 @@ public class ExpertRankTrainData {
     {
       for (int i = 1; i < arr.length - row; i++) {
         List<String> colList = new ArrayList<String>(); // create vector to store all values inside of a column, which is stored inside 2D vector
-        for (int col = 1; col < arr[0].length - 2; col++) // Columns go until the next to last column
+        for (int col = 1; col < arr[0].length - 1; col++) // Columns go until the next to last column
         {
           // Extract double value from each cell
           double x1 = Double.parseDouble(arr[row][col]);

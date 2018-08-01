@@ -24,22 +24,28 @@ import java.util.Properties;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.main.MudrodEngine;
-import org.apache.sdap.mudrod.ranking.common.Learner;
+import org.apache.sdap.mudrod.ranking.common.RankLearner;
 import org.apache.sdap.mudrod.ranking.common.LearnerFactory;
 import org.apache.sdap.mudrod.ranking.traindata.RankTrainDataFactory;
 import org.apache.spark.SparkContext;
+import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.Function;
+import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.mllib.classification.SVMModel;
 import org.apache.spark.mllib.classification.SVMWithSGD;
+import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
 import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.util.MLUtils;
 
+import scala.Tuple2;
+
 /**
  * Learn ranking weights with SVM model
  */
-public class SVMLearner extends Learner {
+public class RankSVMLearner extends RankLearner {
   /**
    *
    */
@@ -57,21 +63,21 @@ public class SVMLearner extends Learner {
    * @param svmSgdModel
    *          path to a trained model
    */
-  public SVMLearner(Properties props, ESDriver es, SparkDriver spark, String svmSgdModel) {
+  public RankSVMLearner(Properties props, ESDriver es, SparkDriver spark, String svmSgdModel) {
     super(props, es, spark);
-
     sc = spark.sc.sc();
     load(svmSgdModel);
   }
 
-  public String customizeTrainData(String sourceDir) {
+  @Override
+  public String customizeData(String sourceDir, String outFileName) {
     RankTrainDataFactory factory = new RankTrainDataFactory(props, es, spark);
-    String resultFile = factory.createTrainData(sourceDir);
+    String resultFile = factory.createRankTrainData("experts", sourceDir);
 
     String path = new File(resultFile).getParent();
     
     String separator = System.getProperty("file.separator");
-    String svmSparkFile = path + separator + "inputDataForSVM_spark.txt";
+    String svmSparkFile = path + separator + outFileName + ".txt";
     SparkFormatter sf = new SparkFormatter();
     sf.toSparkSVMformat(resultFile, svmSparkFile);
 
@@ -85,17 +91,48 @@ public class SVMLearner extends Learner {
     int numIterations = 100;
     model = SVMWithSGD.train(data.rdd(), numIterations);
   }
+  
+  @Override
+  public void evaluate(String testFile) {
+    JavaRDD<LabeledPoint> data = MLUtils.loadLibSVMFile(sc, testFile).toJavaRDD();
+    // Run training algorithm to build the model.
+    JavaRDD<Tuple2<Object, Object>> scoreAndLabels = data.map(p->{
+        double score = model.predict(p.features());
+        return new Tuple2<>(score, p.label());
+    });
+    BinaryClassificationMetrics metrics =  new BinaryClassificationMetrics(scoreAndLabels.rdd());
+    System.out.println("Area under ROC = " + metrics.areaUnderROC());
+    long correctNum = scoreAndLabels.filter(new Function<Tuple2<Object,Object>, Boolean>(){
+      @Override
+      public Boolean call(Tuple2<Object, Object> arg0) throws Exception {
+        Integer predict = (Integer)arg0._1();
+        Integer label = (Integer)arg0._2();
+        int output = 0;
+        if (label == -1.0) {
+          output = 0;
+        } else if (label == 1.0) {
+          output = 1;
+        }
+        
+        if(predict == output){
+          return true;
+        }
+        return false;
+      }
+    }).count();
+    System.out.println("Accuracy = " + correctNum/scoreAndLabels.count());
+  }
 
   @Override
   public double predict(double[] value) {
     LabeledPoint p = new LabeledPoint(99.0, Vectors.dense(value));
-    return model.predict(p.features());
+    return  model.predict(p.features());
   }
 
   @Override
   public void save() {
     // Save model
-    String modelPath = SVMLearner.class.getClassLoader().getResource("javaSVMWithSGDModel").toString();
+    String modelPath = RankSVMLearner.class.getClassLoader().getResource("javaSVMWithSGDModel").toString();
     model.save(sc, modelPath);
   }
 
@@ -114,8 +151,7 @@ public class SVMLearner extends Learner {
     ESDriver es = new ESDriver(props);
 
     LearnerFactory factory = new LearnerFactory(props, es, spark);
-    Learner le = factory.createLearner();
-
+    RankLearner le = factory.createLearner();
     String sourceDir = arg0[0];
     String trainFile = le.customizeTrainData(sourceDir);
     le.train(trainFile);

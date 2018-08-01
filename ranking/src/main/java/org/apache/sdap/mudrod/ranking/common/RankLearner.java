@@ -29,15 +29,17 @@ import java.util.Properties;
 /**
  * learn rank weights from train data and predict search results ranking
  */
-public abstract class Learner extends MudrodAbstract {
+public abstract class RankLearner extends MudrodAbstract {
 
-  public Learner(Properties props, ESDriver es, SparkDriver spark) {
+  public RankLearner(Properties props, ESDriver es, SparkDriver spark) {
 		super(props, es, spark);
 	}
 
-	public abstract String customizeTrainData(String sourceDir);
+	public abstract String customizeData(String sourceDir, String outFileName);
 
 	public abstract void train(String trainFile);
+	
+	public abstract void evaluate(String testFile);
 
 	public abstract double predict(double[] value);
 	

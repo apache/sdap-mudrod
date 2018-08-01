@@ -17,7 +17,8 @@ import org.apache.sdap.mudrod.discoveryengine.MudrodAbstract;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.main.MudrodConstants;
-import org.apache.sdap.mudrod.ranking.ranksvm.SVMLearner;
+import org.apache.sdap.mudrod.ranking.dlrank.DLRankLearner;
+import org.apache.sdap.mudrod.ranking.ranksvm.RankSVMLearner;
 import org.apache.spark.SparkContext;
 import org.apache.spark.mllib.classification.SVMModel;
 import org.apache.spark.mllib.regression.LabeledPoint;
@@ -34,10 +35,12 @@ public class LearnerFactory extends MudrodAbstract {
     super(props, es, spark);
   }
 
-  public Learner createLearner() {
-    if ("1".equals(props.getProperty(MudrodConstants.RANKING_ML)))
+  public RankLearner createLearner() {
+    /*if ("1".equals(props.getProperty(MudrodConstants.RANKING_ML)))
       return new SVMLearner(props, es, spark, props.getProperty(MudrodConstants.RANKING_MODEL));
 
-    return null;
+    return null;*/
+    return new RankSVMLearner(props, es, spark, props.getProperty(MudrodConstants.RANKING_MODEL));
+    //return new DLRankLearner(props, es, spark, "");
   }
 }

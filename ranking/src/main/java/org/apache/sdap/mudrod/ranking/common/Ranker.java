@@ -31,7 +31,7 @@ import java.util.*;
 public class Ranker extends MudrodAbstract implements Serializable {
   private static final long serialVersionUID = 1L;
   transient List<SResult> resultList = new ArrayList<>();
-  Learner le = null;
+  RankLearner le = null;
 
   public Ranker(Properties props, ESDriver es, SparkDriver spark) {
     super(props, es, spark);

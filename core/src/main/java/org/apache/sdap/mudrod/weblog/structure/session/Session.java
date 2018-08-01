@@ -203,7 +203,7 @@ public class Session /*extends MudrodAbstract*/ implements Comparable<Session> {
    * @return an instance of session tree structure
    * @throws UnsupportedEncodingException UnsupportedEncodingException
    */
-  private SessionTree getSessionTree(String indexName, String type, String sessionID) throws UnsupportedEncodingException {
+  public SessionTree getSessionTree(String indexName, String type, String sessionID) throws UnsupportedEncodingException {
 
     SearchResponse response = es.getClient().prepareSearch(indexName).setTypes(type).setQuery(QueryBuilders.termQuery("SessionID", sessionID)).setSize(100).addSort("Time", SortOrder.ASC)
         .execute().actionGet();
@@ -260,32 +260,5 @@ public class Session /*extends MudrodAbstract*/ implements Comparable<Session> {
       seq++;
     }
     return gson.toJsonTree(requestList);
-  }
-
-  /**
-   * getClickStreamList: Extracted ranking training data from current session.
-   *
-   * @param indexName    an index from which to obtain ranked training data.
-   * @param cleanuptype: Session type name in Elasticsearch
-   * @param sessionID:   Session ID
-   * @return Click stram data list
-   * {@link ClickStream}
-   */
-  public List<RankingTrainData> getRankingTrainData(String indexName, String cleanuptype, String sessionID) {
-    SessionTree tree = null;
-    try {
-      tree = this.getSessionTree(indexName, cleanuptype, sessionID);
-    } catch (UnsupportedEncodingException e) {
-      LOG.error("Error whilst retreiving Session Tree: {}", e);
-    }
-
-    List<RankingTrainData> trainData = new ArrayList<>();
-    try {
-      trainData = tree.getRankingTrainData(indexName);
-    } catch (UnsupportedEncodingException e) {
-      LOG.error("Error whilst retreiving ranking training data: {}", e);
-    }
-
-    return trainData;
   }
 }
