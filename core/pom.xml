@@ -26,8 +26,8 @@
 
     <artifactId>mudrod-core</artifactId>
 
-    <name>Mudrod :: Core</name>
-    <description>Core Mudrod library implementation.</description>
+    <name>SDAP Search :: Core</name>
+    <description>Core SDAP Search library</description>
 
     <properties>
         <!-- This property is the name of the directory containing the SVM/SGD Model. It is used during build to create a zip file from this directory -->

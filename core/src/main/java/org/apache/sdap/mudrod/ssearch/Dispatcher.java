@@ -102,22 +102,21 @@ public class Dispatcher extends MudrodAbstract {
     BoolQueryBuilder qb = new BoolQueryBuilder();
     for (Entry<String, Double> entry : selected_Map.entrySet()) {
       if (query_operator.toLowerCase().trim().equals("phrase")) {
-        qb.should(QueryBuilders.multiMatchQuery(entry.getKey(), fieldsList).boost(entry.getValue().floatValue()).type(MultiMatchQueryBuilder.Type.PHRASE).tieBreaker((float) 0.5)); // when
-        // set
-        // to
-        // 1.0,
-        // it
-        // would
-        // be
-        // equal
-        // to
-        // "most
-        // fields"
-        // query
+        // when set to 1.0, it would be equal to 'most fields' query
+        qb.should(QueryBuilders.multiMatchQuery(entry.getKey(), fieldsList)
+          .boost(entry.getValue().floatValue())
+          .type(MultiMatchQueryBuilder.Type.PHRASE)
+          .tieBreaker((float) 0.5)); 
       } else if (query_operator.toLowerCase().trim().equals("and")) {
-        qb.should(QueryBuilders.multiMatchQuery(entry.getKey(), fieldsList).boost(entry.getValue().floatValue()).operator(MatchQueryBuilder.DEFAULT_OPERATOR.AND).tieBreaker((float) 0.5));
+        qb.should(QueryBuilders.multiMatchQuery(entry.getKey(), fieldsList)
+          .boost(entry.getValue().floatValue())
+          .operator(MatchQueryBuilder.DEFAULT_OPERATOR.AND)
+          .tieBreaker((float) 0.5));
       } else {
-        qb.should(QueryBuilders.multiMatchQuery(entry.getKey(), fieldsList).boost(entry.getValue().floatValue()).operator(MatchQueryBuilder.DEFAULT_OPERATOR.OR).tieBreaker((float) 0.5));
+        qb.should(QueryBuilders.multiMatchQuery(entry.getKey(), fieldsList)
+          .boost(entry.getValue().floatValue())
+          .operator(MatchQueryBuilder.DEFAULT_OPERATOR.OR)
+          .tieBreaker((float) 0.5));
       }
     }
 

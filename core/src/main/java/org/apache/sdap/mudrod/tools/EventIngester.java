@@ -99,7 +99,7 @@ public class EventIngester extends MudrodAbstract {
    * @param mudrodEngine a populated, configured {@link org.apache.sdap.mudrod.main.MudrodEngine}
    * with indexing backend already configured.
    */
-  private void correlateAndUpdateDatasetMetadataWithEONETEvents(MudrodEngine mudrodEngine) {
+  public void correlateAndUpdateDatasetMetadataWithEONETEvents(MudrodEngine mudrodEngine) {
     LOG.info("Beginning event correlation and update of collection records.");
     Properties props = mudrodEngine.getConfig();
     ESDriver esDriver = mudrodEngine.getESDriver();

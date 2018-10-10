@@ -366,6 +366,7 @@
       },
       "Dataset-ShortName":{
         "type":"text",
+        "fielddata": true,
         "fields":{
           "keyword":{
             "type":"keyword",
