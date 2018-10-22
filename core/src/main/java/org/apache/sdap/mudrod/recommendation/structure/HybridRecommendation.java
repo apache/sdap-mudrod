@@ -30,7 +30,15 @@ import org.elasticsearch.search.sort.SortOrder;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * Recommend metadata using combination all two methods, including content-based
@@ -50,7 +58,7 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
   private static final String WEIGHT = "weight";
 
   /**
-   * recommended data class Date: Sep 12, 2016 2:25:28 AM
+   * recommended data class
    */
   class LinkedTerm {
     public String term = null;
@@ -104,7 +112,7 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
     JsonElement sessionSimJson = mapToJson(sortedSessionSimMap, num);
     resultJson.add("sessionSim", sessionSimJson);
 
-    Map<String, Double> hybirdSimMap = new HashMap<String, Double>();
+    Map<String, Double> hybirdSimMap = new HashMap<>();
 
     for (String name : sortedAbstractSimMap.keySet()) {
       hybirdSimMap.put(name, sortedAbstractSimMap.get(name) /** 0.4 */);
@@ -164,9 +172,7 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
     }
 
     String nodesJson = gson.toJson(nodes);
-    JsonElement nodesElement = gson.fromJson(nodesJson, JsonElement.class);
-
-    return nodesElement;
+    return gson.fromJson(nodesJson, JsonElement.class);
   }
 
   /**
@@ -207,7 +213,7 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
   public List<LinkedTerm> getRelatedDataFromES(String type, String input, int num) {
 
     SearchRequestBuilder builder = es.getClient().prepareSearch(props.getProperty(INDEX_NAME)).setTypes(type).setQuery(QueryBuilders.termQuery("concept_A", input)).addSort(WEIGHT, SortOrder.DESC)
-        .setSize(num);
+            .setSize(num);
 
     SearchResponse usrhis = builder.execute().actionGet();
 
@@ -265,11 +271,8 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
     Properties props = me.loadConfig();
     ESDriver es = new ESDriver(me.getConfig());
     HybridRecommendation test = new HybridRecommendation(props, es, null);
-
-    // String input = "NSCAT_LEVEL_1.7_V2";
     String input = "AQUARIUS_L3_SSS_SMIA_MONTHLY-CLIMATOLOGY_V4";
     JsonObject json = test.getRecomDataInJson(input, 10);
-
     System.out.println(json.toString());
   }
 }

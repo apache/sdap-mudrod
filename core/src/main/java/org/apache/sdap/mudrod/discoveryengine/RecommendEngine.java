@@ -49,7 +49,6 @@ public class RecommendEngine extends DiscoveryEngineAbstract {
 
   @Override
   public void process() {
-    // TODO Auto-generated method stub
     LOG.info("Recommendation processing starts.");
 
     startTime = System.currentTimeMillis();

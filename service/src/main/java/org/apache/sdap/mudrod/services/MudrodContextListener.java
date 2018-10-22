@@ -23,7 +23,7 @@ import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.main.MudrodEngine;
 import org.apache.sdap.mudrod.ssearch.Ranker;
 import org.apache.sdap.mudrod.ssearch.Searcher;
-import org.apache.sdap.mudrod.tools.EONETIngester;
+import org.apache.sdap.mudrod.tools.EventIngester;
 
 import java.util.Properties;
 
@@ -64,11 +64,11 @@ public class MudrodContextListener implements ServletContextListener {
     ServletContext ctx = arg0.getServletContext();
     Searcher searcher = new Searcher(props, es, null);
     Ranker ranker = new Ranker(props, es, me.getSparkDriver());
-    EONETIngester eonetIngester = new EONETIngester(props, es, null);
+    EventIngester eonetIngester = new EventIngester(props, es, null);
     ctx.setAttribute("MudrodInstance", me);
     ctx.setAttribute("MudrodSearcher", searcher);
     ctx.setAttribute("MudrodRanker", ranker);
-    ctx.setAttribute("MudrodEONETIngester", eonetIngester);
+    ctx.setAttribute("MudrodEventIngester", eonetIngester);
   }
 
 }

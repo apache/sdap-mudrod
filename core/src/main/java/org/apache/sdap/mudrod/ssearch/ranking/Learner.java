@@ -34,7 +34,6 @@ public class Learner implements Serializable {
   /**
    * Constructor to load in spark SVM classifier
    *
-   * @param classifierName classifier type
    * @param skd            an instance of spark driver
    * @param svmSgdModel    path to a trained model
    */

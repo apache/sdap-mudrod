@@ -64,8 +64,15 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -123,7 +130,7 @@ public class ESDriver implements Serializable {
         throw new RuntimeException("Caught exception in bulk: " + request.getDescription() + ", failure: " + failure, failure);
       }
     }).setBulkActions(1000).setBulkSize(new ByteSizeValue(2500500, ByteSizeUnit.GB)).setBackoffPolicy(BackoffPolicy.exponentialBackoff(TimeValue.timeValueMillis(100), 10)).setConcurrentRequests(1)
-        .build());
+            .build());
   }
 
   public void destroyBulkProcessor() {
@@ -137,15 +144,11 @@ public class ESDriver implements Serializable {
     }
   }
 
-  public void putMapping(String indexName, String settingsJson, String mappingJson) throws IOException {
-
-    boolean exists = getClient().admin().indices().prepareExists(indexName).execute().actionGet().isExists();
-    if (exists) {
-      return;
+  public void putMapping(String indexName, String type, String settingsJson, String mappingJson) throws IOException {
+    if(!getClient().admin().indices().prepareExists(indexName).execute().actionGet().isExists()) {
+      getClient().admin().indices().prepareCreate(indexName).setSettings(Settings.builder().loadFromSource(settingsJson)).execute().actionGet();
     }
-
-    getClient().admin().indices().prepareCreate(indexName).setSettings(Settings.builder().loadFromSource(settingsJson)).execute().actionGet();
-    getClient().admin().indices().preparePutMapping(indexName).setType("_default_").setSource(mappingJson).execute().actionGet();
+    getClient().admin().indices().preparePutMapping(indexName).setType(type).setSource(mappingJson).execute().actionGet();
   }
 
   public String customAnalyzing(String indexName, String str) throws InterruptedException, ExecutionException {
@@ -188,11 +191,11 @@ public class ESDriver implements Serializable {
             .metaData()
             .index(index)
             .getMappings();
-    
+
     //check if the type exists
     if (!mappings.containsKey(type))
       return;
-    
+
     createBulkProcessor();
     SearchResponse scrollResp = getClient()
             .prepareSearch(index)
@@ -210,7 +213,11 @@ public class ESDriver implements Serializable {
         getBulkProcessor().add(deleteRequest);
       }
 
-      scrollResp = getClient().prepareSearchScroll(scrollResp.getScrollId()).setScroll(new TimeValue(600000)).execute().actionGet();
+      scrollResp = getClient()
+              .prepareSearchScroll(scrollResp.getScrollId())
+              .setScroll(new TimeValue(600000))
+              .execute()
+              .actionGet();
       if (scrollResp.getHits().getHits().length == 0) {
         break;
       }
@@ -255,19 +262,63 @@ public class ESDriver implements Serializable {
     return indexList;
   }
 
-  public String searchByQuery(String index, String type, String query) throws IOException, InterruptedException, ExecutionException {
-    return searchByQuery(index, type, query, false);
+  public List<Map<String, Object>> getAllDocs(String index, String... types){
+    int scrollSize = 5000;
+    List<Map<String,Object>> esData = new ArrayList<>();
+    SearchResponse response = null;
+    int i = 0;
+    while( response == null || response.getHits().hits().length != 0){
+      response = client.prepareSearch(index)
+              .setTypes(types)
+              .setQuery(QueryBuilders.matchAllQuery())
+              .setSize(scrollSize)
+              .setFrom(i * scrollSize)
+              .execute()
+              .actionGet();
+      for(SearchHit hit : response.getHits()){
+        esData.add(hit.getSource());
+      }
+      i++;
+    }
+    return esData;
   }
 
+  /**
+   * Convenience method to search an index by document types and a text string.
+   * @param index the index to query
+   * @param query the query string (text string) itself
+   * @param types the types to query
+   * @return JSON {@link java.lang.String} representing the query results.
+   */
+  public String searchByQuery(String index, String query, String... types) {
+    return searchByQuery(index, QueryBuilders.queryStringQuery(query), false, types);
+  }
+
+  /**
+   * Convenience method to search an index by document types and a text string. This
+   * method includes an optional flag which toggles detailed metadata retrieval.
+   * @param index the index to query
+   * @param queryBuilder the QueryBuilder object to execute
+   * @param bDetail whether this is a full, detailed query over entire 
+   * metadata as oppose to a subset of the available metadata. False by
+   * default.
+   * @param types the types to query
+   * @return JSON {@link java.lang.String} representing the query results.
+   */
   @SuppressWarnings("unchecked")
-  public String searchByQuery(String index, String type, String query, Boolean bDetail) throws IOException, InterruptedException, ExecutionException {
+  public String searchByQuery(String index, QueryBuilder queryBuilder, Boolean bDetail, String... types) {
     boolean exists = getClient().admin().indices().prepareExists(index).execute().actionGet().isExists();
     if (!exists) {
       return null;
     }
 
-    QueryBuilder qb = QueryBuilders.queryStringQuery(query);
-    SearchResponse response = getClient().prepareSearch(index).setTypes(type).setQuery(qb).setSize(500).execute().actionGet();
+    SearchResponse response = getClient()
+            .prepareSearch(index)
+            .setTypes(types)
+            .setQuery(queryBuilder)
+            .setSize(5000)
+            .execute()
+            .actionGet();
 
     // Map of K,V pairs where key is the field name from search result and value is the that should be returned for that field. Not always the same.
     Map<String, String> fieldsToReturn = new HashMap<>();
@@ -277,6 +328,8 @@ public class ESDriver implements Serializable {
     fieldsToReturn.put("DatasetParameter-Topic", "Topic");
     fieldsToReturn.put("Dataset-Description", "Dataset-Description");
     fieldsToReturn.put("DatasetCitation-ReleaseDateLong", "Release Date");
+    fieldsToReturn.put("Dataset-Metadata", "Dataset-Metadata");
+    fieldsToReturn.put("events", "events");
 
     if (bDetail) {
       fieldsToReturn.put("DatasetPolicy-DataFormat", "DataFormat");
@@ -313,9 +366,11 @@ public class ESDriver implements Serializable {
       Map<String, Object> source = hit.getSource();
 
       Map<String, Object> searchResult = source.entrySet().stream().filter(entry -> fieldsToReturn.keySet().contains(entry.getKey()))
-          .collect(Collectors.toMap(entry -> fieldsToReturn.get(entry.getKey()), Entry::getValue));
+              .collect(Collectors.toMap(entry -> fieldsToReturn.get(entry.getKey()), Entry::getValue));
 
       // searchResult is now a map where the key = value from fieldsToReturn and the value = value from search result
+
+      searchResult.put("id", hit.getId());
 
       // Some results require special handling/formatting:
       // Release Date formatting
@@ -323,7 +378,6 @@ public class ESDriver implements Serializable {
       searchResult.put("Release Date", releaseDate.format(DateTimeFormatter.ISO_DATE));
 
       if (bDetail) {
-
         // DataFormat value, translate RAW to BINARY
         if ("RAW".equals(searchResult.get("DataFormat"))) {
           searchResult.put("DataFormat", "BINARY");
@@ -336,8 +390,8 @@ public class ESDriver implements Serializable {
         // Time Span Formatting
         LocalDate startDate = Instant.ofEpochMilli((Long) searchResult.get("DatasetCoverage-StartTimeLong-Long")).atZone(ZoneId.of("Z")).toLocalDate();
         LocalDate endDate = "".equals(searchResult.get("Dataset-DatasetCoverage-StopTimeLong")) ?
-            null :
-            Instant.ofEpochMilli(Long.parseLong(searchResult.get("Dataset-DatasetCoverage-StopTimeLong").toString())).atZone(ZoneId.of("Z")).toLocalDate();
+                null :
+                Instant.ofEpochMilli(Long.parseLong(searchResult.get("Dataset-DatasetCoverage-StopTimeLong").toString())).atZone(ZoneId.of("Z")).toLocalDate();
         searchResult.put("Time Span", startDate.format(DateTimeFormatter.ISO_DATE) + " to " + (endDate == null ? "Present" : endDate.format(DateTimeFormatter.ISO_DATE)));
 
         // Temporal resolution can come from one of two fields
@@ -358,7 +412,7 @@ public class ESDriver implements Serializable {
 
         // Measurement is a list of hierarchies that goes Topic -> Term -> Variable -> Variable Detail. Need to construct these hierarchies.
         List<List<String>> measurements = buildMeasurementHierarchies((List<String>) searchResult.get("Topic"), (List<String>) searchResult.get("DatasetParameter-Term-Full"),
-            (List<String>) searchResult.get("DatasetParameter-Variable-Full"), (List<String>) searchResult.get("DatasetParameter-VariableDetail"));
+                (List<String>) searchResult.get("DatasetParameter-Variable-Full"), (List<String>) searchResult.get("DatasetParameter-VariableDetail"));
 
         searchResult.put("Measurements", measurements);
 
@@ -432,15 +486,21 @@ public class ESDriver implements Serializable {
       return new ArrayList<>();
     }
 
-    Set<String> suggestHS = new HashSet<String>();
+    Set<String> suggestHS = new HashSet<>();
     List<String> suggestList = new ArrayList<>();
 
     // please make sure that the completion field is configured in the ES mapping
-    CompletionSuggestionBuilder suggestionsBuilder = SuggestBuilders.completionSuggestion("Dataset-Metadata").prefix(term, Fuzziness.fromEdits(2)).size(100);
-    SearchRequestBuilder suggestRequestBuilder = getClient().prepareSearch(index).suggest(new SuggestBuilder().addSuggestion("completeMe", suggestionsBuilder));
+    CompletionSuggestionBuilder suggestionsBuilder = SuggestBuilders
+            .completionSuggestion("Dataset-Metadata")
+            .prefix(term, Fuzziness.fromEdits(2))
+            .size(100);
+    SearchRequestBuilder suggestRequestBuilder = getClient()
+            .prepareSearch(index)
+            .suggest(new SuggestBuilder().addSuggestion("completeMe", suggestionsBuilder));
     SearchResponse sr = suggestRequestBuilder.setFetchSource(false).execute().actionGet();
 
-    Iterator<? extends Suggest.Suggestion.Entry.Option> iterator = sr.getSuggest().getSuggestion("completeMe").iterator().next().getOptions().iterator();
+    Iterator<? extends Suggest.Suggestion.Entry.Option> iterator = sr.getSuggest()
+            .getSuggestion("completeMe").iterator().next().getOptions().iterator();
 
     while (iterator.hasNext()) {
       Suggest.Suggestion.Entry.Option next = iterator.next();
@@ -490,7 +550,9 @@ public class ESDriver implements Serializable {
 
     Client client = null;
 
-    if (hosts != null && port > 1) {  
+    // Prefer TransportClient
+    if (hosts != null && port > 1) {
+      @SuppressWarnings("resource")
       TransportClient transportClient = new ESTransportClient(settings);
       for (String host : hosts)
         transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), port));
@@ -542,6 +604,16 @@ public class ESDriver implements Serializable {
     this.bulkProcessor = bulkProcessor;
   }
 
+  /**
+   * 
+   * @param index index you wish to update documents within
+   * @param type document type you wish to update
+   * @param id a unique document ID you wish to update
+   * @param field1 the field of the document you want to update
+   * @param value1 the associated value for that field
+   * @return a populated UpdateRequest
+   * ready to execute.
+   */
   public UpdateRequest generateUpdateRequest(String index, String type, String id, String field1, Object value1) {
 
     UpdateRequest ur = null;

@@ -34,8 +34,8 @@
 
     <artifactId>mudrod-web</artifactId>
     <packaging>jar</packaging>
-    <name>Mudrod :: Web</name>
-    <description>Mudrod Web UI application.</description>
+    <name>SDAP Search :: Web</name>
+    <description>SDAP Search Web UI</description>
     <url>https://github.com/apache/incubator-sdap-mudrod.git</url>
 
     <licenses>

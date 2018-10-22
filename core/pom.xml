@@ -26,8 +26,8 @@
 
     <artifactId>mudrod-core</artifactId>
 
-    <name>Mudrod :: Core</name>
-    <description>Core Mudrod library implementation.</description>
+    <name>SDAP Search :: Core</name>
+    <description>Core SDAP Search library</description>
 
     <properties>
         <!-- This property is the name of the directory containing the SVM/SGD Model. It is used during build to create a zip file from this directory -->
@@ -71,6 +71,23 @@
         <dependency>
             <groupId>com.carrotsearch</groupId>
             <artifactId>hppc</artifactId>
+        </dependency>
+        <!-- Optional Dependencies to support Geo Queries
+        see https://www.elastic.co/guide/en/elasticsearch/client/java-api/5.2/java-geo-queries.html
+        -->
+        <dependency>
+          <groupId>org.locationtech.spatial4j</groupId>
+          <artifactId>spatial4j</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>com.vividsolutions</groupId>
+          <artifactId>jts</artifactId>
+          <exclusions>
+            <exclusion>
+              <groupId>xerces</groupId>
+              <artifactId>xercesImpl</artifactId>
+            </exclusion>
+          </exclusions>
         </dependency>
         <!-- End of Elasticsearch dependencies -->
 

@@ -30,6 +30,7 @@ import org.apache.sdap.mudrod.discoveryengine.WeblogDiscoveryEngine;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.integration.LinkageIntegration;
+import org.apache.sdap.mudrod.tools.EventIngester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +63,7 @@ public class MudrodEngine {
   private static final String LOG_INGEST = "logIngest";
   private static final String META_INGEST = "metaIngest";
   private static final String FULL_INGEST = "fullIngest";
+  private static final String EONET_INGEST = "eonetIngest";
   private static final String PROCESSING = "processingWithPreResults";
   private static final String ES_HOST = "esHost";
   private static final String ES_TCP_PORT = "esTCPPort";
@@ -162,7 +164,7 @@ public class MudrodEngine {
     } catch (IOException e) {
       LOG.info("Fail to load the sytem config file");
     }
-    
+
     return getConfig();
   }
 
@@ -235,7 +237,7 @@ public class MudrodEngine {
     LOG.info("Metadata has been ingested successfully.");
   }
 
-  public void startFullIngest() {
+  public void startFullIngest(MudrodEngine me) {
     DiscoveryEngineAbstract wd = new WeblogDiscoveryEngine(props, es, spark);
     wd.preprocess();
     wd.process();
@@ -247,6 +249,10 @@ public class MudrodEngine {
     DiscoveryEngineAbstract recom = new RecommendEngine(props, es, spark);
     recom.preprocess();
     recom.process();
+
+    EventIngester eonet = new EventIngester(props, es, spark);
+    eonet.ingestAllEonetEvents(me);
+    eonet.correlateAndUpdateDatasetMetadataWithEONETEvents(me);
     LOG.info("Full ingest has finished successfully.");
   }
 
@@ -271,6 +277,16 @@ public class MudrodEngine {
 
     DiscoveryEngineAbstract recom = new RecommendEngine(props, es, spark);
     recom.process();
+  }
+
+  private void startFullEonetIngest(MudrodEngine me) {
+    LOG.info("Starting full EONET ingest.");
+    EventIngester eonet = new EventIngester(props, es, spark);
+    eonet.ingestAllEonetEvents(me);
+    LOG.info("Full EONET ingest has finished successfully.");
+    LOG.info("Starting event + dataset correlation.");
+    eonet.correlateAndUpdateDatasetMetadataWithEONETEvents(me);
+    LOG.info("Event + dataset correlation finished successfully.");
   }
 
   /**
@@ -302,19 +318,45 @@ public class MudrodEngine {
     Option fullIngestOpt = new Option("f", FULL_INGEST, false, "begin full ingest Mudrod workflow");
     // processing only, assuming that preprocessing results is in dataDir
     Option processingOpt = new Option("p", PROCESSING, false, "begin processing with preprocessing results");
+    // EONET data ingest... assumes that log ingest has taken place.
+    Option eonetOpt = new Option("e", EONET_INGEST, false, "execute full EONET data ingestion");
 
     // argument options
-    Option dataDirOpt = OptionBuilder.hasArg(true).withArgName("/path/to/data/directory").hasArgs(1).withDescription("the data directory to be processed by Mudrod").withLongOpt("dataDirectory")
-        .isRequired().create(DATA_DIR);
+    @SuppressWarnings("static-access")
+    Option dataDirOpt = OptionBuilder.hasArg(true)
+    .withArgName("/path/to/data/directory")
+    .hasArgs(1)
+    .withDescription("the data directory to be processed by Mudrod")
+    .withLongOpt("dataDirectory")
+    .isRequired(false)
+    .create(DATA_DIR);
 
-    Option esHostOpt = OptionBuilder.hasArg(true).withArgName("host_name").hasArgs(1).withDescription("elasticsearch cluster unicast host").withLongOpt("elasticSearchHost").isRequired(false)
-        .create(ES_HOST);
+    @SuppressWarnings("static-access")
+    Option esHostOpt = OptionBuilder.hasArg(true)
+    .withArgName("host_name")
+    .hasArgs(1)
+    .withDescription("elasticsearch cluster unicast host")
+    .withLongOpt("elasticSearchHost")
+    .isRequired(false)
+    .create(ES_HOST);
 
-    Option esTCPPortOpt = OptionBuilder.hasArg(true).withArgName("port_num").hasArgs(1).withDescription("elasticsearch transport TCP port").withLongOpt("elasticSearchTransportTCPPort")
-        .isRequired(false).create(ES_TCP_PORT);
+    @SuppressWarnings("static-access")
+    Option esTCPPortOpt = OptionBuilder.hasArg(true)
+    .withArgName("port_num")
+    .hasArgs(1)
+    .withDescription("elasticsearch transport TCP port")
+    .withLongOpt("elasticSearchTransportTCPPort")
+    .isRequired(false)
+    .create(ES_TCP_PORT);
 
-    Option esPortOpt = OptionBuilder.hasArg(true).withArgName("port_num").hasArgs(1).withDescription("elasticsearch HTTP/REST port").withLongOpt("elasticSearchHTTPPort").isRequired(false)
-        .create(ES_HTTP_PORT);
+    @SuppressWarnings("static-access")
+    Option esPortOpt = OptionBuilder.hasArg(true)
+    .withArgName("port_num")
+    .hasArgs(1)
+    .withDescription("elasticsearch HTTP/REST port")
+    .withLongOpt("elasticSearchHTTPPort")
+    .isRequired(false)
+    .create(ES_HTTP_PORT);
 
     // create the options
     Options options = new Options();
@@ -322,6 +364,7 @@ public class MudrodEngine {
     options.addOption(logIngestOpt);
     options.addOption(metaIngestOpt);
     options.addOption(fullIngestOpt);
+    options.addOption(eonetOpt);
     options.addOption(processingOpt);
     options.addOption(dataDirOpt);
     options.addOption(esHostOpt);
@@ -333,7 +376,12 @@ public class MudrodEngine {
       CommandLine line = parser.parse(options, args);
       String processingType = null;
 
-      if (line.hasOption(LOG_INGEST)) {
+      if (line.hasOption("help")) {
+        HelpFormatter hf = new HelpFormatter();
+        hf.printHelp("MudrodEngine: 'dataDir' argument is mandatory when using an ingest method.", options, true);
+        return;
+      }
+      else if (line.hasOption(LOG_INGEST)) {
         processingType = LOG_INGEST;
       } else if (line.hasOption(PROCESSING)) {
         processingType = PROCESSING;
@@ -341,16 +389,12 @@ public class MudrodEngine {
         processingType = META_INGEST;
       } else if (line.hasOption(FULL_INGEST)) {
         processingType = FULL_INGEST;
-      }
-
-      String dataDir = line.getOptionValue(DATA_DIR).replace("\\", "/");
-      if (!dataDir.endsWith("/")) {
-        dataDir += "/";
+      } else if (line.hasOption(EONET_INGEST)) {
+        processingType = EONET_INGEST;
       }
 
       MudrodEngine me = new MudrodEngine();
       me.loadConfig();
-      me.props.put(DATA_DIR, dataDir);
 
       if (line.hasOption(ES_HOST)) {
         String esHost = line.getOptionValue(ES_HOST);
@@ -369,30 +413,38 @@ public class MudrodEngine {
 
       me.es = new ESDriver(me.getConfig());
       me.spark = new SparkDriver(me.getConfig());
-      loadPathConfig(me, dataDir);
+      if (!line.hasOption(EONET_INGEST)) {
+        String dataDir = line.getOptionValue(DATA_DIR).replace("\\", "/");
+        if (!dataDir.endsWith("/")) {
+          dataDir += "/";
+        }
+        me.props.put(DATA_DIR, dataDir);
+        loadPathConfig(me, dataDir);
+      }
       if (processingType != null) {
         switch (processingType) {
-        case PROCESSING:
+          case PROCESSING:
           me.startProcessing();
           break;
-        case LOG_INGEST:
+          case LOG_INGEST:
           me.startLogIngest();
           break;
-        case META_INGEST:
+          case META_INGEST:
           me.startMetaIngest();
           break;
-        case FULL_INGEST:
-          me.startFullIngest();
+          case FULL_INGEST:
+          me.startFullIngest(me);
           break;
-        default:
+          case EONET_INGEST:
+          me.startFullEonetIngest(me);
+          break;
+          default:
           break;
         }
       }
       me.end();
     } catch (Exception e) {
-      HelpFormatter formatter = new HelpFormatter();
-      formatter.printHelp("MudrodEngine: 'dataDir' argument is mandatory. " + "User must also provide an ingest method.", options, true);
-      LOG.error("Error whilst parsing command line.", e);
+      LOG.error("Error during MudrodEngine execution.", e);
     }
   }
 
