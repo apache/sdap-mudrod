@@ -14,6 +14,7 @@
 
 package org.apache.sdap.mudrod.weblog.structure;
 
+import org.apache.sdap.mudrod.weblog.structure.log.ApacheAccessLog;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
