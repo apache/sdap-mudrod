@@ -19,8 +19,8 @@ import com.google.gson.JsonObject;
 
 import org.apache.sdap.mudrod.main.MudrodConstants;
 import org.apache.sdap.mudrod.main.MudrodEngine;
-import org.apache.sdap.mudrod.ssearch.Ranker;
-import org.apache.sdap.mudrod.ssearch.Searcher;
+import org.apache.sdap.mudrod.ranking.common.Ranker;
+import org.apache.sdap.mudrod.ranking.common.Searcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

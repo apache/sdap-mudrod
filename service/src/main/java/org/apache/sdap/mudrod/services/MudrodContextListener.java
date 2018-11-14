@@ -21,8 +21,9 @@ import javax.servlet.annotation.WebListener;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.main.MudrodEngine;
-import org.apache.sdap.mudrod.ssearch.Ranker;
-import org.apache.sdap.mudrod.ssearch.Searcher;
+import org.apache.sdap.mudrod.ranking.common.Ranker;
+import org.apache.sdap.mudrod.ranking.common.Searcher;
+
 import org.apache.sdap.mudrod.tools.EONETIngester;
 
 import java.util.Properties;

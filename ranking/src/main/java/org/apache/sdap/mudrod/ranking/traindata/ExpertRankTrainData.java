@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sdap.mudrod.ssearch.ranking;
+package org.apache.sdap.mudrod.ranking.traindata;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
@@ -28,7 +28,7 @@ import java.util.Map;
  * the space of query-document vectors, e.g. x1, x2, x3, we transform them into a new space
  * in which a pair of documents is represented as the difference between their feature vectors.
  */
-public class DataGenerator {
+public class ExpertRankTrainData {
   private static String mySourceDir;
   private static String myResultDir;
   private static boolean isMultFiles;
@@ -59,17 +59,25 @@ public class DataGenerator {
    * @param multFiles true if multiple files in directory need to be processed and false if
    *                  only a single file needs to be processed
    */
-  public DataGenerator(String sourceDir, String resultDir, boolean multFiles) {
+  public ExpertRankTrainData(String sourceDir, String resultDir, boolean multFiles) {
     mySourceDir = sourceDir;
     myResultDir = resultDir;
     isMultFiles = multFiles;
+  }
+  
+  /**
+   * prepare data for experts to evaluate.
+   */
+  public void prepareDataForExperts() {
+	    parseFile();
+	    writeCSVfile(myMasterList);
   }
 
   /**
    * Responsible for invoking the processing of data file(s) and their subsequent storage
    * into a user specified directory.
    */
-  public void process() {
+  public void convertToTrainSet() {
     parseFile();
     writeCSVfile(myMasterList);
   }
@@ -143,7 +151,7 @@ public class DataGenerator {
     {
       for (int i = 1; i < arr.length - row; i++) {
         List<String> colList = new ArrayList<String>(); // create vector to store all values inside of a column, which is stored inside 2D vector
-        for (int col = 0; col < arr[0].length - 1; col++) // Columns go until the next to last column
+        for (int col = 1; col < arr[0].length - 1; col++) // Columns go until the next to last column
         {
           // Extract double value from each cell
           double x1 = Double.parseDouble(arr[row][col]);
@@ -274,9 +282,9 @@ public class DataGenerator {
    * @param arr 2D array containing the parsed information from input file
    */
   public static void storeHead(String[][] arr) {
-    myHeader = new String[arr[0].length]; // Reside private variable
+    myHeader = new String[arr[0].length-1]; // Reside private variable
 
-    System.arraycopy(arr[0], 0, myHeader, 0, arr[0].length);
+    System.arraycopy(arr[0], 1, myHeader, 0, arr[0].length-1);
   }
 
   /**
@@ -287,18 +295,18 @@ public class DataGenerator {
   public static void writeCSVfile(List<List<String>> list) {
     String outputFile = myResultDir;
     boolean alreadyExists = new File(outputFile).exists();
-
+    if(alreadyExists){
+    	new File(outputFile).delete();
+    }
     try {
       CSVWriter csvOutput = new CSVWriter(new FileWriter(outputFile), ','); // Create new instance of CSVWriter to write to file output
 
-      if (!alreadyExists) {
-        csvOutput.writeNext(myHeader); // Write the text headers first before data
+      csvOutput.writeNext(myHeader); // Write the text headers first before data
 
-        for (List<String> aList : list) { // Iterate through all rows in 2D array
-          String[] temp = new String[aList.size()]; // Convert row array list in 2D array to regular string array
-          temp = aList.toArray(temp);
-          csvOutput.writeNext(temp); // Write this array to the file
-        }
+      for (List<String> aList : list) { // Iterate through all rows in 2D array
+        String[] temp = new String[aList.size()]; // Convert row array list in 2D array to regular string array
+        temp = aList.toArray(temp);
+        csvOutput.writeNext(temp); // Write this array to the file
       }
 
       csvOutput.close(); // Close csvWriter

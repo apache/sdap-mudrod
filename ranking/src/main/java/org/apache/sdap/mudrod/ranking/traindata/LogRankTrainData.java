@@ -1,4 +1,4 @@
-package org.apache.sdap.mudrod.weblog.structure.session;
+package org.apache.sdap.mudrod.ranking.traindata;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * ClassName: train data extracted from web logs for training ranking weightss.
  */
-public class RankingTrainData implements Serializable {
+public class LogRankTrainData implements Serializable {
   /**
    *
    */
@@ -31,13 +31,13 @@ public class RankingTrainData implements Serializable {
    * @param highRankDataset the dataset name for the highest ranked dataset
    * @param lowRankDataset  the dataset name for the lowest ranked dataset
    */
-  public RankingTrainData(String query, String highRankDataset, String lowRankDataset) {
+  public LogRankTrainData(String query, String highRankDataset, String lowRankDataset) {
     this.query = query;
     this.highRankDataset = highRankDataset;
     this.lowRankDataset = lowRankDataset;
   }
 
-  public RankingTrainData() {
+  public LogRankTrainData() {
     //default constructor
   }
 

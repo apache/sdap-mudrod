@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 /**
- * This package includes data structure needed for ranking process
+ * This package includes classes for semantic search, such as click stream importer,
+ * query dispatcher, semantic searcher, and ranker (ranksvm, ordinal/linear regression)
  */
-package org.apache.sdap.mudrod.ssearch.structure;
+package org.apache.sdap.mudrod.ranking.common;

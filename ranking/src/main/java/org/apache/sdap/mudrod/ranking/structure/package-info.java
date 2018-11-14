@@ -12,7 +12,6 @@
  * limitations under the License.
  */
 /**
- * This package includes classes for importing training data, ML models,
- * generating input data for RankSVM, and evaluating ranking results
+ * This package includes data structure needed for ranking process
  */
-package org.apache.sdap.mudrod.ssearch.ranking;
+package org.apache.sdap.mudrod.ranking.structure;

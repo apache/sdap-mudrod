@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sdap.mudrod.ssearch;
+package org.apache.sdap.mudrod.ranking.common;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -20,7 +20,7 @@ import com.google.gson.JsonObject;
 import org.apache.sdap.mudrod.discoveryengine.MudrodAbstract;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
-import org.apache.sdap.mudrod.ssearch.structure.SResult;
+import org.apache.sdap.mudrod.ranking.structure.SResult;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;

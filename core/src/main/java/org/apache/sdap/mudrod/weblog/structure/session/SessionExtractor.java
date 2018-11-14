@@ -205,7 +205,7 @@ public class SessionExtractor implements Serializable {
    *          a log index name
    * @return list of session names
    */
-  protected List<String> getSessions(Properties props, ESDriver es, String logIndex) {
+  public List<String> getSessions(Properties props, ESDriver es, String logIndex) {
 
     String cleanupType = MudrodConstants.CLEANUP_TYPE;
     String sessionStatType = MudrodConstants.SESSION_STATS_TYPE;
@@ -383,102 +383,4 @@ public class SessionExtractor implements Serializable {
       }
     });
   }
-
-  /**
-   * extractClickStreamFromES:Extract click streams from logs stored in
-   * Elasticsearch
-   *
-   * @param props
-   *          the Mudrod configuration
-   * @param es
-   *          the Elasticsearch drive
-   * @param spark
-   *          the spark driver
-   * @return clickstream list in JavaRDD format {@link ClickStream}
-   */
-  public JavaRDD<RankingTrainData> extractRankingTrainData(Properties props, ESDriver es, SparkDriver spark) {
-
-    List<RankingTrainData> queryList = this.extractRankingTrainData(props, es);
-    return spark.sc.parallelize(queryList);
-
-  }
-
-  /**
-   * getClickStreamList:Extract click streams from logs stored in Elasticsearch.
-   *
-   * @param props
-   *          the Mudrod configuration
-   * @param es
-   *          the Elasticsearch driver
-   * @return clickstream list {@link ClickStream}
-   */
-  protected List<RankingTrainData> extractRankingTrainData(Properties props, ESDriver es) {
-    List<String> logIndexList = es.getIndexListWithPrefix(props.getProperty(MudrodConstants.LOG_INDEX));
-
-    LOG.info(logIndexList.toString());
-
-    List<RankingTrainData> result = new ArrayList<>();
-    for (String logIndex : logIndexList) {
-      List<String> sessionIdList;
-      try {
-        sessionIdList = this.getSessions(props, es, logIndex);
-        Session session = new Session(props, es);
-        for (String aSessionIdList : sessionIdList) {
-          String[] sArr = aSessionIdList.split(",");
-          List<RankingTrainData> datas = session.getRankingTrainData(sArr[1], sArr[2], sArr[0]);
-          result.addAll(datas);
-        }
-      } catch (Exception e) {
-        LOG.error("Error which extracting ranking train data: {}", e);
-      }
-    }
-
-    return result;
-  }
-
-  protected JavaRDD<RankingTrainData> extractRankingTrainDataInParallel(Properties props, SparkDriver spark, ESDriver es) {
-
-    List<String> logIndexList = es.getIndexListWithPrefix(props.getProperty(MudrodConstants.LOG_INDEX));
-
-    LOG.info(logIndexList.toString());
-
-    List<String> sessionIdList = new ArrayList<>();
-    for (String logIndex : logIndexList) {
-      List<String> tmpsessionList = this.getSessions(props, es, logIndex);
-      sessionIdList.addAll(tmpsessionList);
-    }
-
-    JavaRDD<String> sessionRDD = spark.sc.parallelize(sessionIdList, 16);
-
-    JavaRDD<RankingTrainData> clickStreamRDD = sessionRDD.mapPartitions(
-            new FlatMapFunction<Iterator<String>, RankingTrainData>() {
-      /**
-       *
-       */
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      public Iterator<RankingTrainData> call(Iterator<String> arg0) throws Exception {
-        ESDriver tmpES = new ESDriver(props);
-        tmpES.createBulkProcessor();
-
-        Session session = new Session(props, tmpES);
-        List<RankingTrainData> clickstreams = new ArrayList<>();
-        while (arg0.hasNext()) {
-          String s = arg0.next();
-          String[] sArr = s.split(",");
-          List<RankingTrainData> clicks = session.getRankingTrainData(sArr[1], sArr[2], sArr[0]);
-          clickstreams.addAll(clicks);
-        }
-        tmpES.destroyBulkProcessor();
-        tmpES.close();
-        return clickstreams.iterator();
-      }
-    });
-
-    LOG.info("Clickstream number: {}", clickStreamRDD.count());
-
-    return clickStreamRDD;
-  }
-
 }
