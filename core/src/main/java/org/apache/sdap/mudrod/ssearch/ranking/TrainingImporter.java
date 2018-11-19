@@ -20,7 +20,6 @@ import org.apache.sdap.mudrod.main.MudrodConstants;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -63,29 +62,31 @@ public class TrainingImporter extends MudrodAbstract {
   /**
    * Method of importing training set in to Elasticsearch
    *
-   * @param dataFolder the path to the traing set
-   * @throws IOException IOException
+   * @param dataFolder
+   *          the path to the traing set
+   * @throws IOException
+   *           IOException
    */
   public void importTrainingSet(String dataFolder) throws IOException {
     es.createBulkProcessor();
 
     File[] files = new File(dataFolder).listFiles();
     for (File file : files) {
-      BufferedReader br = new BufferedReader(new FileReader(file.getAbsolutePath()));
-      br.readLine();
-      String line = br.readLine();
-      while (line != null) {
-        String[] list = line.split(",");
-        String query = file.getName().replace(".csv", "");
-        if (list.length > 0) {
-          IndexRequest ir = new IndexRequest(props.getProperty(MudrodConstants.ES_INDEX_NAME), "trainingranking")
-              .source(jsonBuilder().startObject().field("query", query).field("dataID", list[0]).field("label", list[list.length - 1]).endObject());
-          es.getBulkProcessor().add(ir);
+      try (BufferedReader br = new BufferedReader(new FileReader(file.getAbsolutePath()))) {
+        String line = null;
+        line = br.readLine(); // cvs header
+        while ((line = br.readLine()) != null) {
+          String[] list = line.split(",");
+          String query = file.getName().replace(".csv", "");
+          if (list.length > 0) {
+            IndexRequest ir = new IndexRequest(props.getProperty(MudrodConstants.ES_INDEX_NAME), "trainingranking")
+                .source(jsonBuilder().startObject().field("query", query).field("dataID", list[0]).field("label", list[list.length - 1]).endObject());
+            es.getBulkProcessor().add(ir);
+          }
         }
-        line = br.readLine();
       }
-      br.close();
     }
+    
     es.destroyBulkProcessor();
   }
 }
