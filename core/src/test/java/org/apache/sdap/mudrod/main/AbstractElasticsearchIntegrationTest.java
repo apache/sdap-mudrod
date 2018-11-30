@@ -30,8 +30,8 @@ public abstract class AbstractElasticsearchIntegrationTest {
 
     /**
      * By using this method you can access the embedded server.
-     *//*
+     */
     protected Client getClient() {
         return embeddedElasticsearchServer.getClient();
-    }*/
+    }
 }

@@ -1,4 +1,4 @@
-package org.apache.sdap.mudrod.weblog.structure.log;
+package org.apache.sdap.mudrod.weblog.structure;
 
 import static org.junit.Assert.*;
 
@@ -72,5 +72,4 @@ public class RequestUrlTest {
 			e.printStackTrace();
 		}
 	}
-
 }

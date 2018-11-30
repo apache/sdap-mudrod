@@ -391,12 +391,12 @@ public class MudrodEngine {
       me.end();
     } catch (Exception e) {
       HelpFormatter formatter = new HelpFormatter();
-      formatter.printHelp("MudrodEngine: 'dataDir' argument is mandatory. " + "User must also provide an ingest method.", true);
+      formatter.printHelp("MudrodEngine: 'dataDir' argument is mandatory. " + "User must also provide an ingest method.", options, true);
       LOG.error("Error whilst parsing command line.", e);
     }
   }
 
-  private static void loadPathConfig(MudrodEngine me, String dataDir) {
+  public static void loadPathConfig(MudrodEngine me, String dataDir) {
     me.props.put(MudrodConstants.ONTOLOGY_INPUT_PATH, dataDir + "SWEET_ocean/");
     me.props.put(MudrodConstants.ONTOLOGY_PATH, dataDir + "ocean_triples.csv");
     me.props.put(MudrodConstants.USER_HISTORY_PATH, dataDir + "userhistorymatrix.csv");
@@ -405,7 +405,6 @@ public class MudrodEngine {
     me.props.put(MudrodConstants.CLICKSTREAM_SVD_PATH, dataDir + "clickstreamsvdmatrix_tmp.csv");
     me.props.put(MudrodConstants.METADATA_SVD_PATH, dataDir + "metadatasvdMatrix_tmp.csv");
     me.props.put(MudrodConstants.RAW_METADATA_PATH, dataDir + me.props.getProperty(MudrodConstants.RAW_METADATA_TYPE));
-
     me.props.put(MudrodConstants.METADATA_TERM_MATRIX_PATH, dataDir + "metadata_term_tfidf.csv");
     me.props.put(MudrodConstants.METADATA_WORD_MATRIX_PATH, dataDir + "metadata_word_tfidf.csv");
     me.props.put(MudrodConstants.METADATA_SESSION_MATRIX_PATH, dataDir + "metadata_session_coocurrence_matrix.csv");
@@ -428,6 +427,5 @@ public class MudrodEngine {
    */
   public void setSparkDriver(SparkDriver sparkDriver) {
     this.spark = sparkDriver;
-
   }
 }

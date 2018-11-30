@@ -51,11 +51,8 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest{
   static MudrodEngine mudrodEngine = null;
   @BeforeClass
   public static void setUp(){
-//	 Map<String, String> env = System.getenv();
-//	 env.put(MudrodConstants.MUDROD_CONFIG, "dexuantest");	 
 	 mudrodEngine = new MudrodEngine();
 	 es = new ESDriver(mudrodEngine.loadConfig());	 
-
   }
 
   @AfterClass

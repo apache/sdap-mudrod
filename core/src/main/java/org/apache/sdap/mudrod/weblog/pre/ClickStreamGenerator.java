@@ -71,5 +71,4 @@ public class ClickStreamGenerator extends DiscoveryStepAbstract {
   public Object execute(Object o) {
     return null;
   }
-
 }

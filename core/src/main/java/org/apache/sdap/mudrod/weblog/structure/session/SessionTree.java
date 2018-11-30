@@ -26,10 +26,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -205,7 +208,8 @@ public class SessionTree extends MudrodAbstract {
       RequestUrl requestURL = new RequestUrl();
       String viewquery = "";
       try {
-        String infoStr = requestURL.getSearchInfo(viewnode.getRequest());
+        //String infoStr = requestURL.getSearchInfo(viewnode.getRequest());
+        String infoStr = requestURL.getSearchInfo(viewnode.getReferer());
         viewquery = es.customAnalyzing(props.getProperty(MudrodConstants.ES_INDEX_NAME), infoStr);
       } catch (UnsupportedEncodingException | InterruptedException | ExecutionException e) {
         LOG.warn("Exception getting search info. Ignoring...", e);
@@ -222,6 +226,8 @@ public class SessionTree extends MudrodAbstract {
 
       if (viewquery != null && !"".equals(viewquery)) {
         String[] queries = viewquery.trim().split(",");
+        Set<String> queryset = new HashSet<>();
+        queryset.addAll(Arrays.asList(queries));
         if (queries.length > 0) {
           for (String query : queries) {
             ClickStream data = new ClickStream(query, dataset, download);

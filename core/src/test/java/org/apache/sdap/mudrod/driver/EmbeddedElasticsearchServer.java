@@ -34,9 +34,6 @@ public class EmbeddedElasticsearchServer {
     Settings.Builder settingsBuilder = Settings.builder();
     settingsBuilder.put("http.type", "netty3");
     settingsBuilder.put("transport.type", "netty3");
-    settingsBuilder.put("network.host", "127.0.0.1");
-    settingsBuilder.put("transport.tcp.port", 9300);
-
     settingsBuilder.put("cluster.name", "MurdorES").put("http.enabled", "false").put("path.data", dataDirectory).put("path.home", "/");
       
     Settings settings = settingsBuilder.build();
@@ -51,7 +48,6 @@ public class EmbeddedElasticsearchServer {
     }
     
     System.out.println(node.getNodeEnvironment().nodeId());
-   
   }
 
   public Client getClient() {

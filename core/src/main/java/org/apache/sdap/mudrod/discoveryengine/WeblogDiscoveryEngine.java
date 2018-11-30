@@ -105,7 +105,7 @@ public class WeblogDiscoveryEngine extends DiscoveryEngineAbstract {
       startTime = System.currentTimeMillis();
       LOG.info("Processing logs dated {}", anInputList);
 
-      DiscoveryStepAbstract im = new ImportLogFile(this.props, this.es, this.spark);
+     /* DiscoveryStepAbstract im = new ImportLogFile(this.props, this.es, this.spark);
       im.execute();
 
       DiscoveryStepAbstract cd = new CrawlerDetection(this.props, this.es, this.spark);
@@ -118,15 +118,15 @@ public class WeblogDiscoveryEngine extends DiscoveryEngineAbstract {
       ss.execute();
 
       DiscoveryStepAbstract rr = new RemoveRawLog(this.props, this.es, this.spark);
-      rr.execute();
+      rr.execute();*/
 
       endTime = System.currentTimeMillis();
 
       LOG.info("Web log preprocessing for logs dated {} complete. Time elapsed {} seconds.", anInputList, (endTime - startTime) / 1000);
     }
 
-    DiscoveryStepAbstract hg = new HistoryGenerator(this.props, this.es, this.spark);
-    hg.execute();
+    /*DiscoveryStepAbstract hg = new HistoryGenerator(this.props, this.es, this.spark);
+    hg.execute();*/
 
     DiscoveryStepAbstract cg = new ClickStreamGenerator(this.props, this.es, this.spark);
     cg.execute();
