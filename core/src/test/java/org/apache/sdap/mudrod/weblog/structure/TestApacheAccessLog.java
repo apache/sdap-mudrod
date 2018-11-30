@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.Properties;
+import org.apache.sdap.mudrod.weblog.structure.log.ApacheAccessLog;
 
 import static org.junit.Assert.assertNotEquals;
 
