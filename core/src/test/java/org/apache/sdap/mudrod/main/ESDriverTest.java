@@ -41,29 +41,30 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
-public class ESDriverTest extends AbstractElasticsearchIntegrationTest{
+public class ESDriverTest extends AbstractElasticsearchIntegrationTest {
 
   private static final Logger LOG = LoggerFactory.getLogger(ESDriver.class);
   protected static final String ES_SETTINGS = "elastic_settings.json";
   protected static final String ES_MAPPINGS = "elastic_mappings.json";
-  
+
   static ESDriver es = null;
   static MudrodEngine mudrodEngine = null;
+
   @BeforeClass
-  public static void setUp(){
-	 mudrodEngine = new MudrodEngine();
-	 es = new ESDriver(mudrodEngine.loadConfig());	 
+  public static void setUp() {
+    mudrodEngine = new MudrodEngine();
+    es = new ESDriver(mudrodEngine.loadConfig());
   }
 
   @AfterClass
-  public static void tearDown(){
-     //es.destroyBulkProcessor();
-     //es.close();
+  public static void tearDown() {
+    // es.destroyBulkProcessor();
+    // es.close();
   }
-  
+
   @Test
   public void testESDriverProperties() {
-   
+
     Client client = es.getClient();
     assert client != null;
   }
@@ -85,7 +86,7 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest{
   }
 
   @Test
-  public void testPutMapping() {  
+  public void testPutMapping() {
 
     InputStream settingsStream = getClass().getClassLoader().getResourceAsStream(ES_SETTINGS);
     InputStream mappingsStream = getClass().getClassLoader().getResourceAsStream(ES_MAPPINGS);
@@ -117,7 +118,7 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest{
 
   @Test
   public void testCustomAnalyzingStringString() {
-       
+
     String str = "temp";
     try {
       String res = es.customAnalyzing("mudrod", str);
@@ -129,7 +130,7 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest{
   }
 
   @Test
-  public void testCustomAnalyzingStringStringString() {   
+  public void testCustomAnalyzingStringStringString() {
     String str = "temp";
 
     try {
@@ -142,7 +143,7 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest{
   }
 
   @Test
-  public void testCustomAnalyzingStringListOfString() {   
+  public void testCustomAnalyzingStringListOfString() {
 
     List<String> customlist = new ArrayList<>();
     customlist.add("string_a");
@@ -157,7 +158,7 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest{
   }
 
   @Test
-  public void testDeleteAllByQuery() {    
+  public void testDeleteAllByQuery() {
     es.deleteAllByQuery("mudrod", "MetadataLinkage", QueryBuilders.matchAllQuery());
 
     // String res = es.searchByQuery("mudrod", "MetadataLinkage",
@@ -167,18 +168,18 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest{
 
   @Test
   public void testDeleteType() {
-        
+
     es.deleteType("mudrod", "MetadataLinkage");
   }
 
   @Test
   public void testGetTypeListWithPrefix() {
-    
+
     es.getTypeListWithPrefix("podaacsession", "sessionstats");
   }
 
   @Test
-  public void testGetIndexListWithPrefix() {    
+  public void testGetIndexListWithPrefix() {
 
     List<String> res = es.getIndexListWithPrefix("podaacsession");
     assert !res.isEmpty();
@@ -221,20 +222,16 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest{
 
   @Test
   public void testRefreshIndex() {
-    
+
     es.refreshIndex();
   }
 
-/*  @Test
-  public void testMakeClient() {
-
-    try {
-      Client client = es.makeClient(mudrodEngine.loadConfig());
-      assert client != null;
-    } catch (IOException e) {
-      LOG.error("Error!", e);
-    }
-  }*/
+  /*
+   * @Test public void testMakeClient() {
+   * 
+   * try { Client client = es.makeClient(mudrodEngine.loadConfig()); assert
+   * client != null; } catch (IOException e) { LOG.error("Error!", e); } }
+   */
 
   @Test
   public void testGetClient() {
@@ -243,29 +240,23 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest{
     assert client != null;
   }
 
-/*  @Test
-  public void testSetClient() {
-    
-    try {
-      Client client = es.makeClient(mudrodEngine.loadConfig());
-      es.setClient(client);
-      Client res = es.getClient();
-      assert res != null;
-    } catch (IOException e) {
-      LOG.error("Error!", e);
-    }
-  }
-*/
+  /*
+   * @Test public void testSetClient() {
+   * 
+   * try { Client client = es.makeClient(mudrodEngine.loadConfig());
+   * es.setClient(client); Client res = es.getClient(); assert res != null; }
+   * catch (IOException e) { LOG.error("Error!", e); } }
+   */
   @Test
   public void testGetBulkProcessor() {
-        
+
     BulkProcessor processor = es.getBulkProcessor();
     assert processor != null;
   }
 
   @Test
   public void testSetBulkProcessor() {
-      
+
     BulkProcessor begin = es.getBulkProcessor();
     es.setBulkProcessor(begin);
 
@@ -275,14 +266,14 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest{
 
   @Test
   public void testGenerateUpdateRequestStringStringStringStringObject() {
-    
+
     UpdateRequest res = es.generateUpdateRequest("mudrod", "MetadataLinkage", "id_1", "temp", "string_a");
     assert res != null;
   }
 
   @Test
   public void testGenerateUpdateRequestStringStringStringMapOfStringObject() {
-    
+
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("temp", "string_a");
 
@@ -292,7 +283,7 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest{
 
   @Test
   public void testGetDocCountStringStringArray() {
-    
+
     String box[] = new String[] { "MetadataLinkage" };
     int res = es.getDocCount("mudrod", box);
 
@@ -301,7 +292,7 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest{
 
   @Test
   public void testGetDocCountStringArrayStringArray() {
-    
+
     String begin[] = new String[] { "mudrod" };
     String box[] = new String[] { "MetadataLinkage" };
     int res = es.getDocCount(begin, box);
@@ -310,7 +301,7 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest{
 
   @Test
   public void testGetDocCountStringArrayStringArrayQueryBuilder() {
-    
+
     MatchAllQueryBuilder search = QueryBuilders.matchAllQuery();
 
     String begin[] = new String[] { "mudrod" };
