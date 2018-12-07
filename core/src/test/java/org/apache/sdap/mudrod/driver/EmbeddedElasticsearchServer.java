@@ -54,7 +54,6 @@ public class EmbeddedElasticsearchServer {
       node = new PluginConfigurableNode(settings, plugins).start();
       System.out.println(node.toString());
     } catch (NodeValidationException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
 
@@ -66,10 +65,6 @@ public class EmbeddedElasticsearchServer {
   }
 
   public void shutdown() {
-    /*
-     * try { node.close(); } catch (IOException e) { // TODO Auto-generated
-     * catch block e.printStackTrace(); } deleteDataDirectory();
-     */
   }
 
   private void deleteDataDirectory() {

@@ -208,7 +208,6 @@ public class SessionTree extends MudrodAbstract {
       RequestUrl requestURL = new RequestUrl();
       String viewquery = "";
       try {
-        //String infoStr = requestURL.getSearchInfo(viewnode.getRequest());
         String infoStr = requestURL.getSearchInfo(viewnode.getReferer());
         viewquery = es.customAnalyzing(props.getProperty(MudrodConstants.ES_INDEX_NAME), infoStr);
       } catch (UnsupportedEncodingException | InterruptedException | ExecutionException e) {

@@ -24,8 +24,6 @@ import org.junit.BeforeClass;
 /**
  * This is a helper class the starts an embedded elasticsearch server for each
  * test.
- *
- * @author Felix Müller
  */
 public abstract class AbstractElasticsearchIntegrationTest {
 
@@ -38,7 +36,7 @@ public abstract class AbstractElasticsearchIntegrationTest {
 
   @AfterClass
   public static void shutdownEmbeddedElasticsearchServer() {
-    // embeddedElasticsearchServer.shutdown();
+    embeddedElasticsearchServer.shutdown();
   }
 
   /**

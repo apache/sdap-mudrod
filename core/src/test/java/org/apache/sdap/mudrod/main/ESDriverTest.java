@@ -58,8 +58,8 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest {
 
   @AfterClass
   public static void tearDown() {
-    // es.destroyBulkProcessor();
-    // es.close();
+    es.destroyBulkProcessor();
+    es.close();
   }
 
   @Test
@@ -158,27 +158,6 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest {
   }
 
   @Test
-  public void testDeleteAllByQuery() {
-    es.deleteAllByQuery("mudrod", "MetadataLinkage", QueryBuilders.matchAllQuery());
-
-    // String res = es.searchByQuery("mudrod", "MetadataLinkage",
-    // QueryBuilders.matchAllQuery());
-    // assert res == ""||res == null;
-  }
-
-  @Test
-  public void testDeleteType() {
-
-    es.deleteType("mudrod", "MetadataLinkage");
-  }
-
-  @Test
-  public void testGetTypeListWithPrefix() {
-
-    es.getTypeListWithPrefix("podaacsession", "sessionstats");
-  }
-
-  @Test
   public void testGetIndexListWithPrefix() {
 
     List<String> res = es.getIndexListWithPrefix("podaacsession");
@@ -215,38 +194,12 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest {
   }
 
   @Test
-  public void testClose() {
-
-    es.close();
-  }
-
-  @Test
-  public void testRefreshIndex() {
-
-    es.refreshIndex();
-  }
-
-  /*
-   * @Test public void testMakeClient() {
-   * 
-   * try { Client client = es.makeClient(mudrodEngine.loadConfig()); assert
-   * client != null; } catch (IOException e) { LOG.error("Error!", e); } }
-   */
-
-  @Test
   public void testGetClient() {
 
     Client client = es.getClient();
     assert client != null;
   }
 
-  /*
-   * @Test public void testSetClient() {
-   * 
-   * try { Client client = es.makeClient(mudrodEngine.loadConfig());
-   * es.setClient(client); Client res = es.getClient(); assert res != null; }
-   * catch (IOException e) { LOG.error("Error!", e); } }
-   */
   @Test
   public void testGetBulkProcessor() {
 

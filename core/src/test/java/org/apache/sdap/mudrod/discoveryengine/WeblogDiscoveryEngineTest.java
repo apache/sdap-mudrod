@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
@@ -52,7 +53,6 @@ public class WeblogDiscoveryEngineTest extends AbstractElasticsearchIntegrationT
 
   @AfterClass
   public static void tearDown() {
-    // TODO
   }
 
   private static String getTestDataPath() {
@@ -64,76 +64,63 @@ public class WeblogDiscoveryEngineTest extends AbstractElasticsearchIntegrationT
 
   @Test
   public void testPreprocess() throws IOException {
-
     weblogEngine.preprocess();
-    testPreprocess_userHistory();
-    testPreprocess_clickStream();
+    testPreprocessUserHistory();
+    testPreprocessClickStream();
   }
 
-  private void testPreprocess_userHistory() throws IOException {
+  private void testPreprocessUserHistory() throws IOException {
     // compare user history data
     String userHistorycsvFile = getTestDataPath() + "/userHistoryMatrix.csv";
-    BufferedReader br = new BufferedReader(new FileReader(userHistorycsvFile));
-    String line = null;
-    HashMap<String, List<String>> map = new HashMap<>();
-    int i = 0;
-    List<String> header = new LinkedList<>();
-    while ((line = br.readLine()) != null) {
-      if (i == 0) {
-        String str[] = line.split(",");
-        for (String s : str) {
-          header.add(s);
-        }
-      } else {
-        String str[] = line.split(",");
-        for (int j = 1; j < str.length; j++) {
-          if (!str[j].equals("0")) {
-            if (!map.containsKey(str[0])) {
-              map.put(str[0], new ArrayList<>());
-            }
-            map.get(str[0]).add(header.get(j));
-          }
-        }
-      }
-      i += 1;
-    }
-
+    HashMap<String, List<String>> map = extractPairFromCSV(userHistorycsvFile);
     Assert.assertEquals("failed in history data result!", "195.219.98.7", String.join(",", map.get("sea surface topography")));
   }
 
-  private void testPreprocess_clickStream() throws IOException {
-    // TODO compare clickStream data
-    // String clickStreamcsvFile =
-    // "C:/Users/admin/Documents/GitHub/incubator-sdap-mudrod/core/clickStreamMatrix.csv";
+  private void testPreprocessClickStream() throws IOException {
     String clickStreamcsvFile = getTestDataPath() + "/clickStreamMatrix.csv";
     System.out.println(clickStreamcsvFile);
-    BufferedReader br = new BufferedReader(new FileReader(clickStreamcsvFile));
+    HashMap<String, List<String>> map = extractPairFromCSV(clickStreamcsvFile);
+    System.out.println(map);
+    Assert.assertEquals("failed in click stream result!", "\"ostm_l2_ost_ogdr_gps\"", String.join(",", map.get("sea surface topography")));
+  }
+  
+  private HashMap extractPairFromCSV(String csvfile){
+    
+    BufferedReader br = null;
+    try {
+      br = new BufferedReader(new FileReader(csvfile));
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
     String line = null;
     HashMap<String, List<String>> map = new HashMap<>();
-
     int i = 0;
     List<String> header = new LinkedList<>();
-    while ((line = br.readLine()) != null) {
-      if (i == 0) {
-        String str[] = line.split(",");
-        for (String s : str) {
-          header.add(s);
-        }
-      } else {
-        String str[] = line.split(",");
-        for (int j = 1; j < str.length; j++) {
-          if (!str[j].equals("0.0")) { //
-            if (!map.containsKey(str[0])) {
-              map.put(str[0], new ArrayList<>());
+    try {
+      while ((line = br.readLine()) != null) {
+        if (i == 0) {
+          String str[] = line.split(",");
+          for (String s : str) {
+            header.add(s);
+          }
+        } else {
+          String str[] = line.split(",");
+          for (int j = 1; j < str.length; j++) {
+            int value = Integer.parseInt(str[j]);
+            if (value > 0) {
+              if (!map.containsKey(str[0])) {
+                map.put(str[0], new ArrayList<>());
+              }
+              map.get(str[0]).add(header.get(j));
             }
-            map.get(str[0]).add(header.get(j));
           }
         }
+        i += 1;
       }
-      i += 1;
+    } catch (IOException e) {
+      e.printStackTrace();
     }
-    System.out.println(map);
-
-    Assert.assertEquals("failed in click stream result!", "\"ostm_l2_ost_ogdr_gps\"", String.join(",", map.get("sea surface topography")));
+    
+    return map;
   }
 }
