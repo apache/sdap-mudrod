@@ -390,9 +390,8 @@ public class MudrodEngine {
       }
       me.end();
     } catch (Exception e) {
-      HelpFormatter formatter = new HelpFormatter();
-      formatter.printHelp("MudrodEngine: 'dataDir' argument is mandatory. " + "User must also provide an ingest method.", options, true);
       LOG.error("Error whilst parsing command line.", e);
+      throw new RuntimeException(e);
     }
   }
 

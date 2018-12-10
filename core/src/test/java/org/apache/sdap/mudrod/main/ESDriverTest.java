@@ -64,7 +64,6 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest {
 
   @Test
   public void testESDriverProperties() {
-
     Client client = es.getClient();
     assert client != null;
   }
@@ -87,7 +86,6 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest {
 
   @Test
   public void testPutMapping() {
-
     InputStream settingsStream = getClass().getClassLoader().getResourceAsStream(ES_SETTINGS);
     InputStream mappingsStream = getClass().getClassLoader().getResourceAsStream(ES_MAPPINGS);
 
@@ -118,7 +116,6 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest {
 
   @Test
   public void testCustomAnalyzingStringString() {
-
     String str = "temp";
     try {
       String res = es.customAnalyzing("mudrod", str);
@@ -132,7 +129,6 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest {
   @Test
   public void testCustomAnalyzingStringStringString() {
     String str = "temp";
-
     try {
       String res = es.customAnalyzing("mudrod", "cody", str);
       assert res != "";
@@ -144,7 +140,6 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest {
 
   @Test
   public void testCustomAnalyzingStringListOfString() {
-
     List<String> customlist = new ArrayList<>();
     customlist.add("string_a");
     customlist.add("string_b");
@@ -159,14 +154,12 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest {
 
   @Test
   public void testGetIndexListWithPrefix() {
-
     List<String> res = es.getIndexListWithPrefix("podaacsession");
     assert !res.isEmpty();
   }
 
   @Test
   public void testSearchByQueryStringStringString() {
-
     try {
       String res = es.searchByQuery("mudrod", "MetadataLinkage", "temp");
       assert res != null;
@@ -177,7 +170,6 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest {
 
   @Test
   public void testSearchByQueryStringStringStringBoolean() {
-
     try {
       String res = es.searchByQuery("mudrod", "MetadataLinkage", "temp", false);
       assert res != null;
@@ -188,64 +180,53 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest {
 
   @Test
   public void testAutoComplete() {
-
     List<String> res = es.autoComplete("mudrod", "term");
     assert !res.isEmpty();
   }
 
   @Test
   public void testGetClient() {
-
     Client client = es.getClient();
     assert client != null;
   }
 
   @Test
   public void testGetBulkProcessor() {
-
     BulkProcessor processor = es.getBulkProcessor();
     assert processor != null;
   }
 
   @Test
   public void testSetBulkProcessor() {
-
     BulkProcessor begin = es.getBulkProcessor();
     es.setBulkProcessor(begin);
-
     BulkProcessor processor = es.getBulkProcessor();
     assert processor != null;
   }
 
   @Test
   public void testGenerateUpdateRequestStringStringStringStringObject() {
-
     UpdateRequest res = es.generateUpdateRequest("mudrod", "MetadataLinkage", "id_1", "temp", "string_a");
     assert res != null;
   }
 
   @Test
   public void testGenerateUpdateRequestStringStringStringMapOfStringObject() {
-
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("temp", "string_a");
-
     UpdateRequest res = es.generateUpdateRequest("mudrod", "MetadataLinkage", "id_1", result);
     assert res != null;
   }
 
   @Test
   public void testGetDocCountStringStringArray() {
-
     String box[] = new String[] { "MetadataLinkage" };
     int res = es.getDocCount("mudrod", box);
-
     assert res > 0;
   }
 
   @Test
   public void testGetDocCountStringArrayStringArray() {
-
     String begin[] = new String[] { "mudrod" };
     String box[] = new String[] { "MetadataLinkage" };
     int res = es.getDocCount(begin, box);
@@ -254,9 +235,7 @@ public class ESDriverTest extends AbstractElasticsearchIntegrationTest {
 
   @Test
   public void testGetDocCountStringArrayStringArrayQueryBuilder() {
-
     MatchAllQueryBuilder search = QueryBuilders.matchAllQuery();
-
     String begin[] = new String[] { "mudrod" };
     String box[] = new String[] { "MetadataLinkage" };
     int res = es.getDocCount(begin, box, search);

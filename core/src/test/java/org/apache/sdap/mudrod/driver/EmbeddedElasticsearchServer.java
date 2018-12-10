@@ -65,6 +65,11 @@ public class EmbeddedElasticsearchServer {
   }
 
   public void shutdown() {
+    try {
+      node.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   private void deleteDataDirectory() {

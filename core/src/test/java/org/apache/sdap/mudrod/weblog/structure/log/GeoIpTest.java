@@ -25,5 +25,4 @@ public class GeoIpTest {
     Coordinates result = ip.toLocation(iptest);
     Assert.assertEquals("failed in geoip function!", "22.283001,114.150002", result.latlon);
   }
-
 }

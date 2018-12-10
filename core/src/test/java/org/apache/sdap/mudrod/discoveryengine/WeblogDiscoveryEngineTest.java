@@ -37,6 +37,8 @@ import org.junit.Test;
 public class WeblogDiscoveryEngineTest extends AbstractElasticsearchIntegrationTest {
 
   private static WeblogDiscoveryEngine weblogEngine = null;
+  
+  static String DIR_TESTDATA_ONE = "Testing_Data_1_3dayLog+Meta+Onto";
 
   @BeforeClass
   public static void setUp() {
@@ -44,7 +46,7 @@ public class WeblogDiscoveryEngineTest extends AbstractElasticsearchIntegrationT
     Properties props = mudrodEngine.loadConfig();
     ESDriver es = new ESDriver(props);
     SparkDriver spark = new SparkDriver(props);
-    String dataDir = getTestDataPath();
+    String dataDir = getTestDataPath(DIR_TESTDATA_ONE);
     System.out.println(dataDir);
     props.setProperty(MudrodConstants.DATA_DIR, dataDir);
     MudrodEngine.loadPathConfig(mudrodEngine, dataDir);
@@ -55,11 +57,12 @@ public class WeblogDiscoveryEngineTest extends AbstractElasticsearchIntegrationT
   public static void tearDown() {
   }
 
-  private static String getTestDataPath() {
-    File resourcesDirectory = new File("src/test/resources/");
-    String resourcedir = "/Testing_Data_1_3dayLog+Meta+Onto/";
-    String dataDir = resourcesDirectory.getAbsolutePath() + resourcedir;
-    return dataDir;
+  private static String getTestDataPath(String testDataDir) {
+    String path = WeblogDiscoveryEngineTest.class.getClassLoader().getResource(testDataDir).toString();
+    if(path.startsWith("file:/")){
+      path = path.replaceAll("file:/", "");
+    }
+    return path;
   }
 
   @Test
@@ -71,13 +74,14 @@ public class WeblogDiscoveryEngineTest extends AbstractElasticsearchIntegrationT
 
   private void testPreprocessUserHistory() throws IOException {
     // compare user history data
-    String userHistorycsvFile = getTestDataPath() + "/userHistoryMatrix.csv";
+    String userHistorycsvFile = getTestDataPath(DIR_TESTDATA_ONE) + "/userHistoryMatrix.csv";
+    System.out.println(userHistorycsvFile);
     HashMap<String, List<String>> map = extractPairFromCSV(userHistorycsvFile);
     Assert.assertEquals("failed in history data result!", "195.219.98.7", String.join(",", map.get("sea surface topography")));
   }
 
   private void testPreprocessClickStream() throws IOException {
-    String clickStreamcsvFile = getTestDataPath() + "/clickStreamMatrix.csv";
+    String clickStreamcsvFile = getTestDataPath(DIR_TESTDATA_ONE) + "/clickStreamMatrix.csv";
     System.out.println(clickStreamcsvFile);
     HashMap<String, List<String>> map = extractPairFromCSV(clickStreamcsvFile);
     System.out.println(map);
@@ -85,7 +89,6 @@ public class WeblogDiscoveryEngineTest extends AbstractElasticsearchIntegrationT
   }
   
   private HashMap extractPairFromCSV(String csvfile){
-    
     BufferedReader br = null;
     try {
       br = new BufferedReader(new FileReader(csvfile));
@@ -106,8 +109,8 @@ public class WeblogDiscoveryEngineTest extends AbstractElasticsearchIntegrationT
         } else {
           String str[] = line.split(",");
           for (int j = 1; j < str.length; j++) {
-            int value = Integer.parseInt(str[j]);
-            if (value > 0) {
+            double value = Double.parseDouble(str[j]);
+            if (value > 0.0) {
               if (!map.containsKey(str[0])) {
                 map.put(str[0], new ArrayList<>());
               }
