@@ -40,12 +40,13 @@ public class EmbeddedElasticsearchServer {
   }
 
   public EmbeddedElasticsearchServer(String dataDirectory) {
+    
     this.dataDirectory = dataDirectory;
 
     Settings.Builder settingsBuilder = Settings.builder();
     settingsBuilder.put("http.type", "netty3");
     settingsBuilder.put("transport.type", "netty3");
-    settingsBuilder.put("cluster.name", "MurdorES").put("http.enabled", "false").put("path.data", dataDirectory).put("path.home", "/");
+    settingsBuilder.put("cluster.name", "MudrodES").put("http.enabled", "true").put("path.data", dataDirectory).put("path.home", "/");
 
     Settings settings = settingsBuilder.build();
     Collection plugins = Arrays.asList(Netty3Plugin.class);
@@ -58,6 +59,36 @@ public class EmbeddedElasticsearchServer {
     }
 
     System.out.println(node.getNodeEnvironment().nodeId());
+    
+    
+   /* System.out.println("======= INTEGRATION TEST: START Embedded Elasticsearch Server ========");
+    Settings settings = Settings.builder().put("path.home", this.dataDirectory)
+            .put("transport.type", "local")
+            .put("network.host", "127.0.0.1")
+            .put("cluster.name", "MudrodES")
+            //.put("http.port", "9200-9300")
+            .put("http.type", "netty3")
+            //.put("transport.tcp.port", "9300-9400")
+            .put("http.enabled", false)
+           // .put("client.transport.sniff", true)
+            .build();
+    node = new Node(settings);
+   
+    
+    Settings set = node.settings();
+    try {
+      node.start();
+    } catch (NodeValidationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    
+    final String clusterName = node.settings().get("cluster.name");
+    final String clusterport = node.settings().get("transport.tcp.port");
+    System.out.println("starting server with cluster-name: "+ clusterport);
+    
+    System.out.println(node.client());*/
+
   }
 
   public Client getClient() {

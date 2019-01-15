@@ -31,7 +31,9 @@ public abstract class AbstractElasticsearchIntegrationTest {
 
   @BeforeClass
   public static void startEmbeddedElasticsearchServer() {
-    embeddedElasticsearchServer = new EmbeddedElasticsearchServer();
+    if(embeddedElasticsearchServer == null){
+      embeddedElasticsearchServer = new EmbeddedElasticsearchServer();
+    }
   }
 
   @AfterClass
