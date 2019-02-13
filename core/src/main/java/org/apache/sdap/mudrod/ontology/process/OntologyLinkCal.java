@@ -22,8 +22,11 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
@@ -71,9 +74,9 @@ public class OntologyLinkCal extends DiscoveryStepAbstract {
     double weight = 0;
 
     try {
-      br = new BufferedReader(new FileReader(props.getProperty(MudrodConstants.ONTOLOGY_PATH)));
+      br = new BufferedReader(new InputStreamReader(new FileInputStream(props.getProperty(MudrodConstants.ONTOLOGY_PATH)), StandardCharsets.UTF_8));
       while ((line = br.readLine()) != null) {
-        String[] strList = line.toLowerCase().split(",");
+        String[] strList = line.toLowerCase(Locale.ROOT).split(",");
         if (strList[1].equals("subclassof")) {
           weight = 0.75;
         } else {

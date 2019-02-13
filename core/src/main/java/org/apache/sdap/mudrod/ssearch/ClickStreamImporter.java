@@ -21,9 +21,12 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
@@ -82,7 +85,7 @@ public class ClickStreamImporter extends MudrodAbstract {
     String cvsSplitBy = ",";
 
     try {
-      br = new BufferedReader(new FileReader(props.getProperty(MudrodConstants.CLICKSTREAM_PATH)));
+      br = new BufferedReader(new InputStreamReader(new FileInputStream(props.getProperty(MudrodConstants.CLICKSTREAM_PATH)), StandardCharsets.UTF_8));
       String line = br.readLine();
       // first item needs to be skipped
       String[] dataList = line.split(cvsSplitBy);

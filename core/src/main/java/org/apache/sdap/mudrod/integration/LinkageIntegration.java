@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
@@ -42,12 +43,15 @@ public class LinkageIntegration extends DiscoveryStepAbstract {
   private static final Logger LOG = LoggerFactory.getLogger(LinkageIntegration.class);
   private static final long serialVersionUID = 1L;
   transient List<LinkedTerm> termList = new ArrayList<>();
-  DecimalFormat df = new DecimalFormat("#.00");
+  private DecimalFormat df;
   private static final String INDEX_NAME = MudrodConstants.ES_INDEX_NAME;
   private static final String WEIGHT = "weight";
 
   public LinkageIntegration(Properties props, ESDriver es, SparkDriver spark) {
     super(props, es, spark);
+    NumberFormat nf = NumberFormat.getNumberInstance(Locale.ROOT);
+    df = (DecimalFormat) nf;
+    df.applyPattern("#.00");
   }
 
   /**

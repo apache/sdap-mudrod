@@ -23,8 +23,10 @@ import org.elasticsearch.index.query.QueryBuilders;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
@@ -71,7 +73,7 @@ public class TrainingImporter extends MudrodAbstract {
 
     File[] files = new File(dataFolder).listFiles();
     for (File file : files) {
-      try (BufferedReader br = new BufferedReader(new FileReader(file.getAbsolutePath()))) {
+      try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file.getAbsolutePath()), StandardCharsets.UTF_8))) {
         br.readLine();
         String line = br.readLine();
         while (line != null) {

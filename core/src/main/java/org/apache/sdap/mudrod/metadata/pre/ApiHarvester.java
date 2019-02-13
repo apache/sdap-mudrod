@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 /**
@@ -150,9 +151,9 @@ public class ApiHarvester extends DiscoveryStepAbstract {
         int docId = startIndex + i;
         File itemfile = new File(props.getProperty(MudrodConstants.RAW_METADATA_PATH) + "/" + docId + ".json");
 
-        try (FileWriter fw = new FileWriter(itemfile.getAbsoluteFile()); BufferedWriter bw = new BufferedWriter(fw)) {
+        try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(itemfile.getAbsoluteFile()), StandardCharsets.UTF_8)) {
           itemfile.createNewFile();
-          bw.write(item.toString());
+          osw.write(item.toString());
         } catch (IOException e) {
           LOG.error("Error writing metadata to local file!", e);
         }

@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -101,7 +102,7 @@ public class CrawlerDetection extends LogAbstract {
   public boolean checkKnownCrawler(String agent) {
     String[] crawlers = props.getProperty(MudrodConstants.BLACK_LIST_AGENT).split(",");
     for (int i = 0; i < crawlers.length; i++) {
-      if (agent.toLowerCase().contains(crawlers[i].trim()))
+      if (agent.toLowerCase(Locale.ROOT).contains(crawlers[i].trim()))
         return true;
     }  
     return false;
@@ -169,7 +170,7 @@ public class CrawlerDetection extends LogAbstract {
           String logtype = (String) result.get("LogType");
           if (logtype.equals(MudrodConstants.HTTP_LOG)) {
             String request = (String) result.get("Request");
-            matcher = pattern.matcher(request.trim().toLowerCase());
+            matcher = pattern.matcher(request.trim().toLowerCase(Locale.ROOT));
             boolean find = false;
             while (matcher.find()) {
               request = matcher.group(1);

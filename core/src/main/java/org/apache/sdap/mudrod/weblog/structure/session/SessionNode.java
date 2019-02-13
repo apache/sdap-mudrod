@@ -15,6 +15,7 @@ package org.apache.sdap.mudrod.weblog.structure.session;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,7 +24,7 @@ import org.apache.sdap.mudrod.main.MudrodConstants;
 
 /**
  * ClassName: SessionNode Function: Functions related to a node in a session
- * tree sturcture.
+ * tree structure.
  */
 public class SessionNode {
   // id: Node ID
@@ -86,7 +87,7 @@ public class SessionNode {
       this.referer = "";
       return;
     }
-	this.referer= referer.toLowerCase().replace(basicUrl, "");
+	this.referer= referer.toLowerCase(Locale.ROOT).replace(basicUrl, "");
   }
 
   /**
@@ -285,7 +286,7 @@ public class SessionNode {
    */
   public void parseRequest(String request) {
     Pattern pattern = Pattern.compile("get (.*?) http/*");
-    Matcher matcher = pattern.matcher(request.trim().toLowerCase());
+    Matcher matcher = pattern.matcher(request.trim().toLowerCase(Locale.ROOT));
     while (matcher.find()) {
       request = matcher.group(1);
     }
@@ -293,7 +294,7 @@ public class SessionNode {
       this.parseDatasetId(request);
     }
 
-    this.request = request.toLowerCase();
+    this.request = request.toLowerCase(Locale.ROOT);
   }
 
   /**
@@ -301,16 +302,16 @@ public class SessionNode {
    *
    * @param params filter key value pairs of this node
    */
-  private void parseFilterParams(Map<String, String> params) {
-    this.filter = new HashMap<String, String>();
+  private void parseFilterParams(Map<String, String> params) throws UnsupportedEncodingException {
+    this.filter = new HashMap<>();
     if (params.containsKey("ids")) {
       String idsStr = params.get("ids");
       if (!idsStr.equals("")) {
-        idsStr = URLDecoder.decode(idsStr);
+        idsStr = URLDecoder.decode(idsStr, StandardCharsets.UTF_8.displayName(Locale.ROOT));
         String[] ids = idsStr.split(":");
         String valueStr = params.get("values");
         if (valueStr != null) {
-          valueStr = URLDecoder.decode(valueStr);
+          valueStr = URLDecoder.decode(valueStr, StandardCharsets.UTF_8.displayName(Locale.ROOT));
           String[] values = valueStr.split(":");
           int size = ids.length;
           for (int i = 0; i < size; i++) {

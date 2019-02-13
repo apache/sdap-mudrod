@@ -24,10 +24,11 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -67,9 +68,8 @@ public class HistoryGenerator extends LogAbstract {
 
       file.createNewFile();
 
-      FileWriter fw = new FileWriter(file.getAbsoluteFile());
-      try (BufferedWriter bw = new BufferedWriter(fw)) {
-        bw.write("Num" + ",");
+      try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(file.getAbsoluteFile()), StandardCharsets.UTF_8)) {
+        osw.write("Num" + ",");
 
         // step 1: write first row of csv
         List<String> logIndexList = es.getIndexListWithPrefix(
@@ -82,7 +82,7 @@ public class HistoryGenerator extends LogAbstract {
         LOG.info("{}: {}", this.sessionStats, docCount);
 
         if (docCount == 0) {
-          bw.close();
+          osw.close();
           file.delete();
           return;
         }
@@ -106,7 +106,7 @@ public class HistoryGenerator extends LogAbstract {
             ipList.add(entry.getKey().toString());
           }
         }
-        bw.write(String.join(",", ipList) + "\n");
+        osw.write(String.join(",", ipList) + "\n");
 
         // step 2: step the rest rows of csv
         SearchRequestBuilder sr2Builder = es.getClient()
@@ -131,23 +131,22 @@ public class HistoryGenerator extends LogAbstract {
 
           int distinctUser = ipAgg.getBuckets().size();
           if (distinctUser >= Integer.parseInt(props.getProperty(MudrodConstants.QUERY_MIN))) {
-            bw.write(keyword.getKey() + ",");
+            osw.write(keyword.getKey() + ",");
             for (Terms.Bucket IP : ipAgg.getBuckets()) {
 
               ipMap.put(IP.getKey().toString(), 1);
             }
             for (String anIpList : ipList) {
               if (ipMap.containsKey(anIpList)) {
-                bw.write(ipMap.get(anIpList) + ",");
+                osw.write(ipMap.get(anIpList) + ",");
               } else {
-                bw.write("0,");
+                osw.write("0,");
               }
             }
-            bw.write("\n");
+            osw.write("\n");
           }
         }
       }
-      fw.close();
     } catch (IOException e) {
       e.printStackTrace();
     }

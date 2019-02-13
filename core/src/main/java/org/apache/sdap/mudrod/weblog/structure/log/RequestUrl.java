@@ -21,6 +21,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -47,7 +48,7 @@ public class RequestUrl {
     String strPage = null;
     String[] arrSplit = null;
 
-    String newURL = strURL.trim().toLowerCase();
+    String newURL = strURL.trim().toLowerCase(Locale.ROOT);
 
     arrSplit = newURL.split("[?]");
     if (newURL.length() > 0 && arrSplit.length > 1 && arrSplit[0] != null) {
@@ -67,7 +68,7 @@ public class RequestUrl {
     String strAllParam = null;
     String[] arrSplit = null;
 
-    strURL = strURL.trim().toLowerCase(); // keep this in mind
+    strURL = strURL.trim().toLowerCase(Locale.ROOT); // keep this in mind
 
     arrSplit = strURL.split("[?]");
     if (strURL.length() > 1) {

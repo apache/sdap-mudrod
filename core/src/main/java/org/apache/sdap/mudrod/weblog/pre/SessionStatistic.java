@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
@@ -207,7 +208,7 @@ public class SessionStatistic extends LogAbstract {
         String request = (String) result.get("Request");
         String logType = (String) result.get("LogType");
         iP = (String) result.get("IP");
-        Matcher matcher = pattern.matcher(request.trim().toLowerCase());
+        Matcher matcher = pattern.matcher(request.trim().toLowerCase(Locale.ROOT));
         while (matcher.find()) {
           request = matcher.group(1);
         }
@@ -249,7 +250,7 @@ public class SessionStatistic extends LogAbstract {
         if (MudrodConstants.FTP_LOG.equals(logType)) {
           ftpRequestCount++;
           String download = "";
-          String requestLowercase = request.toLowerCase();
+          String requestLowercase = request.toLowerCase(Locale.ROOT);
           if (!requestLowercase.endsWith(".jpg") && 
                   !requestLowercase.endsWith(".pdf") && 
                   !requestLowercase.endsWith(".txt") && 

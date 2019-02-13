@@ -1,12 +1,18 @@
 package org.apache.sdap.mudrod.ssearch.ranking;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class SparkFormatter {
-  DecimalFormat NDForm = new DecimalFormat("#.###");
+  private DecimalFormat ndForm;
 
   public SparkFormatter() {
+    NumberFormat nf = NumberFormat.getNumberInstance(Locale.ROOT);
+    ndForm = (DecimalFormat) nf;
+    ndForm.applyPattern("#.##");
   }
 
   public void toSparkSVMformat(String inputCSVFileName, String outputTXTFileName) {
@@ -17,9 +23,8 @@ public class SparkFormatter {
     try {
       file.createNewFile();
 
-      try (FileWriter fw = new FileWriter(outputTXTFileName); 
-          BufferedWriter bw = new BufferedWriter(fw);
-          BufferedReader br = new BufferedReader(new FileReader(inputCSVFileName));) {
+      try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(outputTXTFileName), StandardCharsets.UTF_8);
+           BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(inputCSVFileName), StandardCharsets.UTF_8))) {
 
         String line = null;
         line = br.readLine(); //header
@@ -35,9 +40,9 @@ public class SparkFormatter {
 
           for (int i = 0; i < list.length - 1; i++) {
             int index = i + 1;
-            output += index + ":" + NDForm.format(Double.parseDouble(list[i].replace("\"", ""))) + " ";
+            output += index + ":" + ndForm.format(Double.parseDouble(list[i].replace("\"", ""))) + " ";
           }
-          bw.write(output + "\n");
+          osw.write(output + "\n");
         }
       }
     } catch (IOException e) {

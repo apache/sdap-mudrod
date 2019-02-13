@@ -29,7 +29,9 @@ import org.elasticsearch.search.sort.SortOrder;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
@@ -54,9 +56,12 @@ public class LinkageTriple implements Serializable {
   // keyB: TermB
   public String keyB;
   // df: Format number
-  public static DecimalFormat df = new DecimalFormat("#.00");
+  public static DecimalFormat df;
 
   public LinkageTriple() {
+    NumberFormat nf = NumberFormat.getNumberInstance(Locale.ROOT);
+    df = (DecimalFormat) nf;
+    df.applyPattern("#.00");
   }
 
   /**
