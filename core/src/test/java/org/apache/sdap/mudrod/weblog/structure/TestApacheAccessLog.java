@@ -34,23 +34,18 @@ public class TestApacheAccessLog {
 
     @BeforeClass
     public static void loadProperties() throws IOException {
-
         URL configURL = ClassLoader.getSystemClassLoader().getResource("config.properties");
-
         assert configURL != null : "Could not load config.properties";
+
         try (InputStream instream = new FileInputStream(configURL.getFile())) {
             testProperties.load(instream);
         }
     }
 
     @Test
-    public void testLogMatch() throws IOException, ParseException {
-
-
-        String testLogLine = "198.118.243.84 - - [31/Dec/2017:23:59:20 +0000] \"GET /events?page=12&amp%25252525252525252525252525252525252525253Bsort=asc&order=field_location&sort=desc HTTP/1.1\" 200 86173";
-
+    public void testLogMatch() throws ParseException {
+        String testLogLine = "198.118.243.84 - - [31/Dec/2017:23:59:20 +0000] \"GET /events?page=12&amp%25252525252525252525252525252525252525253Bsort=asc&order=field_location&sort=desc HTTP/1.1\" 200 86173 \"http://www.example.com/start.html\" \"Mozilla/4.08 [en] (Win98; I ;Nav)\"";
         String result = ApacheAccessLog.parseFromLogLine(testLogLine, testProperties);
-
         assertNotEquals("Log line does not match", "{}", result);
     }
 }
