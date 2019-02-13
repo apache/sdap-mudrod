@@ -40,7 +40,7 @@ import java.util.Map;
 
 /**
  * The LocalOntology implementation enables us to work with Ontology files
- * whcih are cached locally and available on the runtime classpath e.g.
+ * which are cached locally and available on the runtime classpath e.g.
  * in <code>src/main/resource/ontology/...</code>.
  * From here we can test and iterate on how use of ontology can enhance search.
  */
@@ -88,14 +88,14 @@ public class LocalOntology implements Ontology {
 
   /**
    * Load the default <i>sweetAll.owl</i> ontology
-   * from <a href="https://raw.githubusercontent.com/ESIPFed/sweet/master/2.4/sweetAll.owl">
-   * https://raw.githubusercontent.com/ESIPFed/sweet/master/2.4/sweetAll.owl</a>
+   * from <a href="http://sweetontology.net/sweetAll">
+   * http://sweetontology.net/sweetAll</a>
    */
   @Override
   public void load() {
     URL ontURL = null;
     try {
-      ontURL = new URL("https://raw.githubusercontent.com/ESIPFed/sweet/master/2.4/sweetAll.owl");
+      ontURL = new URL("http://sweetontology.net/sweetAll");
       //ontURL = new URL("https://raw.githubusercontent.com/ESIPFed/sweet/master/2.4/reprDataProduct.owl");
     } catch (MalformedURLException e) {
       LOG.error("Error when attempting to create URL resource: ", e);
@@ -109,7 +109,7 @@ public class LocalOntology implements Ontology {
       LOG.error("Error in URL syntax, please check your Ontology resource: ", e);
     }
     if (!ontArrayList.isEmpty()) {
-      load(ontArrayList.stream().toArray(String[]::new));
+      load(ontArrayList.toArray(new String[0]));
     }
   }
 
@@ -187,10 +187,7 @@ public class LocalOntology implements Ontology {
     Map<OntResource, String> classMap = retrieve(entitySearchTerm);
     Map<String, String> subclasses = new HashMap<>();
 
-    Iterator<OntResource> iter = classMap.keySet().iterator();
-    while (iter.hasNext()) {
-      OntResource resource = iter.next();
-
+    for (OntResource resource : classMap.keySet()) {
       if (resource instanceof OntClass) {
         //get subclasses N.B. we only get direct sub-classes e.g. direct children
         //it is possible for us to navigate the entire class tree if we wish, we simply
@@ -224,7 +221,7 @@ public class LocalOntology implements Ontology {
   }
 
   /**
-   * Retreives synonyms for an given phrase if the phrase
+   * Retrieves synonyms for an given phrase if the phrase
    * is present in the ontology
    * @param queryKeyPhrase an input string representing a phrase
    * for which we wish to obtain synonyms.
@@ -334,7 +331,7 @@ public class LocalOntology implements Ontology {
     indent(out, depth);
 
     if (c.isRestriction()) {
-      renderRestriction(out, (Restriction) c.as(Restriction.class));
+      renderRestriction(out, c.as(Restriction.class));
     } else {
       if (!c.isAnon()) {
         out.print("Class ");
