@@ -20,7 +20,13 @@ import org.apache.hadoop.fs.Path;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.main.MudrodConstants;
-import org.apache.sdap.mudrod.weblog.pre.*;
+import org.apache.sdap.mudrod.weblog.pre.ClickStreamGenerator;
+import org.apache.sdap.mudrod.weblog.pre.CrawlerDetection;
+import org.apache.sdap.mudrod.weblog.pre.HistoryGenerator;
+import org.apache.sdap.mudrod.weblog.pre.ImportLogFile;
+import org.apache.sdap.mudrod.weblog.pre.SessionGenerator;
+import org.apache.sdap.mudrod.weblog.pre.SessionStatistic;
+import org.apache.sdap.mudrod.weblog.pre.RemoveRawLog;
 import org.apache.sdap.mudrod.weblog.process.ClickStreamAnalyzer;
 import org.apache.sdap.mudrod.weblog.process.UserHistoryAnalyzer;
 import org.slf4j.Logger;
@@ -44,7 +50,7 @@ public class WeblogDiscoveryEngine extends DiscoveryEngineAbstract {
    */
   private static final long serialVersionUID = 1L;
   private static final Logger LOG = LoggerFactory.getLogger(WeblogDiscoveryEngine.class);
-  public String timeSuffix = null;
+  private String timeSuffix = null;
 
   public WeblogDiscoveryEngine(Properties props, ESDriver es, SparkDriver spark) {
     super(props, es, spark);

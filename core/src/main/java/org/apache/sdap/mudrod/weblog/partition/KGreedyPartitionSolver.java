@@ -1,10 +1,29 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.sdap.mudrod.weblog.partition;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class KGreedyPartitionSolver implements ThePartitionProblemSolver {
 
-  public boolean bsorted = false;
+  private boolean bsorted = false;
 
   public KGreedyPartitionSolver() {
     // default constructor
@@ -76,7 +95,7 @@ public class KGreedyPartitionSolver implements ThePartitionProblemSolver {
     return labelGroups;
   }
 
-  public Map<String, Double> sortMapByValue(Map<String, Double> passedMap) {
+  private Map<String, Double> sortMapByValue(Map<String, Double> passedMap) {
     List<String> mapKeys = new ArrayList<>(passedMap.keySet());
     List<Double> mapValues = new ArrayList<>(passedMap.values());
     Collections.sort(mapValues, Collections.reverseOrder());

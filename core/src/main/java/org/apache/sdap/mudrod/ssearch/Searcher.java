@@ -32,7 +32,11 @@ import org.elasticsearch.search.sort.SortOrder;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Pattern;
 
 /**
@@ -56,7 +60,7 @@ public class Searcher extends MudrodAbstract implements Serializable {
    * @param pro processing level string
    * @return processing level number
    */
-  public Double getProLevelNum(String pro) {
+  private Double getProLevelNum(String pro) {
     if (pro == null) {
       return 1.0;
     }
@@ -73,7 +77,7 @@ public class Searcher extends MudrodAbstract implements Serializable {
     return proNum;
   }
 
-  public Double getPop(Double pop) {
+  private Double getPop(Double pop) {
     if (pop > 1000) {
       pop = 1000.0;
     }
@@ -91,7 +95,7 @@ public class Searcher extends MudrodAbstract implements Serializable {
    * @return a list of search result
    */
   @SuppressWarnings("unchecked")
-  public List<SResult> searchByQuery(String index, String type, String query, String queryOperator, String rankOption) {
+  private List<SResult> searchByQuery(String index, String type, String query, String queryOperator, String rankOption) {
     boolean exists = es.getClient()
             .admin()
             .indices()

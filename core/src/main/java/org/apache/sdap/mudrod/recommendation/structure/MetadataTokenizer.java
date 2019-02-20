@@ -11,10 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * This package includes the preprocessing, processing, and data structure used
- * by recommendation module.
- */
 package org.apache.sdap.mudrod.recommendation.structure;
 
 import org.apache.sdap.mudrod.driver.ESDriver;
@@ -45,8 +41,8 @@ public class MetadataTokenizer implements Serializable {
   private String metadataType;
   private List<String> variables;
 
-  public static final String SPLIT_BLANK = " ";
-  public static final String SPLIT_COMMA = ",";
+  private static final String SPLIT_BLANK = " ";
+  private static final String SPLIT_COMMA = ",";
 
   public MetadataTokenizer(Properties props) {
     indexName = props.getProperty(MudrodConstants.ES_INDEX_NAME);
@@ -103,7 +99,7 @@ public class MetadataTokenizer implements Serializable {
 
   }
 
-  public List<String> getTokens(String str, String splitter) throws Exception {
+  private List<String> getTokens(String str, String splitter) throws Exception {
     String[] tokens = null;
     if (splitter.equals(SPLIT_BLANK)) {
       tokens = str.split(" ");
@@ -113,7 +109,7 @@ public class MetadataTokenizer implements Serializable {
     return java.util.Arrays.asList(tokens);
   }
 
-  public List<Tuple2<String, String>> loadMetadataFromES(ESDriver es, List<String> variables, String metadataName) throws Exception {
+  private List<Tuple2<String, String>> loadMetadataFromES(ESDriver es, List<String> variables, String metadataName) throws Exception {
 
     SearchResponse scrollResp = es.getClient().prepareSearch(indexName).setTypes(metadataType).setQuery(QueryBuilders.matchAllQuery()).setScroll(new TimeValue(60000)).setSize(100).execute()
         .actionGet();
@@ -154,9 +150,7 @@ public class MetadataTokenizer implements Serializable {
 
     RowMatrix docwordMatrix = labelMatrix.rowMatrix;
 
-    RowMatrix docwordTFIDFMatrix = MatrixUtil.createTFIDFMatrix(docwordMatrix);
-
-    labelMatrix.rowMatrix = docwordTFIDFMatrix;
+    labelMatrix.rowMatrix = MatrixUtil.createTFIDFMatrix(docwordMatrix);
 
     return labelMatrix;
   }

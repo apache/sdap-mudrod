@@ -64,8 +64,15 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -588,7 +595,6 @@ public class ESDriver implements Serializable {
   public int getDocCount(String[] index, String[] type, QueryBuilder filterSearch) {
     SearchRequestBuilder countSrBuilder = getClient().prepareSearch(index).setTypes(type).setQuery(filterSearch).setSize(0);
     SearchResponse countSr = countSrBuilder.execute().actionGet();
-    int docCount = (int) countSr.getHits().getTotalHits();
-    return docCount;
+    return (int) countSr.getHits().getTotalHits();
   }
 }

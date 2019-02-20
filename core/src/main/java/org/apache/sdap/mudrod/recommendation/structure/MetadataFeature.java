@@ -11,10 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * This package includes the preprocessing, processing, and data structure used
- * by recommendation module.
- */
 package org.apache.sdap.mudrod.recommendation.structure;
 
 import org.elasticsearch.common.xcontent.XContentBuilder;
@@ -24,6 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class MetadataFeature implements Serializable {
+
+  private static final long serialVersionUID = 1L;
 
   protected static final Integer VAR_SPATIAL = 1;
   protected static final Integer VAR_TEMPORAL = 2;

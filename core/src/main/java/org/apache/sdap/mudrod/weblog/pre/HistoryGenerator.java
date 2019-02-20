@@ -28,7 +28,12 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Supports ability to generate search history (queries) for each individual
@@ -58,7 +63,7 @@ public class HistoryGenerator extends LogAbstract {
    * Method to generate a binary user*query matrix (stored in temporary .csv
    * file)
    */
-  public void generateBinaryMatrix() {
+  private void generateBinaryMatrix() {
     try {
       File file = new File(props.getProperty(MudrodConstants.USER_HISTORY_PATH));
       if (file.exists()) {
@@ -149,7 +154,7 @@ public class HistoryGenerator extends LogAbstract {
       }
       fw.close();
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.error("Failed to generate Binary Matrix : ", e);
     }
 
   }

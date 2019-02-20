@@ -18,13 +18,23 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.Optional;
-import org.apache.spark.api.java.function.*;
+import org.apache.spark.api.java.function.Function;
+import org.apache.spark.api.java.function.Function2;
+import org.apache.spark.api.java.function.FlatMapFunction;
+import org.apache.spark.api.java.function.PairFlatMapFunction;
+import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.mllib.feature.IDF;
 import org.apache.spark.mllib.feature.IDFModel;
-import org.apache.spark.mllib.linalg.*;
+import org.apache.spark.mllib.linalg.Matrices;
+import org.apache.spark.mllib.linalg.Matrix;
+import org.apache.spark.mllib.linalg.SingularValueDecomposition;
+import org.apache.spark.mllib.linalg.Vector;
+import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.mllib.linalg.distributed.IndexedRow;
 import org.apache.spark.mllib.linalg.distributed.IndexedRowMatrix;
 import org.apache.spark.mllib.linalg.distributed.RowMatrix;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scala.Tuple2;
 
 import java.io.BufferedWriter;
@@ -41,6 +51,8 @@ import java.util.stream.Stream;
  * Matrix utility tool
  */
 public class MatrixUtil {
+
+  private static final Logger LOG = LoggerFactory.getLogger(MatrixUtil.class);
 
   private MatrixUtil() {
   }
@@ -458,7 +470,7 @@ public class MatrixUtil {
     try {
       file.createNewFile();
     } catch (IOException e1) {
-      e1.printStackTrace();
+      LOG.error("Failed to create file : ", e1);
     }
     try (FileWriter fw = new FileWriter(file.getAbsoluteFile());
             BufferedWriter bw = new BufferedWriter(fw);){
@@ -479,7 +491,7 @@ public class MatrixUtil {
         bw.write(row + "\n");
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.error("Failed to write to the file : ", e);
     }
   }
 }

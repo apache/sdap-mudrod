@@ -14,12 +14,7 @@
 package org.apache.sdap.mudrod.metadata.structure;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-
-import org.apache.sdap.mudrod.driver.ESDriver;
 
 public abstract class Metadata implements Serializable  {
 

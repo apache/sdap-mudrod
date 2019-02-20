@@ -19,24 +19,15 @@ import org.apache.sdap.mudrod.main.MudrodConstants;
 import org.apache.sdap.mudrod.weblog.structure.log.ApacheAccessLog;
 import org.apache.sdap.mudrod.weblog.structure.log.FtpLog;
 import org.apache.spark.api.java.JavaRDD;
-import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.spark.rdd.api.java.JavaEsSpark;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 /**
  * Supports ability to parse and process FTP and HTTP log files
@@ -50,11 +41,11 @@ public class ImportLogFile extends LogAbstract {
    */
   private static final long serialVersionUID = 1L;
 
-  String logEntryPattern = "^([\\d.]+) (\\S+) (\\S+) \\[([\\w:/]+\\s[+\\-]\\d{4})\\] " + "\"(.+?)\" (\\d{3}) (\\d+|-) \"((?:[^\"]|\")+)\" \"([^\"]+)\"";
+  private String logEntryPattern = "^([\\d.]+) (\\S+) (\\S+) \\[([\\w:/]+\\s[+\\-]\\d{4})\\] " + "\"(.+?)\" (\\d{3}) (\\d+|-) \"((?:[^\"]|\")+)\" \"([^\"]+)\"";
 
-  public static final int NUM_FIELDS = 9;
-  Pattern p = Pattern.compile(logEntryPattern);
-  transient Matcher matcher;
+  private static final int NUM_FIELDS = 9;
+  private Pattern p = Pattern.compile(logEntryPattern);
+  private transient Matcher matcher;
   
   @Override
   public Object execute(Object o) {
@@ -123,7 +114,7 @@ public class ImportLogFile extends LogAbstract {
     return newTime;
   }
 
-  public void readFile() {
+  private void readFile() {
 
     String httplogpath = null;
     String ftplogpath = null;
@@ -161,18 +152,18 @@ public class ImportLogFile extends LogAbstract {
    * @param httplogpath path to the parent directory containing http logs
    * @param ftplogpath  path to the parent directory containing ftp logs
    */
-  public void readFileInParallel(String httplogpath, String ftplogpath) {
+  private void readFileInParallel(String httplogpath, String ftplogpath) {
     importHttpfile(httplogpath);
     importFtpfile(ftplogpath);
   }
 
-  public void importHttpfile(String httplogpath) {
+  private void importHttpfile(String httplogpath) {
     // import http logs
     JavaRDD<String> accessLogs = spark.sc.textFile(httplogpath, this.partition).map(s -> ApacheAccessLog.parseFromLogLine(s, props)).filter(ApacheAccessLog::checknull);
     JavaEsSpark.saveJsonToEs(accessLogs, logIndex + "/" + this.httpType);
   }
 
-  public void importFtpfile(String ftplogpath) {
+  private void importFtpfile(String ftplogpath) {
     // import ftp logs
     JavaRDD<String> ftpLogs = spark.sc.textFile(ftplogpath, this.partition).map(s -> FtpLog.parseFromLogLine(s, props)).filter(FtpLog::checknull);
     JavaEsSpark.saveJsonToEs(ftpLogs, logIndex + "/" + this.ftpType);

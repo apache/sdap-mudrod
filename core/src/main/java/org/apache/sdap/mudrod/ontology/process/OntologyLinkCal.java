@@ -43,7 +43,7 @@ public class OntologyLinkCal extends DiscoveryStepAbstract {
   /**
    * Method of adding mapping for triples extracted from SWEET
    */
-  public void addSWEETMapping() {
+  private void addSWEETMapping() {
     XContentBuilder Mapping;
     try {
       Mapping = jsonBuilder().startObject().startObject(MudrodConstants.ONTOLOGY_LINKAGE_TYPE).startObject("properties").startObject("concept_A").field("type", "string")

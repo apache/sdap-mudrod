@@ -42,7 +42,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
@@ -72,7 +78,7 @@ public class SessionGenerator extends LogAbstract {
     return null;
   }
 
-  public void generateSession() {
+  private void generateSession() {
     try {
       es.createBulkProcessor();
       genSessionByReferer(Integer.parseInt(props.getProperty(MudrodConstants.REQUEST_TIME_GAP)));
@@ -86,18 +92,18 @@ public class SessionGenerator extends LogAbstract {
     } catch (IOException e) {
       LOG.error("Error whilst reading configuration.", e);
     } catch (NumberFormatException e) {
-      e.printStackTrace();
+      LOG.error("Error whilst parsing Integer configuration parameter.", e);
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      LOG.error("Current running thread interrupted.", e);
       Thread.currentThread().interrupt();
     }
   }
 
-  public void genSessionByReferer(int timeThres) throws InterruptedException, IOException {
+  private void genSessionByReferer(int timeThres) throws InterruptedException, IOException {
     genSessionByRefererInParallel(timeThres);
   }
 
-  public void combineShortSessions(int timeThres) throws InterruptedException, IOException {
+  private void combineShortSessions(int timeThres) throws InterruptedException, IOException {
     combineShortSessionsInParallel(timeThres);
   }
 
@@ -109,7 +115,7 @@ public class SessionGenerator extends LogAbstract {
    * @throws ElasticsearchException ElasticsearchException
    * @throws IOException            IOException
    */
-  public void deleteInvalid(ESDriver es, String ip) throws IOException {
+  private void deleteInvalid(ESDriver es, String ip) throws IOException {
 
     BoolQueryBuilder filterAll = new BoolQueryBuilder();
     filterAll.must(QueryBuilders.termQuery("IP", ip));
@@ -141,7 +147,7 @@ public class SessionGenerator extends LogAbstract {
   /**
    * Method to update a Elasticsearch record/document by id, field, and value
    *
-   * @param es
+   * @param es     Elasticsearch Driver
    * @param index  index name is Elasticsearch
    * @param type   type name
    * @param id     ID of the document that needs to be updated
@@ -156,7 +162,7 @@ public class SessionGenerator extends LogAbstract {
     es.getBulkProcessor().add(ur);
   }
 
-  public void genSessionByRefererInParallel(int timeThres) throws InterruptedException, IOException {
+  private void genSessionByRefererInParallel(int timeThres) throws InterruptedException, IOException {
 
     JavaRDD<String> userRDD = getUserRDD(this.cleanupType);
     int sessionCount = 0;
@@ -195,7 +201,7 @@ public class SessionGenerator extends LogAbstract {
     LOG.info("Initial Session count: {}", Integer.toString(sessionCount));
   }
 
-  public int genSessionByReferer(ESDriver es, String user, int timeThres) throws ElasticsearchException, IOException {
+  private int genSessionByReferer(ESDriver es, String user, int timeThres) throws ElasticsearchException, IOException {
 
     String startTime = null;
     int sessionCountIn = 0;
@@ -316,7 +322,7 @@ public class SessionGenerator extends LogAbstract {
     return sessionCountIn;
   }
 
-  public void combineShortSessionsInParallel(int timeThres) throws InterruptedException, IOException {
+  private void combineShortSessionsInParallel(int timeThres) throws InterruptedException, IOException {
 
     JavaRDD<String> userRDD = getUserRDD(this.cleanupType);
 
@@ -341,7 +347,7 @@ public class SessionGenerator extends LogAbstract {
     LOG.info("Final Session count (after combining short sessions): {}", Long.toString(userRDD.count()));
   }
 
-  public void combineShortSessions(ESDriver es, String user, int timeThres) throws ElasticsearchException, IOException {
+  private void combineShortSessions(ESDriver es, String user, int timeThres) throws ElasticsearchException, IOException {
 
     BoolQueryBuilder filterSearch = new BoolQueryBuilder();
     filterSearch.must(QueryBuilders.termQuery("IP", user));

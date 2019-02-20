@@ -32,7 +32,7 @@ public interface OntologyParser {
    * implementation processing the ontology operation(s).
    * @param ontModel the {@link org.apache.jena.ontology.OntModel}
    */
-  public void parse(Ontology ont, OntModel ontModel);
+  void parse(Ontology ont, OntModel ontModel);
 
   /**
    * An ontology model (RDF graph) for which to obtain an
@@ -41,6 +41,6 @@ public interface OntologyParser {
    * @param ontModel the {@link org.apache.jena.ontology.OntModel}
    * @return an {@link java.util.Iterator} instance containing all root classes.
    */
-  public Iterator<OntClass> rootClasses(OntModel ontModel);
+  Iterator<OntClass> rootClasses(OntModel ontModel);
 
 }
