@@ -14,6 +14,8 @@
 package org.apache.sdap.mudrod.metadata.structure;
 
 import org.apache.sdap.mudrod.driver.ESDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +68,8 @@ public class PODAACMetadata extends Metadata {
   // regionList: data set region list
   private List<String> regionList;
 
+  private static final Logger LOG = LoggerFactory.getLogger(PODAACMetadata.class);
+
   public PODAACMetadata() {
     // Default constructor
   }
@@ -111,7 +115,7 @@ public class PODAACMetadata extends Metadata {
       this.variableList = es.customAnalyzing(index, variable);
       this.regionList = es.customAnalyzing(index, region);
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Constructor initialization failed : ", e);
     }
   }
 
