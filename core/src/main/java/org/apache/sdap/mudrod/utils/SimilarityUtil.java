@@ -104,6 +104,8 @@ public class SimilarityUtil {
           weight = SimilarityUtil.pearsonDistance(vecA, vecB);
         } else if (simType == SimilarityUtil.SIM_HELLINGER) {
           weight = SimilarityUtil.hellingerDistance(vecA, vecB);
+        } else if (simType == SimilarityUtil.SIM_COSINE) {
+          weight = SimilarityUtil.cosineDistance(vecA, vecB);
         }
 
         LinkageTriple triple = new LinkageTriple();
@@ -265,13 +267,25 @@ public class SimilarityUtil {
   }
 
   /**
-   * calculate similarity between vectors
+   * Calculate similarity (Cosine Distance) between vectors.
    *
    * @param vecA initial vector from which to calculate a similarity
    * @param vecB second vector involved in similarity calculation
-   * @return similarity between two vectors
+   * @return Cosine similarity between two vectors
    */
   public static double cosineDistance(Vector vecA, Vector vecB) {
-    return 1;
+    double[] arrA = vecA.toArray();
+    double[] arrB = vecB.toArray();
+
+    double dotProduct = 0.0;
+    double normA = 0.0;
+    double normB = 0.0;
+    for (int i = 0; i < arrA.length; i++) {
+      dotProduct += arrA[i] * arrB[i];
+      normA += Math.pow(arrA[i], 2);
+      normB += Math.pow(arrB[i], 2);
+    }
+
+    return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
   }
 }
