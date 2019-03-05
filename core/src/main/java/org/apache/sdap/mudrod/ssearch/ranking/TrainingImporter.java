@@ -71,20 +71,20 @@ public class TrainingImporter extends MudrodAbstract {
 
     File[] files = new File(dataFolder).listFiles();
     for (File file : files) {
-      BufferedReader br = new BufferedReader(new FileReader(file.getAbsolutePath()));
-      br.readLine();
-      String line = br.readLine();
-      while (line != null) {
-        String[] list = line.split(",");
-        String query = file.getName().replace(".csv", "");
-        if (list.length > 0) {
-          IndexRequest ir = new IndexRequest(props.getProperty(MudrodConstants.ES_INDEX_NAME), "trainingranking")
-              .source(jsonBuilder().startObject().field("query", query).field("dataID", list[0]).field("label", list[list.length - 1]).endObject());
-          es.getBulkProcessor().add(ir);
+      try (BufferedReader br = new BufferedReader(new FileReader(file.getAbsolutePath()))) {
+        br.readLine();
+        String line = br.readLine();
+        while (line != null) {
+          String[] list = line.split(",");
+          String query = file.getName().replace(".csv", "");
+          if (list.length > 0) {
+            IndexRequest ir = new IndexRequest(props.getProperty(MudrodConstants.ES_INDEX_NAME), "trainingranking")
+                .source(jsonBuilder().startObject().field("query", query).field("dataID", list[0]).field("label", list[list.length - 1]).endObject());
+            es.getBulkProcessor().add(ir);
+          }
+          line = br.readLine();
         }
-        line = br.readLine();
       }
-      br.close();
     }
     es.destroyBulkProcessor();
   }

@@ -57,9 +57,9 @@ public class ApacheAccessLog extends WebLog implements Serializable {
 	  super();
   }
 
-  public static String parseFromLogLine(String log, Properties props) throws IOException, ParseException {
+  public static String parseFromLogLine(String log, Properties props) throws ParseException {
 
-    String logEntryPattern = "^([\\d.]+) (\\S+) (\\S+) \\[([\\w:/]+\\s[+\\-]\\d{4})\\] \"(.+?)\" (\\d{3}) (\\d+|-) \"((?:[^\"]|\")+)\" \"([^\"]+)\"";
+    String logEntryPattern = "^([\\d.]+) (\\S+) (\\S+) \\[([\\w:/]+\\s[+\\-]\\d{4})] \"(.+?)\" (\\d{3}) (\\d+|-) \"((?:[^\"]|\")+)\" \"([^\"]+)\"";
     final int numFields = 9;
     Pattern p = Pattern.compile(logEntryPattern);
     Matcher matcher;

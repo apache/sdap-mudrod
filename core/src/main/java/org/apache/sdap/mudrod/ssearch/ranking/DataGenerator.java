@@ -91,16 +91,13 @@ public class DataGenerator {
 
         if (directoryListing != null) {
           for (File child : directoryListing) {
-            CSVReader csvReader = new CSVReader(new FileReader(child));
-            List<String[]> list = csvReader.readAll();
-
-            // Store into 2D array by transforming array list to normal array
-            dataArr = new String[list.size()][];
-            dataArr = list.toArray(dataArr);
-
-            calculateVec(dataArr);
-
-            csvReader.close();
+            try (CSVReader csvReader = new CSVReader(new FileReader(child))) {
+              List<String[]> list = csvReader.readAll();
+              // Store into 2D array by transforming array list to normal array
+              dataArr = new String[list.size()][];
+              dataArr = list.toArray(dataArr);
+              calculateVec(dataArr);
+            }
           }
           storeHead(dataArr); // Store the header
         }
@@ -109,17 +106,16 @@ public class DataGenerator {
         File file = new File(sourceDir);
 
         if (file != null) {
-          CSVReader csvReader = new CSVReader(new FileReader(file));
-          List<String[]> list = csvReader.readAll();
+          try (CSVReader csvReader = new CSVReader(new FileReader(file))) {
+            List<String[]> list = csvReader.readAll();
 
-          // Store into 2D array by transforming array list to normal array
-          dataArr = new String[list.size()][];
-          dataArr = list.toArray(dataArr);
+            // Store into 2D array by transforming array list to normal array
+            dataArr = new String[list.size()][];
+            dataArr = list.toArray(dataArr);
 
-          storeHead(dataArr); // Store the header
-          calculateVec(dataArr);
-
-          csvReader.close();
+            storeHead(dataArr); // Store the header
+            calculateVec(dataArr);
+          }
         }
       }
     } catch (FileNotFoundException e) {
