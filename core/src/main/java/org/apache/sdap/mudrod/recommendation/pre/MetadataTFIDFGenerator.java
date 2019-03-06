@@ -70,7 +70,7 @@ public class MetadataTFIDFGenerator extends DiscoveryStepAbstract {
     return null;
   }
 
-  public LabeledRowMatrix generateWordBasedTFIDF() throws Exception {
+  private LabeledRowMatrix generateWordBasedTFIDF() throws Exception {
 
     MetadataTokenizer opt = new MetadataTokenizer(props);
 

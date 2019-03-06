@@ -107,7 +107,7 @@ public class CrawlerDetection extends LogAbstract {
     return false;
   }
 
-  void checkByRateInParallel() throws InterruptedException, IOException {
+  private void checkByRateInParallel() throws InterruptedException, IOException {
 
     JavaRDD<String> userRDD = getUserRDD(this.httpType);
     LOG.info("Original User count: {}", userRDD.count());

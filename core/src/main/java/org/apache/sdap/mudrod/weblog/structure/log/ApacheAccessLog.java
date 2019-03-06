@@ -18,7 +18,6 @@ import com.google.gson.Gson;
 import org.apache.sdap.mudrod.main.MudrodConstants;
 import org.apache.sdap.mudrod.weblog.pre.CrawlerDetection;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,9 +31,10 @@ import java.util.regex.Pattern;
  * http://httpd.apache.org/docs/2.2/logs.html for more details.
  */
 public class ApacheAccessLog extends WebLog implements Serializable {
-  String Response;
-  String Referer;
-  String Browser;
+
+  private String Response;
+  private String Referer;
+  private String Browser;
 
   @Override
   public double getBytes() {
@@ -110,7 +110,7 @@ public class ApacheAccessLog extends WebLog implements Serializable {
       lineJson = gson.toJson(accesslog);
 
       return lineJson;
-  }
+    }
   }
 
   public static boolean checknull(WebLog s) {

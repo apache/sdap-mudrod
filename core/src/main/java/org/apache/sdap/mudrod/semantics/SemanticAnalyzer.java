@@ -23,6 +23,8 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.distributed.CoordinateMatrix;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +40,7 @@ public class SemanticAnalyzer extends MudrodAbstract {
    *
    */
   private static final long serialVersionUID = 1L;
+  private static final Logger LOG = LoggerFactory.getLogger(SemanticAnalyzer.class);
 
   /**
    * Creates a new instance of SemanticAnalyzer.
@@ -119,7 +122,7 @@ public class SemanticAnalyzer extends MudrodAbstract {
     try {
       LinkageTriple.insertTriples(es, tripleList, index, type);
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.error("Saving to Elastic Search failed : ", e);
     }
   }
 
@@ -141,8 +144,7 @@ public class SemanticAnalyzer extends MudrodAbstract {
     try {
       LinkageTriple.insertTriples(es, tripleList, index, type, bTriple, bSymmetry);
     } catch (IOException e) {
-      e.printStackTrace();
-
+      LOG.error("Saving to Elastic Search failed : ", e);
     }
   }
 }

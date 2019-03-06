@@ -54,7 +54,7 @@ public class HttpRequest {
       }
     } catch (Exception e) {
       line = "{\"exception\":\"No service was found\"}";
-      LOG.error(line);
+      LOG.error(line, e);
     }
     return line;
   }

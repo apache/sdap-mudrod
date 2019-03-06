@@ -73,7 +73,7 @@ public class SessionExtractor implements Serializable {
 	return getClickStreamListInParallel(props, spark, es);
   }
 
-  protected JavaRDD<ClickStream> getClickStreamListInParallel(Properties props, SparkDriver spark, ESDriver es) {
+  private JavaRDD<ClickStream> getClickStreamListInParallel(Properties props, SparkDriver spark, ESDriver es) {
 
     List<String> logIndexList = es.getIndexListWithPrefix(props.getProperty(MudrodConstants.LOG_INDEX));
 
@@ -205,7 +205,7 @@ public class SessionExtractor implements Serializable {
    *          a log index name
    * @return list of session names
    */
-  protected List<String> getSessions(Properties props, ESDriver es, String logIndex) {
+  private List<String> getSessions(Properties props, ESDriver es, String logIndex) {
 
     String cleanupType = MudrodConstants.CLEANUP_TYPE;
     String sessionStatType = MudrodConstants.SESSION_STATS_TYPE;
@@ -412,7 +412,7 @@ public class SessionExtractor implements Serializable {
    *          the Elasticsearch driver
    * @return clickstream list {@link ClickStream}
    */
-  protected List<RankingTrainData> extractRankingTrainData(Properties props, ESDriver es) {
+  private List<RankingTrainData> extractRankingTrainData(Properties props, ESDriver es) {
     List<String> logIndexList = es.getIndexListWithPrefix(props.getProperty(MudrodConstants.LOG_INDEX));
 
     LOG.info(logIndexList.toString());
@@ -436,7 +436,7 @@ public class SessionExtractor implements Serializable {
     return result;
   }
 
-  protected JavaRDD<RankingTrainData> extractRankingTrainDataInParallel(Properties props, SparkDriver spark, ESDriver es) {
+  public JavaRDD<RankingTrainData> extractRankingTrainDataInParallel(Properties props, SparkDriver spark, ESDriver es) {
 
     List<String> logIndexList = es.getIndexListWithPrefix(props.getProperty(MudrodConstants.LOG_INDEX));
 

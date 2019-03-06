@@ -47,7 +47,7 @@ public class TrainingImporter extends MudrodAbstract {
   /**
    * Method of adding mapping to traning set type
    */
-  public void addMapping() {
+  private void addMapping() {
     XContentBuilder Mapping;
     try {
       Mapping = jsonBuilder().startObject().startObject("trainingranking").startObject("properties").startObject("query").field("type", "string").field("index", "not_analyzed").endObject()

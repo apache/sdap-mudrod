@@ -74,7 +74,7 @@ public class MatrixGenerator extends DiscoveryStepAbstract {
       MatrixUtil.exportToCSV(wordDocMatrix.rowMatrix, wordDocMatrix.rowkeys, wordDocMatrix.colkeys, metadataMatrixFile);
 
     } catch (Exception e) {
-      LOG.error("Error during Metadata matrix generaion: {}", e);
+      LOG.error("Error during Metadata matrix generaion: ", e);
     }
 
     endTime = System.currentTimeMillis();

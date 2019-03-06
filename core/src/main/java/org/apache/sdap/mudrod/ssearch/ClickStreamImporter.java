@@ -19,9 +19,10 @@ import org.apache.sdap.mudrod.driver.SparkDriver;
 import org.apache.sdap.mudrod.main.MudrodConstants;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
@@ -37,6 +38,7 @@ public class ClickStreamImporter extends MudrodAbstract {
    *
    */
   private static final long serialVersionUID = 1L;
+  private static final Logger LOG = LoggerFactory.getLogger(ClickStreamImporter.class);
 
   public ClickStreamImporter(Properties props, ESDriver es, SparkDriver spark) {
     super(props, es, spark);
@@ -65,7 +67,7 @@ public class ClickStreamImporter extends MudrodAbstract {
                       clickStreamMatrixType).setSource(
                               mapping).execute().actionGet();
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.error("Add Elasticsearch mapping for click stream data failed : ", e);
     }
   }
 
@@ -97,17 +99,15 @@ public class ClickStreamImporter extends MudrodAbstract {
           }
         }
       }
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.error("Import click stream CSV into Elasticsearch failed : ", e);
     } finally {
       if (br != null) {
         try {
           br.close();
           es.destroyBulkProcessor();
         } catch (IOException e) {
-          e.printStackTrace();
+          //Ignore
         }
       }
     }

@@ -57,7 +57,7 @@ public class AbstractBasedSimilarity extends DiscoveryStepAbstract {
       svd.saveToES(tripleList, props.getProperty(MudrodConstants.ES_INDEX_NAME), MudrodConstants.METADATA_WORD_SIM_TYPE, true, true);
 
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Abstract similarity calculation failed: ", e);
     }
 
     endTime = System.currentTimeMillis();

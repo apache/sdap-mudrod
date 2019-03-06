@@ -42,11 +42,11 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
    */
   private static final long serialVersionUID = 1L;
   // recommended metadata list
-  protected transient List<LinkedTerm> termList = new ArrayList<>();
+  private transient List<LinkedTerm> termList = new ArrayList<>();
   // format decimal
-  DecimalFormat df = new DecimalFormat("#.00");
+  private DecimalFormat df = new DecimalFormat("#.00");
   // index name
-  protected static final String INDEX_NAME = MudrodConstants.ES_INDEX_NAME;
+  private static final String INDEX_NAME = MudrodConstants.ES_INDEX_NAME;
   private static final String WEIGHT = "weight";
 
   /**
@@ -145,7 +145,7 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
    * @param num         the number of converted elements
    * @return converted JSON object
    */
-  protected JsonElement mapToJson(Map<String, Double> wordweights, int num) {
+  private JsonElement mapToJson(Map<String, Double> wordweights, int num) {
     Gson gson = new Gson();
 
     List<JsonObject> nodes = new ArrayList<>();
@@ -164,9 +164,7 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
     }
 
     String nodesJson = gson.toJson(nodes);
-    JsonElement nodesElement = gson.fromJson(nodesJson, JsonElement.class);
-
-    return nodesElement;
+    return gson.fromJson(nodesJson, JsonElement.class);
   }
 
   /**
@@ -178,7 +176,7 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
    * @return recommended dataset map, key is dataset name, value is similarity
    * value
    */
-  public Map<String, Double> getRelatedData(String type, String input, int num) {
+  private Map<String, Double> getRelatedData(String type, String input, int num) {
     termList = new ArrayList<>();
     Map<String, Double> termsMap = new HashMap<>();
     Map<String, Double> sortedMap = new HashMap<>();
@@ -204,7 +202,7 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
    * @param num   the number of recommended dataset
    * @return recommended dataset list
    */
-  public List<LinkedTerm> getRelatedDataFromES(String type, String input, int num) {
+  private List<LinkedTerm> getRelatedDataFromES(String type, String input, int num) {
 
     SearchRequestBuilder builder = es.getClient().prepareSearch(props.getProperty(INDEX_NAME)).setTypes(type).setQuery(QueryBuilders.termQuery("concept_A", input)).addSort(WEIGHT, SortOrder.DESC)
         .setSize(num);
@@ -230,7 +228,7 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
    * @param passedMap input map
    * @return sorted map
    */
-  public Map<String, Double> sortMapByValue(Map<String, Double> passedMap) {
+  private Map<String, Double> sortMapByValue(Map<String, Double> passedMap) {
     List<String> mapKeys = new ArrayList<>(passedMap.keySet());
     List<Double> mapValues = new ArrayList<>(passedMap.values());
     Collections.sort(mapValues, Collections.reverseOrder());

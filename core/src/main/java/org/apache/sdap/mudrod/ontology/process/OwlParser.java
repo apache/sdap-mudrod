@@ -59,7 +59,7 @@ public class OwlParser implements OntologyParser {
     }
   }
 
-  protected void parseClass(OntClass cls, List<Object> occurs, int depth) {
+  private void parseClass(OntClass cls, List<Object> occurs, int depth) {
     //dont deal with anonymous classes
     if (cls.isAnon()) {
       return;
@@ -155,7 +155,7 @@ public class OwlParser implements OntologyParser {
     }
   }
 
-  public String rdfidToLabel(String idString) {
+  private String rdfidToLabel(String idString) {
     Pattern p = Pattern.compile("([a-z0-9])([A-Z])");
     Matcher m = p.matcher(idString);
 

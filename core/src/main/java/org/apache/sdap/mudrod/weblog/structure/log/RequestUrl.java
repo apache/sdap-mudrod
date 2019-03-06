@@ -87,7 +87,7 @@ public class RequestUrl {
    * @param URL request url
    * @return url params key value map
    */
-  public static Map<String, String> uRLRequest(String URL) {
+  private static Map<String, String> uRLRequest(String URL) {
     Map<String, String> mapRequest = new HashMap<String, String>();
 
     String[] arrSplit = null;
@@ -213,8 +213,7 @@ public class RequestUrl {
         keyword = keyword.replaceAll("[-+^:,*_\"]", " ").replace("\\", " ").replaceAll("\\s+", " ").trim();
 
       } catch (UnsupportedEncodingException e) {
-        LOG.error(mapRequest.get("search"));
-        e.printStackTrace();
+        LOG.error(mapRequest.get("search"), e);
       }
       if (!"".equals(keyword)) {
         info.add(keyword);
@@ -246,8 +245,7 @@ public class RequestUrl {
             filterValues.put(ids[i], item);
           }
         } catch (Exception e) {
-          LOG.error(values[i]);
-          e.printStackTrace();
+          LOG.error("Error occurred while decoding value " + values[i], e);
         }
       }
     }

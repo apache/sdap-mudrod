@@ -11,13 +11,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * This package includes the preprocessing, processing, and data structure used
- * by recommendation module.
- */
 package org.apache.sdap.mudrod.recommendation.structure;
 
 import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.regex.Pattern;
@@ -26,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 public class PODAACMetadataFeature extends MetadataFeature {
+
+  private static final Logger LOG = LoggerFactory.getLogger(PODAACMetadataFeature.class);
 
   public void normalizeSpatialVariables(Map<String, Object> metadata, Map<String, Object> updatedValues) {
 
@@ -121,7 +121,7 @@ public class PODAACMetadataFeature extends MetadataFeature {
       return 0;
   }
 
-  public Double getProLevelNum(String pro) {
+  private Double getProLevelNum(String pro) {
     if (pro == null) {
       return 1.0;
     }
@@ -236,7 +236,7 @@ public class PODAACMetadataFeature extends MetadataFeature {
       contentBuilder.field("Spatial_Covergae_Sim", similarity);
     } catch (IOException e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("Spatial similarity calculation failed : ", e);
     }
   }
 
@@ -280,7 +280,7 @@ public class PODAACMetadataFeature extends MetadataFeature {
       contentBuilder.field("Temporal_Covergae_Sim", similarity);
     } catch (IOException e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("Temporal similarity calculation failed : ", e);
     }
   }
 
@@ -319,7 +319,7 @@ public class PODAACMetadataFeature extends MetadataFeature {
         contentBuilder.field(variable + "_Sim", similarity);
       } catch (IOException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
+        LOG.error("Categorical variables similarity calculation failed : ", e);
       }
     }
   }
@@ -352,7 +352,7 @@ public class PODAACMetadataFeature extends MetadataFeature {
         contentBuilder.field(variable + "_Sim", similarity);
       } catch (IOException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
+        LOG.error("Ordinal similarity calculation failed : ", e);
       }
     }
   }

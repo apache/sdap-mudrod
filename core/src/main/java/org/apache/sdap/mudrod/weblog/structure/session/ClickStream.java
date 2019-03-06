@@ -15,6 +15,8 @@ package org.apache.sdap.mudrod.weblog.structure.session;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 
@@ -36,6 +38,9 @@ public class ClickStream implements Serializable {
   private String sessionID;
   // type: session type name
   private String type;
+
+  private static final Logger LOG = LoggerFactory.getLogger(ClickStream.class);
+
 
   /**
    * Creates a new instance of ClickStream.
@@ -180,7 +185,7 @@ public class ClickStream implements Serializable {
       data.setDownloadDataset(jsonData.getString("downloaddataset"));
 
     } catch (JSONException e) {
-      e.printStackTrace();
+      LOG.error("Error occurred while parsing the json log line : ", e);
     }
 
     return data;

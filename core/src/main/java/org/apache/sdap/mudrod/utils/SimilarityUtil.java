@@ -38,7 +38,7 @@ public class SimilarityUtil {
   /**
    * CalSimilarityFromMatrix: Calculate term similarity from matrix.
    *
-   * @param svdMatrix. Each row is corresponding to a term, and each column is
+   * @param svdMatrix Each row is corresponding to a term, and each column is
    *                   corresponding to a dimension of feature
    * @return CoordinateMatrix, each row is corresponding to a term, and each
    * column is also a term, the cell value is the similarity between the

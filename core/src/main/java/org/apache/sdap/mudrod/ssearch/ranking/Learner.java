@@ -28,13 +28,12 @@ public class Learner implements Serializable {
    *
    */
   private static final long serialVersionUID = 1L;
-  SVMModel model = null;
-  transient SparkContext sc = null;
+  private SVMModel model = null;
+  private transient SparkContext sc = null;
 
   /**
    * Constructor to load in spark SVM classifier
    *
-   * @param classifierName classifier type
    * @param skd            an instance of spark driver
    * @param svmSgdModel    path to a trained model
    */
