@@ -28,15 +28,15 @@ public class RequestUrlTest {
 
   @Test
   public void testUrlPage() {
-    RequestUrl url = new RequestUrl();
-    String result = url.urlPage(strURL);
+//    RequestUrl url = new RequestUrl();
+    String result = RequestUrl.urlPage(strURL);
     Assert.assertEquals("You did not pass urlPage function ", "https://podaac.jpl.nasa.gov/datasetlist", result);
   }
 
   @Test
   public void testuRLRequest() {
-    RequestUrl url = new RequestUrl();
-    Map<String, String> result = url.uRLRequest(strURL);
+//    RequestUrl url = new RequestUrl();
+    Map<String, String> result = RequestUrl.uRLRequest(strURL);
     Assert.assertEquals("You did not pass uRLRequest function!", "list", result.get("view"));
     Assert.assertEquals("You did not pass uRLRequest function!", "scat_byu_l3_ow_sigma0_enhanced:sea%20ice:bering%20sea:ers-2:ami", result.get("values"));
     Assert.assertEquals("You did not pass uRLRequest function!", "collections:measurement:spatialcoverage:platform:sensor", result.get("ids"));

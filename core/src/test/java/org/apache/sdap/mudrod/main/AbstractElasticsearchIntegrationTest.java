@@ -14,11 +14,8 @@
 package org.apache.sdap.mudrod.main;
 
 import org.apache.sdap.mudrod.driver.EmbeddedElasticsearchServer;
-import org.apache.sdap.mudrod.driver.EmbeddedElasticsearchServer;
 import org.elasticsearch.client.Client;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 
 /**
