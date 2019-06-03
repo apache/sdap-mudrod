@@ -57,7 +57,7 @@ public class SessionDetailResource {
   @Path("{CleanupType}-{SessionID}")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes("text/plain")
-  protected Response searchSessionDetail(@PathParam("CleanupType") String cleanupType, @PathParam("SessionID") String sessionID) {
+  public Response searchSessionDetail(@PathParam("CleanupType") String cleanupType, @PathParam("SessionID") String sessionID) {
 
     JsonObject json = new JsonObject();
     if (sessionID != null) {
