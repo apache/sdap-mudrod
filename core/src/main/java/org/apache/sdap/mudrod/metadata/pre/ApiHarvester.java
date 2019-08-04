@@ -28,14 +28,15 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 /**
@@ -64,7 +65,7 @@ public class ApiHarvester extends DiscoveryStepAbstract {
     //remove old metadata from ES
     es.deleteType(props.getProperty(MudrodConstants.ES_INDEX_NAME), props.getProperty(MudrodConstants.RAW_METADATA_TYPE));
     //harvest new metadata using PO.DAAC web services
-    if("1".equals(props.getProperty(MudrodConstants.METADATA_DOWNLOAD))) 
+    if("1".equals(props.getProperty(MudrodConstants.METADATA_DOWNLOAD)))
       harvestMetadatafromWeb();
     es.createBulkProcessor();
     addMetadataMapping();
@@ -175,7 +176,7 @@ public class ApiHarvester extends DiscoveryStepAbstract {
       }
 
     } while (docLength != 0);
-    
+
     LOG.info("Metadata downloading finished");
   }
 
