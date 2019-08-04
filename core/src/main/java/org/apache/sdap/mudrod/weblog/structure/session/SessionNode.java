@@ -16,7 +16,13 @@ package org.apache.sdap.mudrod.weblog.structure.session;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -159,7 +165,7 @@ public class SessionNode {
    * @param request request url
    * @param logType url type
    */
-  public void setKey(Properties props, String request, String logType) {
+  private void setKey(Properties props, String request, String logType) {
     this.key = "";
     String datasetlist = props.getProperty(MudrodConstants.SEARCH_MARKER);
     String dataset = props.getProperty(MudrodConstants.VIEW_MARKER);
@@ -284,7 +290,7 @@ public class SessionNode {
    *
    * @param request request url of this node
    */
-  public void parseRequest(String request) {
+  private void parseRequest(String request) {
     Pattern pattern = Pattern.compile("get (.*?) http/*");
     Matcher matcher = pattern.matcher(request.trim().toLowerCase(Locale.ROOT));
     while (matcher.find()) {
@@ -331,7 +337,7 @@ public class SessionNode {
    *
    * @param request request url
    */
-  public void parseDatasetId(String request) {
+  private void parseDatasetId(String request) {
     try {
       request = URLDecoder.decode(request, "UTF-8");
     } catch (UnsupportedEncodingException e) {

@@ -60,7 +60,7 @@ public class AggregateTriples extends DiscoveryStepAbstract {
     try {
       file.createNewFile();
     } catch (IOException e2) {
-      e2.printStackTrace();
+      LOG.error("File creation failed: ", e2);
     }
 
     try(OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(file.getAbsoluteFile()), StandardCharsets.UTF_8)) {
@@ -72,12 +72,9 @@ public class AggregateTriples extends DiscoveryStepAbstract {
           try {
             loadXml(fileIn.getAbsolutePath());
             getAllClass();
-          } catch (JDOMException e1) {
-            e1.printStackTrace();
-          } catch (IOException e1) {
-            e1.printStackTrace();
+          } catch (JDOMException | IOException e1) {
+            LOG.error("Couln't load Owl file into memory: ", e1);
           }
-  
         }
       }
     } catch (IOException e) {
@@ -87,11 +84,11 @@ public class AggregateTriples extends DiscoveryStepAbstract {
     return null;
   }
 
-  public Document document;
-  public Element rootNode = null;
-  final static String owl_namespace = "http://www.w3.org/2002/07/owl#";
-  final static String rdf_namespace = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-  final static String rdfs_namespace = "http://www.w3.org/2000/01/rdf-schema#";
+  private Document document;
+  private Element rootNode = null;
+  private final static String owl_namespace = "http://www.w3.org/2002/07/owl#";
+  private final static String rdf_namespace = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+  private final static String rdfs_namespace = "http://www.w3.org/2000/01/rdf-schema#";
 
   OutputStreamWriter OSW = null;
 
@@ -102,7 +99,7 @@ public class AggregateTriples extends DiscoveryStepAbstract {
    * @throws JDOMException JDOMException
    * @throws IOException   IOException
    */
-  public void loadXml(String filePathName) throws JDOMException, IOException {
+  private void loadXml(String filePathName) throws JDOMException, IOException {
     SAXBuilder saxBuilder = new SAXBuilder();
     File file = new File(filePathName);
 
@@ -136,7 +133,7 @@ public class AggregateTriples extends DiscoveryStepAbstract {
    * @param ele parent element
    * @return the element of child
    */
-  public Element findChild(String str, Element ele) {
+  private Element findChild(String str, Element ele) {
     Iterator<?> processDescendants = ele.getDescendants(new ElementFilter());
     String name = "";
     Element result = null;
@@ -158,7 +155,7 @@ public class AggregateTriples extends DiscoveryStepAbstract {
    *
    * @throws IOException IOException
    */
-  public void getAllClass() throws IOException {
+  private void getAllClass() throws IOException {
     List<?> classElements = rootNode.getChildren("Class", Namespace.getNamespace("owl", owl_namespace));
 
     for (Object classElement1 : classElements) {
@@ -204,7 +201,7 @@ public class AggregateTriples extends DiscoveryStepAbstract {
    * @param str String needed to be processed
    * @return the processed string
    */
-  public String cutString(String str) {
+  private String cutString(String str) {
     str = str.substring(str.indexOf("#") + 1);
     String[] strArray = str.split("(?=[A-Z])");
     str = Arrays.toString(strArray);

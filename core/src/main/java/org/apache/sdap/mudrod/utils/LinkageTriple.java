@@ -25,6 +25,8 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.sort.SortOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -56,7 +58,9 @@ public class LinkageTriple implements Serializable {
   // keyB: TermB
   public String keyB;
   // df: Format number
-  public static DecimalFormat df;
+  private static DecimalFormat df;
+
+  private static final Logger LOG = LoggerFactory.getLogger(LinkageTriple.class);
 
   public LinkageTriple() {
     NumberFormat nf = NumberFormat.getNumberInstance(Locale.ROOT);
@@ -138,7 +142,7 @@ public class LinkageTriple implements Serializable {
 
       es.getClient().admin().indices().preparePutMapping(index).setType(type).setSource(mapping).execute().actionGet();
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.error("Failed to add mapping : ", e);
     }
   }
 

@@ -21,6 +21,8 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.distributed.CoordinateMatrix;
 import org.apache.spark.mllib.linalg.distributed.RowMatrix;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,11 +38,13 @@ public class SVDUtil extends MudrodAbstract {
    */
   private static final long serialVersionUID = 1L;
   // wordRDD: terms extracted from all documents
-  JavaRDD<String> wordRDD;
+  private JavaRDD<String> wordRDD;
   // svdMatrix: svd matrix
   private RowMatrix svdMatrix;
   // simMatrix: similarity matrix
   private CoordinateMatrix simMatrix;
+
+  private static final Logger LOG = LoggerFactory.getLogger(SVDUtil.class);
 
   /**
    * Creates a new instance of SVDUtil.
@@ -111,7 +115,7 @@ public class SVDUtil extends MudrodAbstract {
     try {
       LinkageTriple.insertTriples(es, triples, index, type);
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.error("Linkage triples insert to elasticsearch failed : ", e);
     }
   }
 

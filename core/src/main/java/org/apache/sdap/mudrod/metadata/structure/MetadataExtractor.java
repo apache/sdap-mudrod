@@ -29,7 +29,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 public class MetadataExtractor implements Serializable {
 
@@ -67,7 +66,7 @@ public class MetadataExtractor implements Serializable {
    * @param type  metadata type name
    * @return metadata list
    */
-  protected List<Metadata> loadMetadataFromES(ESDriver es, String index, String type) {
+  private List<Metadata> loadMetadataFromES(ESDriver es, String index, String type) {
 
     List<Metadata> metadatas = new ArrayList<>();
     SearchResponse scrollResp = es.getClient().prepareSearch(index).setTypes(type).setQuery(QueryBuilders.matchAllQuery()).setScroll(new TimeValue(60000)).setSize(100).execute().actionGet();
@@ -97,7 +96,7 @@ public class MetadataExtractor implements Serializable {
    * @return PairRDD, in each pair key is metadata short name and value is term
    * list extracted from metadata variables.
    */
-  protected JavaPairRDD<String, List<String>> buildMetadataRDD(ESDriver es, JavaSparkContext sc, String index, List<Metadata> metadatas) {
+  private JavaPairRDD<String, List<String>> buildMetadataRDD(ESDriver es, JavaSparkContext sc, String index, List<Metadata> metadatas) {
     JavaRDD<Metadata> metadataRDD = sc.parallelize(metadatas);
     JavaPairRDD<String, List<String>> metadataTermsRDD = metadataRDD.mapToPair(new PairFunction<Metadata, String, List<String>>() {
       /**

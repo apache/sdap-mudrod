@@ -33,7 +33,7 @@ import java.util.Properties;
 @WebListener
 public class MudrodContextListener implements ServletContextListener {
 
-  MudrodEngine me = null;
+  private MudrodEngine me = null;
 
   /**
    * Default constructor.

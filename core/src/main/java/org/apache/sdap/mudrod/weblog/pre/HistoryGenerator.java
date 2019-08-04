@@ -59,7 +59,7 @@ public class HistoryGenerator extends LogAbstract {
    * Method to generate a binary user*query matrix (stored in temporary .csv
    * file)
    */
-  public void generateBinaryMatrix() {
+  private void generateBinaryMatrix() {
     try {
       File file = new File(props.getProperty(MudrodConstants.USER_HISTORY_PATH));
       if (file.exists()) {
@@ -148,7 +148,7 @@ public class HistoryGenerator extends LogAbstract {
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.error("Failed to generate Binary Matrix : ", e);
     }
 
   }

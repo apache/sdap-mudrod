@@ -30,12 +30,12 @@ public interface Ontology {
    *
    * @param urls a {@link java.lang.String} containing ontology URIs.
    */
-  public void load(String[] urls);
+  void load(String[] urls);
 
   /**
    * Load a collection of default ontology resources.
    */
-  public void load() ;
+  void load() ;
 
   /**
    * merge relevant ontology subgraphs into a new subgraph which can
@@ -44,7 +44,7 @@ public interface Ontology {
    * @param o an ontology to merge with the current ontology held
    *          within Mudrod.
    */
-  public void merge(Ontology o);
+  void merge(Ontology o);
 
   /**
    * Retreive all subclasses for a particular entity provided within the
@@ -53,7 +53,7 @@ public interface Ontology {
    * @param entitySearchTerm an input search term
    * @return an {@link java.util.Iterator} object containing subClass entries.
    */
-  public Iterator<String> subclasses(String entitySearchTerm);
+  Iterator<String> subclasses(String entitySearchTerm);
 
   /**
    * Retreive all synonyms for a particular entity provided within the
@@ -62,6 +62,6 @@ public interface Ontology {
    * @param queryKeyPhrase a phrase to undertake synonym expansion on.
    * @return an {@link java.util.Iterator} object containing synonym entries.
    */
-  public Iterator<String> synonyms(String queryKeyPhrase);
+  Iterator<String> synonyms(String queryKeyPhrase);
 
 }

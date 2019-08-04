@@ -21,11 +21,11 @@ import java.lang.reflect.Field;
 public class SResult {
   public static final String rlist[] = { "term_score", "releaseDate_score", /*"versionNum_score",*/
       "processingL_score", "allPop_score", "monthPop_score", "userPop_score"/*, "termAndv_score"*/ };
-  String shortName = null;
-  String longName = null;
-  String topic = null;
-  String description = null;
-  String relase_date = null;
+  private String shortName = null;
+  private String longName = null;
+  private String topic = null;
+  private String description = null;
+  private String relase_date = null;
 
   public Double final_score = 0.0;
   public Double term_score = 0.0;

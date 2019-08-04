@@ -11,10 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * This package includes the preprocessing, processing, and data structure used
- * by recommendation module.
- */
+
 package org.apache.sdap.mudrod.recommendation.pre;
 
 import org.apache.sdap.mudrod.discoveryengine.DiscoveryStepAbstract;
@@ -35,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.regex.Pattern;
 
 public class NormalizeFeatures extends DiscoveryStepAbstract {
 
@@ -80,7 +76,7 @@ public class NormalizeFeatures extends DiscoveryStepAbstract {
     return null;
   }
 
-  public void normalizeMetadataVariables(ESDriver es) {
+  private void normalizeMetadataVariables(ESDriver es) {
 
     es.createBulkProcessor();
 

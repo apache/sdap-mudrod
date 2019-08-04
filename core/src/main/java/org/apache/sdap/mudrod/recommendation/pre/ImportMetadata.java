@@ -26,7 +26,11 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 /**
@@ -61,7 +65,7 @@ public class ImportMetadata extends DiscoveryStepAbstract {
    * addMetadataMapping: Add mapping to index metadata in Elasticsearch. Please
    * invoke this method before import metadata to Elasticsearch.
    */
-  public void addMetadataMapping() {
+  private void addMetadataMapping() {
     String mappingJson = "{\r\n   \"dynamic_templates\": " + "[\r\n      " + "{\r\n         \"strings\": " + "{\r\n            \"match_mapping_type\": \"string\","
         + "\r\n            \"mapping\": {\r\n               \"type\": \"string\"," + "\r\n               \"analyzer\": \"csv\"\r\n            }" + "\r\n         }\r\n      }\r\n   ]\r\n}";
 
@@ -91,10 +95,10 @@ public class ImportMetadata extends DiscoveryStepAbstract {
 
           es.getBulkProcessor().add(ir);
         } catch (IOException e) {
-          e.printStackTrace();
+          LOG.error("Error reading File Content: ", e);
         }
       } catch (FileNotFoundException e) {
-        e.printStackTrace();
+        LOG.error("Error finding file: ", e);
       }
 
     }

@@ -72,13 +72,11 @@ public class SessionStatistic extends LogAbstract {
     startTime = System.currentTimeMillis();
     try {
       processSession();
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (IOException | ExecutionException e) {
+      LOG.error("Session summarization process failed.", e);
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      LOG.error("Current running thread interrupted.", e);
       Thread.currentThread().interrupt();
-    } catch (ExecutionException e) {
-      e.printStackTrace();
     }
     endTime = System.currentTimeMillis();
     es.refreshIndex();
@@ -86,7 +84,7 @@ public class SessionStatistic extends LogAbstract {
     return null;
   }
 
-  public void processSession() throws InterruptedException, IOException, ExecutionException {
+  private void processSession() throws InterruptedException, IOException, ExecutionException {
     processSessionInParallel();
   }
 
@@ -96,7 +94,7 @@ public class SessionStatistic extends LogAbstract {
    * @param request raw log request
    * @return dataset ID
    */
-  public String findDataset(String request) {
+  private String findDataset(String request) {
     String pattern1 = props.getProperty(MudrodConstants.VIEW_MARKER);
     String pattern2;
     if (request.contains("?")) {
@@ -113,7 +111,7 @@ public class SessionStatistic extends LogAbstract {
     return null;
   }
 
-  public void processSessionInParallel() throws InterruptedException, IOException {
+  private void processSessionInParallel() throws InterruptedException, IOException {
 
     List<String> sessions = this.getSessions();
     JavaRDD<String> sessionRDD = spark.sc.parallelize(sessions, partition);
@@ -145,7 +143,7 @@ public class SessionStatistic extends LogAbstract {
     LOG.info("Final Session count: {}", Integer.toString(sessionCount));
   }
 
-  public int processSession(ESDriver es, String sessionId) throws IOException, InterruptedException, ExecutionException {
+  private int processSession(ESDriver es, String sessionId) throws IOException, InterruptedException, ExecutionException {
 
     String inputType = cleanupType;
     String outputType = sessionStats;

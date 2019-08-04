@@ -50,7 +50,6 @@ import com.google.gson.JsonParser;
  * Entry point providing ingestion logic of <a href="https://eonet.sci.gsfc.nasa.gov/">
  * Earth Observatory Natural Event Tracker (EONET)</a> data into
  * the SDAP search server.
- * @param <E>
  */
 public class EONETIngester extends MudrodAbstract {
 
@@ -134,7 +133,7 @@ public class EONETIngester extends MudrodAbstract {
       try {
         updateResponse = esDriver.getClient().update(updateRequest).get();
       } catch (InterruptedException | ExecutionException e) {
-        e.printStackTrace();
+        LOG.error("Failed to execute bulk Index request : ", e);
       }
       if (updateResponse != null) {
         result = updateResponse.getGetResult();
@@ -162,7 +161,7 @@ public class EONETIngester extends MudrodAbstract {
                 .field("geometries", event.get("geometries").getAsJsonArray())
                 .endObject();
       } catch (IOException e) {
-        e.printStackTrace();
+        LOG.error("Failed to create event mapping : ", e);
       }
     } else {
       try {
@@ -177,7 +176,7 @@ public class EONETIngester extends MudrodAbstract {
                 .field("geometries", event.get("geometries").getAsJsonArray())
                 .endObject();
       } catch (IOException e) {
-        e.printStackTrace();
+        LOG.error("Failed to create event mapping : ", e);
       }
     }
     return eventMapping;
@@ -200,7 +199,7 @@ public class EONETIngester extends MudrodAbstract {
           eventArray.add(jsonElement);
         }
       } catch (IOException e) {
-        e.printStackTrace();
+        LOG.error("Failed to execute HTTP GET " + request.toString() + " : ", e);
       }
     }
     return eventArray;

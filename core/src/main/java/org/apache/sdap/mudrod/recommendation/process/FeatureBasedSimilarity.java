@@ -11,10 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * This package includes the preprocessing, processing, and data structure used
- * by recommendation module.
- */
 package org.apache.sdap.mudrod.recommendation.process;
 
 import org.apache.sdap.mudrod.discoveryengine.DiscoveryStepAbstract;
@@ -109,7 +105,7 @@ public class FeatureBasedSimilarity extends DiscoveryStepAbstract implements Ser
     return null;
   }
 
-  public void featureSimilarity(ESDriver es) {
+  private void featureSimilarity(ESDriver es) {
 
     es.createBulkProcessor();
 
@@ -161,7 +157,7 @@ public class FeatureBasedSimilarity extends DiscoveryStepAbstract implements Ser
     es.destroyBulkProcessor();
   }
 
-  public static void addMapping(ESDriver es, String index, String type) {
+  private static void addMapping(ESDriver es, String index, String type) {
     XContentBuilder Mapping;
     try {
       Mapping = jsonBuilder().startObject().startObject(type).startObject("properties").startObject("concept_A").field("type", "string").field("index", "not_analyzed").endObject()
@@ -175,7 +171,7 @@ public class FeatureBasedSimilarity extends DiscoveryStepAbstract implements Ser
     }
   }
 
-  public void normalizeVariableWeight(ESDriver es) {
+  private void normalizeVariableWeight(ESDriver es) {
 
     es.createBulkProcessor();
 

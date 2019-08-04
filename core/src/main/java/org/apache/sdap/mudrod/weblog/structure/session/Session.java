@@ -166,7 +166,6 @@ public class Session /*extends MudrodAbstract*/ implements Comparable<Session> {
       sessionResults.add("RequestList", jsonRequest);
     } catch (UnsupportedEncodingException e) {
       LOG.error("Encoding error detected.", e);
-
     }
 
     return sessionResults;
@@ -283,7 +282,7 @@ public class Session /*extends MudrodAbstract*/ implements Comparable<Session> {
     try {
       trainData = tree.getRankingTrainData(indexName);
     } catch (UnsupportedEncodingException e) {
-      LOG.error("Error whilst retreiving ranking training data: {}", e);
+      LOG.error("Error whilst retrieving ranking training data: {}", e);
     }
 
     return trainData;

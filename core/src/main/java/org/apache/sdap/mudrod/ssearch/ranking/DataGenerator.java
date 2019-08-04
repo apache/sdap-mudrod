@@ -15,6 +15,8 @@ package org.apache.sdap.mudrod.ssearch.ranking;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -38,7 +40,8 @@ public class DataGenerator {
   private static List<List<String>> myMasterList = new ArrayList<>();
 
   // HashMap used for comparing evaluation classes
-  public static final Map<String, Integer> map1 = new HashMap<>();
+  private static final Map<String, Integer> map1 = new HashMap<>();
+  private static final Logger LOG = LoggerFactory.getLogger(DataGenerator.class);
 
   static {
     map1.put("Excellent", 7);
@@ -79,7 +82,7 @@ public class DataGenerator {
    * Parses the original user-specified CSV file, storing the contents for future calculations
    * and formatting.
    */
-  public static void parseFile() {
+  private static void parseFile() {
     String[][] dataArr = null;
     try {
       String sourceDir = mySourceDir;
@@ -119,10 +122,8 @@ public class DataGenerator {
           }
         }
       }
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.error("User specified CSV file parse failed : ", e);
     }
   }
 
@@ -132,7 +133,7 @@ public class DataGenerator {
    *
    * @param arr the parsed contents of the original CSV file
    */
-  public static void calculateVec(String[][] arr) {
+  private static void calculateVec(String[][] arr) {
     List<List<String>> listofLists = new ArrayList<>(); // Holds calculations 
 
     int rowStart = 1;
@@ -183,7 +184,7 @@ public class DataGenerator {
    * @return 1 if first evaluation is greater than the second, -1 if first evaluation is less than the second, and
    * 10 in the case that the two are equal
    */
-  public static int compareEvaluation(String eval1, String eval2) {
+  private static int compareEvaluation(String eval1, String eval2) {
     int evalNum1 = map1.get(eval1);
     int evalNum2 = map1.get(eval2);
 
@@ -204,7 +205,7 @@ public class DataGenerator {
    * @param rawList originally calculated data from the input CSV file
    * @return data that has an equal distribution of evaluation values
    */
-  public static List<List<String>> equalizeList(List<List<String>> rawList) {
+  private static List<List<String>> equalizeList(List<List<String>> rawList) {
     // Create two sets - one containing row index for +1 and the other for -1
     List<Integer> pos1List = new ArrayList<>();
     List<Integer> neg1List = new ArrayList<>();
@@ -270,7 +271,7 @@ public class DataGenerator {
    *
    * @param arr 2D array containing the parsed information from input file
    */
-  public static void storeHead(String[][] arr) {
+  private static void storeHead(String[][] arr) {
     myHeader = new String[arr[0].length]; // Reside private variable
 
     System.arraycopy(arr[0], 0, myHeader, 0, arr[0].length);
@@ -281,7 +282,7 @@ public class DataGenerator {
    *
    * @param list finalized vector data to write to user specified output file
    */
-  public static void writeCSVfile(List<List<String>> list) {
+  private static void writeCSVfile(List<List<String>> list) {
     String outputFile = myResultDir;
     boolean alreadyExists = new File(outputFile).exists();
 
@@ -298,7 +299,7 @@ public class DataGenerator {
       }
 
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.error("Writing to CSV file failed : ", e);
     }
   }
 

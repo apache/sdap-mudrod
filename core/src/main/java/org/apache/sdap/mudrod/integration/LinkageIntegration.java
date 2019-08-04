@@ -30,8 +30,15 @@ import org.slf4j.LoggerFactory;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -42,7 +49,7 @@ public class LinkageIntegration extends DiscoveryStepAbstract {
 
   private static final Logger LOG = LoggerFactory.getLogger(LinkageIntegration.class);
   private static final long serialVersionUID = 1L;
-  transient List<LinkedTerm> termList = new ArrayList<>();
+  private transient List<LinkedTerm> termList = new ArrayList<>();
   private DecimalFormat df;
   private static final String INDEX_NAME = MudrodConstants.ES_INDEX_NAME;
   private static final String WEIGHT = "weight";
@@ -300,7 +307,6 @@ public class LinkageIntegration extends DiscoveryStepAbstract {
   /**
    * Method of converting hashmap to JSON
    *
-   * @param word        input query
    * @param wordweights a map from related terms to weights
    * @return converted JSON object
    */

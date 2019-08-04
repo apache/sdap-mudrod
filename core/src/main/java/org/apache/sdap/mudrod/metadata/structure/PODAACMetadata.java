@@ -14,6 +14,8 @@
 package org.apache.sdap.mudrod.metadata.structure;
 
 import org.apache.sdap.mudrod.driver.ESDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,113 +26,107 @@ import java.util.Map;
  */
 public class PODAACMetadata extends Metadata {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-	// shortname: data set short name
-	// private String shortname;
-	// abstractStr: data set abstract
-	private String abstractStr;
-	// isoTopic: data set topic
-	private String isoTopic;
-	// sensor: sensor
-	private String sensor;
-	// source: data source
-	private String source;
-	// project: data project
-	private String project;
-	// hasAbstarct: whether data set has abstract
-	boolean hasAbstarct;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
+  // shortname: data set short name
+  // private String shortname;
+  // abstractStr: data set abstract
+  private String abstractStr;
+  // isoTopic: data set topic
+  private String isoTopic;
+  // sensor: sensor
+  private String sensor;
+  // source: data source
+  private String source;
+  // project: data project
+  private String project;
+  // hasAbstarct: whether data set has abstract
+  boolean hasAbstarct;
 
-	// longnameList: data set long name list
-	private List<String> longnameList;
-	// keywordList:data set key word list
-	private List<String> keywordList;
-	// termList: data set term list
-	private List<String> termList;
-	// topicList: data set topic list
-	private List<String> topicList;
-	// variableList: data set variable list
-	private List<String> variableList;
-	// abstractList: data set abstract term list
-	private List<String> abstractList;
-	// isotopicList: data set iso topic list
-	private List<String> isotopicList;
-	// sensorList: data set sensor list
-	private List<String> sensorList;
-	// sourceList: data set source list
-	private List<String> sourceList;
-	// projectList: data set project list
-	private List<String> projectList;
-	// regionList: data set region list
-	private List<String> regionList;
+  // longnameList: data set long name list
+  private List<String> longnameList;
+  // keywordList:data set key word list
+  private List<String> keywordList;
+  // termList: data set term list
+  private List<String> termList;
+  // topicList: data set topic list
+  private List<String> topicList;
+  // variableList: data set variable list
+  private List<String> variableList;
+  // abstractList: data set abstract term list
+  private List<String> abstractList;
+  // isotopicList: data set iso topic list
+  private List<String> isotopicList;
+  // sensorList: data set sensor list
+  private List<String> sensorList;
+  // sourceList: data set source list
+  private List<String> sourceList;
+  // projectList: data set project list
+  private List<String> projectList;
+  // regionList: data set region list
+  private List<String> regionList;
 
-	public PODAACMetadata() {
-		// Default constructor
-	}
+  private static final Logger LOG = LoggerFactory.getLogger(PODAACMetadata.class);
 
-	/**
-	 * Creates a new instance of PODAACMetadata.
-	 *
-	 * @param shortname
-	 *            data set short name
-	 * @param longname
-	 *            data set long name
-	 * @param topics
-	 *            data set topics
-	 * @param terms
-	 *            data set terms
-	 * @param variables
-	 *            data set variables
-	 * @param keywords
-	 *            data set keywords
-	 * @param region
-	 *            list of regions
-	 */
-	public PODAACMetadata(String shortname, List<String> longname, List<String> topics, List<String> terms,
-			List<String> variables, List<String> keywords, List<String> region) {
-		this.shortname = shortname;
-		this.longnameList = longname;
-		this.keywordList = keywords;
-		this.termList = terms;
-		this.topicList = topics;
-		this.variableList = variables;
-		this.regionList = region;
-	}
+  public PODAACMetadata() {
+    // Default constructor
+  }
 
-	public PODAACMetadata(Map<String, Object> result, ESDriver es, String index) {
+  /**
+   * Creates a new instance of PODAACMetadata.
+   *
+   * @param shortname data set short name
+   * @param longname  data set long name
+   * @param topics    data set topics
+   * @param terms     data set terms
+   * @param variables data set variables
+   * @param keywords  data set keywords
+   * @param region    list of regions
+   */
+  public PODAACMetadata(String shortname, List<String> longname, List<String> topics, List<String> terms,
+                        List<String> variables, List<String> keywords, List<String> region) {
+    this.shortname = shortname;
+    this.longnameList = longname;
+    this.keywordList = keywords;
+    this.termList = terms;
+    this.topicList = topics;
+    this.variableList = variables;
+    this.regionList = region;
+  }
 
-		String shortname = (String) result.get("Dataset-ShortName");
-		List<String> topic = (List<String>) result.get("DatasetParameter-Topic");
-		List<String> term = (List<String>) result.get("DatasetParameter-Term");
-		List<String> keyword = (List<String>) result.get("Dataset-Metadata");
-		List<String> variable = (List<String>) result.get("DatasetParameter-Variable");
-		List<String> longname = (List<String>) result.get("DatasetProject-Project-LongName");
-		List<String> region = (List<String>) result.get("DatasetRegion-Region");
+  public PODAACMetadata(Map<String, Object> result, ESDriver es, String index) {
 
-		this.shortname = shortname;
-		this.longnameList = longname;
-		try {
-			this.keywordList = es.customAnalyzing(index, keyword);
-			this.termList = es.customAnalyzing(index, term);
-			this.topicList = es.customAnalyzing(index, topic);
-			this.variableList = es.customAnalyzing(index, variable);
-			this.regionList = es.customAnalyzing(index, region);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    String shortname = (String) result.get("Dataset-ShortName");
+    List<String> topic = (List<String>) result.get("DatasetParameter-Topic");
+    List<String> term = (List<String>) result.get("DatasetParameter-Term");
+    List<String> keyword = (List<String>) result.get("Dataset-Metadata");
+    List<String> variable = (List<String>) result.get("DatasetParameter-Variable");
+    List<String> longname = (List<String>) result.get("DatasetProject-Project-LongName");
+    List<String> region = (List<String>) result.get("DatasetRegion-Region");
 
-	/**
-	 * setTerms: set term of data set
-	 *
-	 * @param termstr
-	 *            data set terms
-	 */
-	public void setTerms(String termstr) {
-		this.splitString(termstr, this.termList);
-	}
+    this.shortname = shortname;
+    this.longnameList = longname;
+    try {
+      this.keywordList = es.customAnalyzing(index, keyword);
+      this.termList = es.customAnalyzing(index, term);
+      this.topicList = es.customAnalyzing(index, topic);
+      this.variableList = es.customAnalyzing(index, variable);
+      this.regionList = es.customAnalyzing(index, region);
+    } catch (Exception e) {
+      LOG.error("Constructor initialization failed : ", e);
+    }
+  }
+
+  /**
+   * setTerms: set term of data set
+   *
+   * @param termstr data set terms
+   */
+  public void setTerms(String termstr) {
+    this.splitString(termstr, this.termList);
+  }
 
   /**
    * setKeywords: set key word of data set
