@@ -17,19 +17,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class SparkFormatter {
-
-  private DecimalFormat NDForm = new DecimalFormat("#.###");
-  private static final Logger LOG = LoggerFactory.getLogger(SparkFormatter.class);
+ private DecimalFormat ndForm;
+ private static final Logger LOG = LoggerFactory.getLogger(SparkFormatter.class);
 
   public SparkFormatter() {
+    NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
+    ndForm = (DecimalFormat) nf;
+    ndForm.applyPattern("#.##");
   }
 
   public void toSparkSVMformat(String inputCSVFileName, String outputTXTFileName) {
@@ -40,9 +46,8 @@ public class SparkFormatter {
     try {
       file.createNewFile();
 
-      try (FileWriter fw = new FileWriter(outputTXTFileName);
-           BufferedWriter bw = new BufferedWriter(fw);
-           BufferedReader br = new BufferedReader(new FileReader(inputCSVFileName));) {
+      try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(outputTXTFileName), StandardCharsets.UTF_8);
+           BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(inputCSVFileName), StandardCharsets.UTF_8))) {
 
         String line = null;
         line = br.readLine(); //header
@@ -58,9 +63,9 @@ public class SparkFormatter {
 
           for (int i = 0; i < list.length - 1; i++) {
             int index = i + 1;
-            output += index + ":" + NDForm.format(Double.parseDouble(list[i].replace("\"", ""))) + " ";
+            output += index + ":" + ndForm.format(Double.parseDouble(list[i].replace("\"", ""))) + " ";
           }
-          bw.write(output + "\n");
+          osw.write(output + "\n");
         }
       }
     } catch (IOException e) {

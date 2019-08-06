@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Properties;
 
 /**
@@ -44,12 +45,12 @@ public class FtpLog extends WebLog implements Serializable {
       String time = log.split(" +")[1] + ":" + log.split(" +")[2] + ":" + log.split(" +")[3] + ":" + log.split(" +")[4];
 
       time = SwithtoNum(time);
-      SimpleDateFormat formatter = new SimpleDateFormat("MM:dd:HH:mm:ss:yyyy");
+      SimpleDateFormat formatter = new SimpleDateFormat("MM:dd:HH:mm:ss:yyyy", Locale.ENGLISH);
       Date date = formatter.parse(time);
 
       String bytes = log.split(" +")[7];
 
-      String request = log.split(" +")[8].toLowerCase();
+      String request = log.split(" +")[8].toLowerCase(Locale.ENGLISH);
 
       if (!request.contains("/misc/") && !request.contains("readme")) {
         FtpLog ftplog = new FtpLog();
@@ -58,7 +59,7 @@ public class FtpLog extends WebLog implements Serializable {
         ftplog.Request = request;
         ftplog.Bytes = Double.parseDouble(bytes);
 
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss'Z'");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss'Z'", Locale.ENGLISH);
         ftplog.Time = df.format(date);
 
         return new Gson().toJson(ftplog);

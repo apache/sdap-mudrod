@@ -16,7 +16,6 @@ package org.apache.sdap.mudrod.ssearch;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import org.apache.sdap.mudrod.discoveryengine.MudrodAbstract;
 import org.apache.sdap.mudrod.driver.ESDriver;
 import org.apache.sdap.mudrod.driver.SparkDriver;
@@ -31,10 +30,12 @@ import org.elasticsearch.search.sort.SortOrder;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
@@ -47,11 +48,15 @@ public class Searcher extends MudrodAbstract implements Serializable {
    * 
    */
   private static final long serialVersionUID = 1L;
-  DecimalFormat ndForm = new DecimalFormat("#.##");
-  static final Integer MAX_CHAR = 700;
+  private DecimalFormat ndForm;
+
+  private static final Integer MAX_CHAR = 700;
 
   public Searcher(Properties props, ESDriver es, SparkDriver spark) {
     super(props, es, spark);
+    NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
+    ndForm = (DecimalFormat) nf;
+    ndForm.applyPattern("#.##");
   }
 
   /**
@@ -185,7 +190,7 @@ public class Searcher extends MudrodAbstract implements Serializable {
 
       ArrayList<String> longdate = (ArrayList<String>) result.get("DatasetCitation-ReleaseDateLong");
       Date date = new Date(Long.valueOf(longdate.get(0)));
-      SimpleDateFormat df2 = new SimpleDateFormat("MM/dd/yyyy");
+      SimpleDateFormat df2 = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
       String dateText = df2.format(date);
 
       // start date

@@ -27,10 +27,11 @@ import org.jdom2.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -62,8 +63,8 @@ public class AggregateTriples extends DiscoveryStepAbstract {
       LOG.error("File creation failed: ", e2);
     }
 
-    try(FileWriter fw = new FileWriter(file.getAbsoluteFile())){
-      bw = new BufferedWriter(fw);
+    try(OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(file.getAbsoluteFile()), StandardCharsets.UTF_8)) {
+      OSW = osw;
       File[] files = new File(this.props.getProperty(MudrodConstants.ONTOLOGY_INPUT_PATH)).listFiles();
       for (File fileIn : files) {
         String ext = FilenameUtils.getExtension(fileIn.getAbsolutePath());
@@ -79,12 +80,7 @@ public class AggregateTriples extends DiscoveryStepAbstract {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    
-    try {
-      bw.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+
     return null;
   }
 
@@ -94,7 +90,7 @@ public class AggregateTriples extends DiscoveryStepAbstract {
   private final static String rdf_namespace = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
   private final static String rdfs_namespace = "http://www.w3.org/2000/01/rdf-schema#";
 
-  BufferedWriter bw = null;
+  OutputStreamWriter OSW = null;
 
   /**
    * Load OWL file into memory
@@ -178,10 +174,10 @@ public class AggregateTriples extends DiscoveryStepAbstract {
           Element allValuesFromEle = findChild("allValuesFrom", subclassElement);
           if (allValuesFromEle != null) {
             subclassName = allValuesFromEle.getAttributeValue("resource", Namespace.getNamespace("rdf", rdf_namespace));
-            bw.write(cutString(className) + ",SubClassOf," + cutString(subclassName) + "\n");
+            OSW.write(cutString(className) + ",SubClassOf," + cutString(subclassName) + "\n");
           }
         } else {
-          bw.write(cutString(className) + ",SubClassOf," + cutString(subclassName) + "\n");
+          OSW.write(cutString(className) + ",SubClassOf," + cutString(subclassName) + "\n");
         }
 
       }
@@ -192,7 +188,7 @@ public class AggregateTriples extends DiscoveryStepAbstract {
         String equalClassElementName = equalClassElement.getAttributeValue("resource", Namespace.getNamespace("rdf", rdf_namespace));
 
         if (equalClassElementName != null) {
-          bw.write(cutString(className) + ",equivalentClass," + cutString(equalClassElementName) + "\n");
+          OSW.write(cutString(className) + ",equivalentClass," + cutString(equalClassElementName) + "\n");
         }
       }
 

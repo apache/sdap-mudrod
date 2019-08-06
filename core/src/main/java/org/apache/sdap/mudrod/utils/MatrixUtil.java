@@ -37,10 +37,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.Tuple2;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -472,14 +473,13 @@ public class MatrixUtil {
     } catch (IOException e1) {
       LOG.error("Failed to create file : ", e1);
     }
-    try (FileWriter fw = new FileWriter(file.getAbsoluteFile());
-            BufferedWriter bw = new BufferedWriter(fw);){
+    try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(file.getAbsoluteFile()), StandardCharsets.UTF_8)){
       String coltitle = " Num" + ",";
       for (int j = 0; j < colnum; j++) {
         coltitle += "\"" + colKeys.get(j) + "\",";
       }
       coltitle = coltitle.substring(0, coltitle.length() - 1);
-      bw.write(coltitle + "\n");
+      osw.write(coltitle + "\n");
 
       for (int i = 0; i < rownum; i++) {
         double[] rowvlaue = rows.get(i).toArray();
@@ -488,7 +488,7 @@ public class MatrixUtil {
           row += rowvlaue[j] + ",";
         }
         row = row.substring(0, row.length() - 1);
-        bw.write(row + "\n");
+        osw.write(row + "\n");
       }
     } catch (IOException e) {
       LOG.error("Failed to write to the file : ", e);

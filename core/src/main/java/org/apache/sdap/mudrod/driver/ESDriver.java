@@ -69,6 +69,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -160,7 +161,7 @@ public class ESDriver implements Serializable {
   }
 
   public String customAnalyzing(String indexName, String analyzer, String str) throws InterruptedException, ExecutionException {
-    String[] strList = str.toLowerCase().split(",");
+    String[] strList = str.toLowerCase(Locale.ENGLISH).split(",");
     for (int i = 0; i < strList.length; i++) {
       String tmp = "";
       AnalyzeResponse r = client.admin().indices().prepareAnalyze(strList[i]).setIndex(indexName).setAnalyzer(analyzer).execute().get();
@@ -451,7 +452,7 @@ public class ESDriver implements Serializable {
 
     while (iterator.hasNext()) {
       Suggest.Suggestion.Entry.Option next = iterator.next();
-      String suggest = next.getText().string().toLowerCase();
+      String suggest = next.getText().string().toLowerCase(Locale.ENGLISH);
       suggestList.add(suggest);
     }
 

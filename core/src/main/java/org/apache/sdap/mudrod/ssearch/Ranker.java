@@ -24,10 +24,12 @@ import org.apache.spark.mllib.regression.LabeledPoint;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 
 /**
@@ -116,7 +118,9 @@ public class Ranker extends MudrodAbstract implements Serializable {
    * @return processed double value
    */
   private double getNDForm(double d) {
-    DecimalFormat ndForm = new DecimalFormat("#.###");
+    NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
+    DecimalFormat ndForm = (DecimalFormat) nf;
+    ndForm.applyPattern("#.###");
     return Double.valueOf(ndForm.format(d));
   }
 

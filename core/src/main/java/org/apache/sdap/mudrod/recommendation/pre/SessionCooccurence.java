@@ -33,6 +33,7 @@ import scala.Tuple2;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
@@ -143,7 +144,7 @@ public class SessionCooccurence extends DiscoveryStepAbstract {
       for (SearchHit hit : scrollResp.getHits().getHits()) {
         Map<String, Object> metadata = hit.getSource();
         String shortName = (String) metadata.get(props.getProperty(MudrodConstants.METADATA_ID));
-        shortnameMap.put(shortName.toLowerCase(), shortName);
+        shortnameMap.put(shortName.toLowerCase(Locale.ENGLISH), shortName);
       }
 
       scrollResp = es.getClient().prepareSearchScroll(scrollResp.getScrollId()).setScroll(new TimeValue(600000)).execute().actionGet();

@@ -29,12 +29,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -49,12 +51,15 @@ public class LinkageIntegration extends DiscoveryStepAbstract {
   private static final Logger LOG = LoggerFactory.getLogger(LinkageIntegration.class);
   private static final long serialVersionUID = 1L;
   private transient List<LinkedTerm> termList = new ArrayList<>();
-  private DecimalFormat df = new DecimalFormat("#.00");
+  private DecimalFormat df;
   private static final String INDEX_NAME = MudrodConstants.ES_INDEX_NAME;
   private static final String WEIGHT = "weight";
 
   public LinkageIntegration(Properties props, ESDriver es, SparkDriver spark) {
     super(props, es, spark);
+    NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
+    df = (DecimalFormat) nf;
+    df.applyPattern("#.00");
   }
 
   /**

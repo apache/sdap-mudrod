@@ -33,6 +33,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +47,7 @@ public class FeatureBasedSimilarity extends DiscoveryStepAbstract implements Ser
 
   private static final Logger LOG = LoggerFactory.getLogger(FeatureBasedSimilarity.class);
 
-  private DecimalFormat df = new DecimalFormat("#.000");
+  private DecimalFormat df;
   // a map from variable to its type
   MetadataFeature metadata = null;
   public Map<String, Integer> variableTypes;
@@ -77,6 +79,9 @@ public class FeatureBasedSimilarity extends DiscoveryStepAbstract implements Ser
     metadata.inital();
     variableTypes = metadata.featureTypes;
     variableWeights = metadata.featureWeights;
+    NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
+    df = (DecimalFormat) nf;
+    df.applyPattern("#.000");
   }
 
   @Override

@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -72,7 +73,7 @@ public class ApacheAccessLog extends WebLog implements Serializable {
 
     String time = matcher.group(4);
     time = SwithtoNum(time);
-    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy:HH:mm:ss");
+    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy:HH:mm:ss", Locale.ENGLISH);
     Date date = formatter.parse(time);
 
     String bytes = matcher.group(7);
@@ -81,7 +82,7 @@ public class ApacheAccessLog extends WebLog implements Serializable {
       bytes = "0";
     }
 
-    String request = matcher.group(5).toLowerCase();
+    String request = matcher.group(5).toLowerCase(Locale.ENGLISH);
     String agent = matcher.group(9);
     CrawlerDetection crawlerDe = new CrawlerDetection(props);
     if (crawlerDe.checkKnownCrawler(agent)) {
@@ -103,7 +104,7 @@ public class ApacheAccessLog extends WebLog implements Serializable {
       accesslog.Bytes = Double.parseDouble(bytes);
       accesslog.Referer = matcher.group(8);
       accesslog.Browser = matcher.group(9);
-      SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss'Z'");
+      SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss'Z'", Locale.ENGLISH);
       accesslog.Time = df.format(date);
 
       Gson gson = new Gson();

@@ -18,11 +18,13 @@ import au.com.bytecode.opencsv.CSVWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -98,7 +100,7 @@ public class DataGenerator {
 
         if (directoryListing != null) {
           for (File child : directoryListing) {
-            try (CSVReader csvReader = new CSVReader(new FileReader(child))) {
+            try (CSVReader csvReader = new CSVReader(new InputStreamReader(new FileInputStream(child), StandardCharsets.UTF_8))) {
               List<String[]> list = csvReader.readAll();
               // Store into 2D array by transforming array list to normal array
               dataArr = new String[list.size()][];
@@ -113,7 +115,7 @@ public class DataGenerator {
         File file = new File(sourceDir);
 
         if (file != null) {
-          try (CSVReader csvReader = new CSVReader(new FileReader(file))) {
+          try (CSVReader csvReader = new CSVReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
             List<String[]> list = csvReader.readAll();
 
             // Store into 2D array by transforming array list to normal array
@@ -289,9 +291,8 @@ public class DataGenerator {
     String outputFile = myResultDir;
     boolean alreadyExists = new File(outputFile).exists();
 
-    try {
-      CSVWriter csvOutput = new CSVWriter(new FileWriter(outputFile), ','); // Create new instance of CSVWriter to write to file output
-
+    // Create new instance of CSVWriter to write to file output
+    try(CSVWriter csvOutput = new CSVWriter (new OutputStreamWriter(new FileOutputStream(outputFile), StandardCharsets.UTF_8), ',')) {
       if (!alreadyExists) {
         csvOutput.writeNext(myHeader); // Write the text headers first before data
 
@@ -302,7 +303,6 @@ public class DataGenerator {
         }
       }
 
-      csvOutput.close(); // Close csvWriter
     } catch (IOException e) {
       LOG.error("Writing to CSV file failed : ", e);
     }

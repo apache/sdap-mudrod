@@ -38,6 +38,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.MessageDigest;
 import java.security.cert.CertificateException;
@@ -116,8 +117,7 @@ public class InstallCert {
         return;
     }
 
-    BufferedReader reader =
-        new BufferedReader(new InputStreamReader(System.in));
+    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
 
     System.out.println();
     System.out.println("Server sent " + chain.length + " certificate(s):");

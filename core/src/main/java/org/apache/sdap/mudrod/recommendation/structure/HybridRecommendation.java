@@ -30,6 +30,7 @@ import org.elasticsearch.search.sort.SortOrder;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.*;
 
 /**
@@ -44,7 +45,7 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
   // recommended metadata list
   private transient List<LinkedTerm> termList = new ArrayList<>();
   // format decimal
-  private DecimalFormat df = new DecimalFormat("#.00");
+  private DecimalFormat df;
   // index name
   private static final String INDEX_NAME = MudrodConstants.ES_INDEX_NAME;
   private static final String WEIGHT = "weight";
@@ -66,6 +67,9 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
 
   public HybridRecommendation(Properties props, ESDriver es, SparkDriver spark) {
     super(props, es, spark);
+    NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
+    df = (DecimalFormat) nf;
+    df.applyPattern("#.00");
   }
 
   @Override

@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -277,7 +278,7 @@ public class LocalOntology implements Ontology {
       m = new HashMap<>();
     }
     m.put(resource, "1");
-    searchTerms.put(label.toLowerCase(), m);
+    searchTerms.put(label.toLowerCase(Locale.ENGLISH), m);
   }
 
   /**
@@ -293,7 +294,7 @@ public class LocalOntology implements Ontology {
    */
   public Map<OntResource, String> retrieve(String label) {
     @SuppressWarnings("unchecked")
-    Map<OntResource, String> m = (Map<OntResource, String>) searchTerms.get(label.toLowerCase());
+    Map<OntResource, String> m = (Map<OntResource, String>) searchTerms.get(label.toLowerCase(Locale.ENGLISH));
     if (m == null) {
       m = new HashMap<>();
     }
