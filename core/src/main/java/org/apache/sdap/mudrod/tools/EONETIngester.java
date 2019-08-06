@@ -134,6 +134,9 @@ public class EONETIngester extends MudrodAbstract {
         updateResponse = esDriver.getClient().update(updateRequest).get();
       } catch (InterruptedException | ExecutionException e) {
         LOG.error("Failed to execute bulk Index request : ", e);
+        if (e instanceof InterruptedException) {
+          Thread.currentThread().interrupt();
+        }
       }
       if (updateResponse != null) {
         result = updateResponse.getGetResult();

@@ -106,6 +106,9 @@ public class LinkageIntegration extends DiscoveryStepAbstract {
       map = aggregateRelatedTermsFromAllmodel(es.customAnalyzing(props.getProperty(INDEX_NAME), input));
     } catch (InterruptedException | ExecutionException e) {
       LOG.error("Error applying majority rule", e);
+      if (e instanceof InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
     }
 
     for (Entry<String, List<LinkedTerm>> entry : map.entrySet()) {

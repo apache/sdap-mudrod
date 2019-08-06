@@ -68,6 +68,9 @@ public class SearchDatasetDetailResource {
       dataDetailJson = mEngine.getESDriver().searchByQuery(config.getProperty(MudrodConstants.ES_INDEX_NAME), config.getProperty(MudrodConstants.RAW_METADATA_TYPE), query, true);
     } catch (InterruptedException | ExecutionException | IOException e) {
       LOG.error("Error whilst searching for a Dataset-ShortName: ", e);
+      if (e instanceof InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
     }
     LOG.info("Response received: {}", dataDetailJson);
     return Response.ok(dataDetailJson, MediaType.APPLICATION_JSON).build();
