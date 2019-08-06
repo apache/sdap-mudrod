@@ -48,7 +48,7 @@ public class RequestUrl {
     String strPage = null;
     String[] arrSplit = null;
 
-    String newURL = strURL.trim().toLowerCase(Locale.ROOT);
+    String newURL = strURL.trim().toLowerCase(Locale.ENGLISH);
 
     arrSplit = newURL.split("[?]");
     if (newURL.length() > 0 && arrSplit.length > 1 && arrSplit[0] != null) {
@@ -68,7 +68,7 @@ public class RequestUrl {
     String strAllParam = null;
     String[] arrSplit = null;
 
-    strURL = strURL.trim().toLowerCase(Locale.ROOT); // keep this in mind
+    strURL = strURL.trim().toLowerCase(Locale.ENGLISH); // keep this in mind
 
     arrSplit = strURL.split("[?]");
     if (strURL.length() > 1) {

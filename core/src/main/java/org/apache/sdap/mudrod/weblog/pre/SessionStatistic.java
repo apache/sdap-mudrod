@@ -206,7 +206,7 @@ public class SessionStatistic extends LogAbstract {
         String request = (String) result.get("Request");
         String logType = (String) result.get("LogType");
         iP = (String) result.get("IP");
-        Matcher matcher = pattern.matcher(request.trim().toLowerCase(Locale.ROOT));
+        Matcher matcher = pattern.matcher(request.trim().toLowerCase(Locale.ENGLISH));
         while (matcher.find()) {
           request = matcher.group(1);
         }
@@ -248,7 +248,7 @@ public class SessionStatistic extends LogAbstract {
         if (MudrodConstants.FTP_LOG.equals(logType)) {
           ftpRequestCount++;
           String download = "";
-          String requestLowercase = request.toLowerCase(Locale.ROOT);
+          String requestLowercase = request.toLowerCase(Locale.ENGLISH);
           if (!requestLowercase.endsWith(".jpg") && 
                   !requestLowercase.endsWith(".pdf") && 
                   !requestLowercase.endsWith(".txt") && 

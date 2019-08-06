@@ -118,7 +118,7 @@ public class Ranker extends MudrodAbstract implements Serializable {
    * @return processed double value
    */
   private double getNDForm(double d) {
-    NumberFormat nf = NumberFormat.getNumberInstance(Locale.ROOT);
+    NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
     DecimalFormat ndForm = (DecimalFormat) nf;
     ndForm.applyPattern("#.###");
     return Double.valueOf(ndForm.format(d));

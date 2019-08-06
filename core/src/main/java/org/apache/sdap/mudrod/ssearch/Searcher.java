@@ -54,7 +54,7 @@ public class Searcher extends MudrodAbstract implements Serializable {
 
   public Searcher(Properties props, ESDriver es, SparkDriver spark) {
     super(props, es, spark);
-    NumberFormat nf = NumberFormat.getNumberInstance(Locale.ROOT);
+    NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
     ndForm = (DecimalFormat) nf;
     ndForm.applyPattern("#.##");
   }
@@ -190,7 +190,7 @@ public class Searcher extends MudrodAbstract implements Serializable {
 
       ArrayList<String> longdate = (ArrayList<String>) result.get("DatasetCitation-ReleaseDateLong");
       Date date = new Date(Long.valueOf(longdate.get(0)));
-      SimpleDateFormat df2 = new SimpleDateFormat("MM/dd/yyyy", Locale.ROOT);
+      SimpleDateFormat df2 = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
       String dateText = df2.format(date);
 
       // start date

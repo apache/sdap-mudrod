@@ -93,7 +93,7 @@ public class SessionNode {
       this.referer = "";
       return;
     }
-	this.referer= referer.toLowerCase(Locale.ROOT).replace(basicUrl, "");
+	this.referer= referer.toLowerCase(Locale.ENGLISH).replace(basicUrl, "");
   }
 
   /**
@@ -292,7 +292,7 @@ public class SessionNode {
    */
   private void parseRequest(String request) {
     Pattern pattern = Pattern.compile("get (.*?) http/*");
-    Matcher matcher = pattern.matcher(request.trim().toLowerCase(Locale.ROOT));
+    Matcher matcher = pattern.matcher(request.trim().toLowerCase(Locale.ENGLISH));
     while (matcher.find()) {
       request = matcher.group(1);
     }
@@ -300,7 +300,7 @@ public class SessionNode {
       this.parseDatasetId(request);
     }
 
-    this.request = request.toLowerCase(Locale.ROOT);
+    this.request = request.toLowerCase(Locale.ENGLISH);
   }
 
   /**
@@ -313,11 +313,11 @@ public class SessionNode {
     if (params.containsKey("ids")) {
       String idsStr = params.get("ids");
       if (!idsStr.equals("")) {
-        idsStr = URLDecoder.decode(idsStr, StandardCharsets.UTF_8.displayName(Locale.ROOT));
+        idsStr = URLDecoder.decode(idsStr, StandardCharsets.UTF_8.displayName(Locale.ENGLISH));
         String[] ids = idsStr.split(":");
         String valueStr = params.get("values");
         if (valueStr != null) {
-          valueStr = URLDecoder.decode(valueStr, StandardCharsets.UTF_8.displayName(Locale.ROOT));
+          valueStr = URLDecoder.decode(valueStr, StandardCharsets.UTF_8.displayName(Locale.ENGLISH));
           String[] values = valueStr.split(":");
           int size = ids.length;
           for (int i = 0; i < size; i++) {

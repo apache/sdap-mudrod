@@ -63,7 +63,7 @@ public class LinkageTriple implements Serializable {
   private static final Logger LOG = LoggerFactory.getLogger(LinkageTriple.class);
 
   public LinkageTriple() {
-    NumberFormat nf = NumberFormat.getNumberInstance(Locale.ROOT);
+    NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
     df = (DecimalFormat) nf;
     df.applyPattern("#.00");
   }

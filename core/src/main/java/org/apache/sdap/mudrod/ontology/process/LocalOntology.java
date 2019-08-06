@@ -278,7 +278,7 @@ public class LocalOntology implements Ontology {
       m = new HashMap<>();
     }
     m.put(resource, "1");
-    searchTerms.put(label.toLowerCase(Locale.ROOT), m);
+    searchTerms.put(label.toLowerCase(Locale.ENGLISH), m);
   }
 
   /**
@@ -294,7 +294,7 @@ public class LocalOntology implements Ontology {
    */
   public Map<OntResource, String> retrieve(String label) {
     @SuppressWarnings("unchecked")
-    Map<OntResource, String> m = (Map<OntResource, String>) searchTerms.get(label.toLowerCase(Locale.ROOT));
+    Map<OntResource, String> m = (Map<OntResource, String>) searchTerms.get(label.toLowerCase(Locale.ENGLISH));
     if (m == null) {
       m = new HashMap<>();
     }

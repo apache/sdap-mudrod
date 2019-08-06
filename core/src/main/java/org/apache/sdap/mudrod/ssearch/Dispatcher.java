@@ -102,7 +102,7 @@ public class Dispatcher extends MudrodAbstract {
         "DatasetSource-Sensor-ShortName-Full" };
     BoolQueryBuilder qb = new BoolQueryBuilder();
     for (Entry<String, Double> entry : selected_Map.entrySet()) {
-      if (query_operator.toLowerCase(Locale.ROOT).trim().equals("phrase")) {
+      if (query_operator.toLowerCase(Locale.ENGLISH).trim().equals("phrase")) {
         qb.should(QueryBuilders.multiMatchQuery(entry.getKey(), fieldsList).boost(entry.getValue().floatValue()).type(MultiMatchQueryBuilder.Type.PHRASE).tieBreaker((float) 0.5)); // when
         // set
         // to
@@ -115,7 +115,7 @@ public class Dispatcher extends MudrodAbstract {
         // "most
         // fields"
         // query
-      } else if (query_operator.toLowerCase(Locale.ROOT).trim().equals("and")) {
+      } else if (query_operator.toLowerCase(Locale.ENGLISH).trim().equals("and")) {
         qb.should(QueryBuilders.multiMatchQuery(entry.getKey(), fieldsList).boost(entry.getValue().floatValue()).operator(MatchQueryBuilder.DEFAULT_OPERATOR.AND).tieBreaker((float) 0.5));
       } else {
         qb.should(QueryBuilders.multiMatchQuery(entry.getKey(), fieldsList).boost(entry.getValue().floatValue()).operator(MatchQueryBuilder.DEFAULT_OPERATOR.OR).tieBreaker((float) 0.5));

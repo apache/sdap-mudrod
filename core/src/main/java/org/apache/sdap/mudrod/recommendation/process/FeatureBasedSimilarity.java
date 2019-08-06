@@ -79,7 +79,7 @@ public class FeatureBasedSimilarity extends DiscoveryStepAbstract implements Ser
     metadata.inital();
     variableTypes = metadata.featureTypes;
     variableWeights = metadata.featureWeights;
-    NumberFormat nf = NumberFormat.getNumberInstance(Locale.ROOT);
+    NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
     df = (DecimalFormat) nf;
     df.applyPattern("#.000");
   }

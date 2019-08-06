@@ -67,7 +67,7 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
 
   public HybridRecommendation(Properties props, ESDriver es, SparkDriver spark) {
     super(props, es, spark);
-    NumberFormat nf = NumberFormat.getNumberInstance(Locale.ROOT);
+    NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
     df = (DecimalFormat) nf;
     df.applyPattern("#.00");
   }

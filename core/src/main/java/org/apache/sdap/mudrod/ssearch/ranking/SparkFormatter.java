@@ -33,7 +33,7 @@ public class SparkFormatter {
  private static final Logger LOG = LoggerFactory.getLogger(SparkFormatter.class);
 
   public SparkFormatter() {
-    NumberFormat nf = NumberFormat.getNumberInstance(Locale.ROOT);
+    NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
     ndForm = (DecimalFormat) nf;
     ndForm.applyPattern("#.##");
   }
