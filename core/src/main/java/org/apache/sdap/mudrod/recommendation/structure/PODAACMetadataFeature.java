@@ -289,7 +289,7 @@ public class PODAACMetadataFeature extends MetadataFeature {
     // TODO Auto-generated method stub
     for (String variable : featureTypes.keySet()) {
       Integer type = featureTypes.get(variable);
-      if (type != VAR_CATEGORICAL) {
+      if (!type.equals(VAR_CATEGORICAL)) {
         continue;
       }
 
@@ -329,7 +329,7 @@ public class PODAACMetadataFeature extends MetadataFeature {
     // TODO Auto-generated method stub
     for (String variable : featureTypes.keySet()) {
       Integer type = featureTypes.get(variable);
-      if (type != VAR_ORDINAL) {
+      if (!type.equals(VAR_ORDINAL)) {
         continue;
       }
 
