@@ -68,6 +68,7 @@ public class SessionNode {
   /**
    * Creates a new instance of SessionNode.
    *
+   * @param props a populated {@link java.util.Properties} object
    * @param request: request url
    * @param logType: including two types - po.dacc, ftp
    * @param referer: previous request url
@@ -87,13 +88,14 @@ public class SessionNode {
    * setReferer: Set previous request url of this node
    *
    * @param referer previous request url
+   * @param basicUrl the URL to replace within the referrer string
    */
   public void setReferer(String referer, String basicUrl) {
     if (referer == null) {
       this.referer = "";
       return;
     }
-	this.referer= referer.toLowerCase(Locale.ENGLISH).replace(basicUrl, "");
+    this.referer = referer.toLowerCase(Locale.ENGLISH).replace(basicUrl, "");
   }
 
   /**

@@ -187,6 +187,7 @@ public class SessionTree extends MudrodAbstract {
 
   /**
    * getClickStreamList: Get click stream list in the session
+   * @param props populated {@link java.util.Properties} which includes the index name
    *
    * @return {@link ClickStream}
    */
