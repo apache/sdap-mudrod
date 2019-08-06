@@ -86,6 +86,9 @@ public class CrawlerDetection extends LogAbstract {
       checkByRateInParallel();
     } catch (InterruptedException | IOException e) {
       LOG.error("Encountered an error whilst detecting Web crawlers.", e);
+      if (e instanceof InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
     }
     endTime = System.currentTimeMillis();
     es.refreshIndex();

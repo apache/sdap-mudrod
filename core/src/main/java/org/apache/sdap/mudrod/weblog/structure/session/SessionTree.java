@@ -209,6 +209,9 @@ public class SessionTree extends MudrodAbstract {
         viewquery = es.customAnalyzing(props.getProperty(MudrodConstants.ES_INDEX_NAME), infoStr);
       } catch (UnsupportedEncodingException | InterruptedException | ExecutionException e) {
         LOG.warn("Exception getting search info. Ignoring...", e);
+        if (e instanceof InterruptedException) {
+          Thread.currentThread().interrupt();
+        }
       }
 
       String dataset = viewnode.getDatasetId();
@@ -491,6 +494,9 @@ public class SessionTree extends MudrodAbstract {
         try {
           query = es.customAnalyzing(props.getProperty(MudrodConstants.ES_INDEX_NAME), infoStr);
         } catch (InterruptedException | ExecutionException e) {
+          if (e instanceof InterruptedException) {
+            Thread.currentThread().interrupt();
+          }
           throw new RuntimeException("Error performing custom analyzing", e);
         }
         Map<String, String> filter = RequestUrl.getFilterInfo(queryUrl);

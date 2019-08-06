@@ -244,6 +244,9 @@ public class ESDriver implements Serializable {
       }
     } catch (InterruptedException | ExecutionException e) {
       LOG.error("Error whilst obtaining type list from Elasticsearch mappings.", e);
+      if (e instanceof InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
     }
     return typeList;
   }
