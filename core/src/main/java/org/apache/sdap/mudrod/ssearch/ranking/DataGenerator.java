@@ -108,6 +108,9 @@ public class DataGenerator {
               calculateVec(dataArr);
             }
           }
+          if (dataArr == null) {
+            throw new RuntimeException("Specified CSV file content is empty to create header data!");
+          }
           storeHead(dataArr); // Store the header
         }
       } else // Process only one file
