@@ -73,12 +73,12 @@ public class AggregateTriples extends DiscoveryStepAbstract {
             loadXml(fileIn.getAbsolutePath());
             getAllClass();
           } catch (JDOMException | IOException e1) {
-            LOG.error("Couln't load Owl file into memory: ", e1);
+            LOG.error("Couldn't load Owl file into memory: ", e1);
           }
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.error("Couldn't open file!", e);
     }
 
     return null;

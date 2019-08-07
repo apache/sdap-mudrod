@@ -142,8 +142,7 @@ public class RequestUrl {
         keyword = keyword.replaceAll("[-+^:,*_\"]", " ").replace("\\", " ").replaceAll("\\s+", " ").trim();
 
       } catch (UnsupportedEncodingException e) {
-        LOG.error(mapRequest.get("search"));
-        e.printStackTrace();
+        LOG.error(mapRequest.get("search"), e);
       }
       if (!"".equals(keyword)) {
         info.add(keyword);
@@ -176,8 +175,7 @@ public class RequestUrl {
               info.add(item);
             }
           } catch (Exception e) {
-            LOG.error(values[i]);
-            e.printStackTrace();
+            LOG.error(values[i], e);
           }
         }
 

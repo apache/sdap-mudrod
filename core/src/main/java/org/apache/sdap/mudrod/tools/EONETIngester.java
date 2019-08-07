@@ -99,7 +99,7 @@ public class EONETIngester extends MudrodAbstract {
     try {
       result = executeBulkIndexRequest(mEngine, esDriver, executeEonetGetOperations());
     } catch (SSLHandshakeException e) {
-      e.printStackTrace();
+      LOG.error("SSL handshake is failed whilst acquiring all events!", e);
     }
     if (result != null) {
       return result;

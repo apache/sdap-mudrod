@@ -77,7 +77,7 @@ public class MetadataAnalyzer extends DiscoveryStepAbstract implements Serializa
       analyzer.saveToES(triples, props.getProperty(MudrodConstants.ES_INDEX_NAME), MudrodConstants.METADATA_LINKAGE_TYPE);
 
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Error whilst executing metadata analyzer!", e);
     }
 
     endTime = System.currentTimeMillis();
