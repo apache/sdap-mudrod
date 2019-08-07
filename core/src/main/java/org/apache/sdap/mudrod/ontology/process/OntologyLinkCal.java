@@ -61,7 +61,7 @@ public class OntologyLinkCal extends DiscoveryStepAbstract {
       es.getClient().admin().indices().preparePutMapping(props.getProperty(MudrodConstants.ES_INDEX_NAME))
       .setType(MudrodConstants.ONTOLOGY_LINKAGE_TYPE).setSource(Mapping).execute().actionGet();
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.error("Adding mapping is failed!", e);
     }
   }
 
