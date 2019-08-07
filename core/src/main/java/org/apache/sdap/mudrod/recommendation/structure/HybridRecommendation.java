@@ -27,6 +27,8 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -49,6 +51,8 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
   // index name
   private static final String INDEX_NAME = MudrodConstants.ES_INDEX_NAME;
   private static final String WEIGHT = "weight";
+
+  private static final Logger LOG = LoggerFactory.getLogger(HybridRecommendation.class);
 
   /**
    * recommended data class Date: Sep 12, 2016 2:25:28 AM
@@ -192,7 +196,7 @@ public class HybridRecommendation extends DiscoveryStepAbstract {
 
       sortedMap = sortMapByValue(termsMap); // terms_map will be empty
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Getting recommend dataset is failed!", e);
     }
 
     return sortedMap;

@@ -20,6 +20,8 @@ import org.apache.sdap.mudrod.main.MudrodConstants;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -36,6 +38,8 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
  * Supports ability to parse and process FTP and HTTP log files
  */
 public class OntologyLinkCal extends DiscoveryStepAbstract {
+
+  private static final Logger LOG = LoggerFactory.getLogger(OntologyLinkCal.class);
 
   public OntologyLinkCal(Properties props, ESDriver es, SparkDriver spark) {
     super(props, es, spark);
@@ -90,13 +94,11 @@ public class OntologyLinkCal extends DiscoveryStepAbstract {
 
       }
 
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-      Thread.currentThread().interrupt();
-    } catch (ExecutionException e) {
-      e.printStackTrace();
+    } catch (IOException | ExecutionException | InterruptedException e) {
+      LOG.error("Couldn't open file!", e);
+      if (e instanceof InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
     } finally {
       if (br != null) {
         try {
@@ -104,7 +106,7 @@ public class OntologyLinkCal extends DiscoveryStepAbstract {
           es.destroyBulkProcessor();
           es.refreshIndex();
         } catch (IOException e) {
-          e.printStackTrace();
+          LOG.error("Error whilst closing file!", e);
         }
       }
     }

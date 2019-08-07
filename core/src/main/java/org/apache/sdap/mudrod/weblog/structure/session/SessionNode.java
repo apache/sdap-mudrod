@@ -27,6 +27,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.sdap.mudrod.main.MudrodConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ClassName: SessionNode Function: Functions related to a node in a session
@@ -60,6 +62,8 @@ public class SessionNode {
   protected Map<String, String> filter;
   // datasetId: viewed/downloaded data set ID
   protected String datasetId;
+
+  private static final Logger LOG = LoggerFactory.getLogger(SessionNode.class);
 
   public SessionNode() {
 
@@ -341,7 +345,7 @@ public class SessionNode {
     try {
       request = URLDecoder.decode(request, "UTF-8");
     } catch (UnsupportedEncodingException e) {
-      e.printStackTrace();
+      LOG.error("Parsing request to extract data set ID is failed!", e);
     }
     String[] twoparts = request.split("[?]");
     String[] parts = twoparts[0].split("/");

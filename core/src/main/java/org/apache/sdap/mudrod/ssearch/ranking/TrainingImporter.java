@@ -20,6 +20,8 @@ import org.apache.sdap.mudrod.main.MudrodConstants;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -40,6 +42,8 @@ public class TrainingImporter extends MudrodAbstract {
    */
   private static final long serialVersionUID = 1L;
 
+  private static final Logger LOG = LoggerFactory.getLogger(TrainingImporter.class);
+
   public TrainingImporter(Properties props, ESDriver es, SparkDriver spark) {
     super(props, es, spark);
     es.deleteAllByQuery(props.getProperty(MudrodConstants.ES_INDEX_NAME), "trainingranking", QueryBuilders.matchAllQuery());
@@ -47,7 +51,7 @@ public class TrainingImporter extends MudrodAbstract {
   }
 
   /**
-   * Method of adding mapping to traning set type
+   * Method of adding mapping to training set type
    */
   private void addMapping() {
     XContentBuilder Mapping;
@@ -58,7 +62,7 @@ public class TrainingImporter extends MudrodAbstract {
 
       es.getClient().admin().indices().preparePutMapping(props.getProperty(MudrodConstants.ES_INDEX_NAME)).setType("trainingranking").setSource(Mapping).execute().actionGet();
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.error("Adding mapping to training set type is failed!", e);
     }
   }
 

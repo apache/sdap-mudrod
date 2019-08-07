@@ -147,8 +147,8 @@ public class FeatureBasedSimilarity extends DiscoveryStepAbstract implements Ser
           IndexRequest ir = new IndexRequest(indexName, variableSimType).source(contentBuilder);
           es.getBulkProcessor().add(ir);
 
-        } catch (IOException e1) {
-          e1.printStackTrace();
+        } catch (IOException e) {
+          LOG.error("Indexing feature similarity is failed!", e);
         }
 
       }
@@ -167,7 +167,7 @@ public class FeatureBasedSimilarity extends DiscoveryStepAbstract implements Ser
 
       es.getClient().admin().indices().preparePutMapping(index).setType(type).setSource(Mapping).execute().actionGet();
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.error("Adding mapping is failed!", e);
     }
   }
 
