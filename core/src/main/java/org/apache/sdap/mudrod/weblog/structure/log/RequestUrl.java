@@ -108,8 +108,7 @@ public class RequestUrl {
         mapRequest.put(arrSplitEqual[0], arrSplitEqual[1]);
 
       } else {
-        if (arrSplitEqual[0] != "") {
-
+        if (!arrSplitEqual[0].equals("")) {
           mapRequest.put(arrSplitEqual[0], "");
         }
       }
