@@ -396,7 +396,7 @@ public class MudrodEngine {
     }
   }
 
-  private static void loadPathConfig(MudrodEngine me, String dataDir) {
+  public static void loadPathConfig(MudrodEngine me, String dataDir) {
     me.props.put(MudrodConstants.ONTOLOGY_INPUT_PATH, dataDir + "SWEET_ocean/");
     me.props.put(MudrodConstants.ONTOLOGY_PATH, dataDir + "ocean_triples.csv");
     me.props.put(MudrodConstants.USER_HISTORY_PATH, dataDir + "userhistorymatrix.csv");

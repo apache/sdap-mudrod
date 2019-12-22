@@ -68,6 +68,7 @@ public class ApacheAccessLog extends WebLog implements Serializable {
     String lineJson = "{}";
     matcher = p.matcher(log);
     if (!matcher.matches() || numFields != matcher.groupCount()) {
+      System.out.println("Number of fields does not match.");
       return lineJson;
     }
 

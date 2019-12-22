@@ -60,7 +60,8 @@ public class WeblogDiscoveryEngine extends DiscoveryEngineAbstract {
   /**
    * Get log file list from a directory
    *
-   * @param logDir path to directory containing logs either local or in HDFS.
+   * @param logDir
+   *          path to directory containing logs either local or in HDFS.
    * @return a list of log files
    */
   public List<String> getFileList(String logDir) {
