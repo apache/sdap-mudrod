@@ -131,7 +131,7 @@
     <jacoco.version>0.8.0</jacoco.version>
     <jena.version>3.3.0</jena.version>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <elastic.version>5.2.0</elastic.version>
+    <elastic.version>7.17.13</elastic.version>
   </properties>
 
   <modules>
