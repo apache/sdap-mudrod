@@ -228,7 +228,7 @@ public class SessionStatistic extends LogAbstract {
               String[] keywordList = keywords.split(",");
               for (String item : items) {
                 if (!Arrays.asList(keywordList).contains(item)) {
-                  keywords = keywords + item + ",";
+                  keywords = keywords + "," + item + ",";
                 }
               }
             }
